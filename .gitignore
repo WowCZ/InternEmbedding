@@ -1,0 +1,12 @@
+# Python
+__pycache__
+*.pyc
+*.egg-info
+
+# Private
+assets
+log
+wandb
+ckpts
+results
+resets
