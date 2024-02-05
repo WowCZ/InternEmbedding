@@ -7,4 +7,4 @@
 #SBATCH --gres=gpu:8
 
 export OMP_NUM_THREADS=8
-accelerate launch --config_file /root/.cache/huggingface/accelerate/default_config.yaml train.py
+accelerate launch --config_file /root/.cache/huggingface/accelerate/default_config.yaml run.py train

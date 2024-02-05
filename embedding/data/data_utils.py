@@ -98,3 +98,58 @@ dataset_task_prompts = {
         'Provided a Yahoo question, retrieve the highest voted answers'
     ]
 }
+
+# initial dataloader
+## all samples are randomly sampled, where one batch contains different domain samples. 
+# training_datatset_files = ['/fs-computility/llm/chenzhi/datasets_processed/ELI5/train.jsonl', 
+#                   '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/MultiNLI/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/Quora/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train.jsonl',
+#                   '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl']
+
+## all samples in a batch are sampled from the same task, which we called the in-domain batch sampling. 
+# training_datatset_files = ['/fs-computility/llm/chenzhi/datasets_processed/InDomain/train.jsonl']
+
+##  msmarco dataset with hard negative sampling
+# training_datatset_files = ['/fs-computility/llm/chenzhi/datasets_processed/MSMARCO_Triple/train.jsonl']
+
+# training_datatset_files = [
+#             '/fs-computility/llm/chenzhi/datasets_processed/ELI5/filtered_phase2_train.jsonl', 
+#             '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MultiNLI/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_phase2_train.jsonl'
+# ]
+
+training_datatset_files = ['/fs-computility/llm/chenzhi/datasets_processed/STELI5/train.jsonl', 
+                '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/Quora/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train.jsonl',
+                '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train.jsonl']

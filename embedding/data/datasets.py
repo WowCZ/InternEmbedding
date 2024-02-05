@@ -28,15 +28,18 @@ class EmbedderDatasets(Dataset):
 
                     qa_pairs.append((dataset_name, l))
 
-        print('>>> The statistics of training datasets as below:')
-        print(json.dumps(dataset_statistics, indent=4))
-
+        self.dataset_statistics = dataset_statistics
+        # print('>>> The statistics of training datasets as below:')
+        # print(json.dumps(dataset_statistics, indent=4))
         self.qa_pairs = qa_pairs
         self.qa_num = len(qa_pairs)
         self.task_prompt = task_prompt
 
     def __len__(self):
         return self.qa_num
+    
+    def __str__(self) -> str:
+        return json.dumps(self.dataset_statistics, indent=4)
 
     def make_sample(self, dataset_name, sample):
         sample = json.loads(sample)

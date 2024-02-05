@@ -126,7 +126,7 @@ class BaseEmbedder(nn.Module, ABC):
         else:
             self.embed_dim = embed_dim
             self.project = nn.Linear(self.encoder.backbone_dim, embed_dim, bias=False)
-        print(f'>>> The dimension of {backbone} is {self.embed_dim}.')
+        # print(f'>>> The dimension of {backbone} is {self.embed_dim}.')
         self.which_layer = which_layer
         self.mytryoshka_indexes = mytryoshka_indexes
 
