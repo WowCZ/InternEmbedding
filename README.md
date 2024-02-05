@@ -1,4 +1,4 @@
-<h1 align="center"> InternEmbedding </h1>
+<h1 align="center"> <img src="./resets/images/embedder_triangle2.png" alt="Editor" width="50"> InternEmbedding </h1>
 
 ## 🚀Embedder Training & Evaluation
 -------
@@ -12,5 +12,7 @@ python run.py train \
 ### Evaluate the embedder on MTEB:
 ```shell
 python run.py evaluation \
-    --max_lengthe=1024
+    --embedder_ckpt_path=xxx \
+    --embedder_name=xxx \
+    --max_length=512
 ```
