@@ -41,6 +41,7 @@ evaluating_parser.add_argument('--peft_lora', type=bool, default=True, help='Tra
 evaluating_parser.add_argument('--which_layer', type=int, default=-1, help='The number of the last layer, whose hidden representation as the embedding')
 evaluating_parser.add_argument('--max_length', type=int, default=512, help='The max token lenght of the training text')
 evaluating_parser.add_argument('--task_prompt', type=bool, default=True, help='Using task prompt or not')
+evaluating_parser.add_argument('--mytryoshka_size', type=int, default=4096, help='The selected size in matryoshka representation learning')
 evaluating_parser.add_argument('--embedding_norm', type=bool, default=False, help='Normalize the embedding or not')
 evaluating_parser.add_argument('--embedder_ckpt_path', type=str, default='', help='The evaluated checkpoint of the embedder')
 evaluating_parser.add_argument('--mteb_evaluation_tasks', nargs='+', type=str, default=["Banking77Classification", "AskUbuntuDupQuestions"], help='The evaluation tasks in MTEB')
