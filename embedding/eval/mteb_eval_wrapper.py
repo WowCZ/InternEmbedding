@@ -34,7 +34,8 @@ class EvaluatedEmbedder:
         self.embedder.eval()
         sentence_embeddings = []
         with torch.no_grad():
-            for bi in trange(batch_cnt):
+            # for bi in trange(batch_cnt):
+            for bi in range(batch_cnt):
                 cur_batch = sentences[bi*batch_size: (bi+1)* batch_size]
                 bi_input_ids, bi_attention_mask = make_text_batch(cur_batch, self.tokenizer, self.max_length)
                 bi_input_ids, bi_attention_mask = bi_input_ids.to(self.device), bi_attention_mask.to(self.device)

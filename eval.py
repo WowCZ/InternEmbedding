@@ -7,7 +7,6 @@ from embedding.models.modeling_mistral import MistralEmbedder
 from embedding.eval.mteb_eval_wrapper import MTEBEvaluationWrapper
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
-
 def evaluate_embedder(args):
     mytryoshka_indexes = list(range(args.mytryoshka_size))
     tokenizer = AutoTokenizer.from_pretrained(args.init_backbone)

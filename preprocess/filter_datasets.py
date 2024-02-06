@@ -43,10 +43,11 @@ def deduplicate_filter(paired_data: List[str]):
         question = l['question']
         response = l['response']
 
-        if question in hash_map or question.lower() == response.lower():
+        qa_pair = question.lower() + response.lower()
+        if qa_pair in hash_map or question.lower() == response.lower():
             continue
 
-        hash_map[question] = 1.0
+        hash_map[qa_pair] = 1.0
         filtered_data.append(json.dumps(l))
 
     return filtered_data
@@ -86,7 +87,7 @@ def consistency_filter(paired_data: List[str], embedder):
     return sorted(filtered_data, key=lambda x:x[0], reverse=True)
 
 if __name__ == '__main__':
-    filter_phrase = 2
+    filter_phrase = 1
 
     if filter_phrase == 1:
         import os
@@ -99,13 +100,14 @@ if __name__ == '__main__':
         from embedding.models.modeling_bge import BGEEmbedder
         from transformers import AutoTokenizer
 
+        # print(os.environ['CUDA_VISIBLE_DEVICES'])
+
         mytryoshka_size = 4096
         max_length = 512
         embedding_norm = False
         mytryoshka_indexes = list(range(mytryoshka_size))
-        rank = 7
-        device = f'cuda:{rank}'
-        print(f'>>> load in {device}!')
+        rank = int(os.environ['CUDA_VISIBLE_DEVICES'])
+        device = 'cuda'
 
         # # for mistral embedder
         # backbone = "/fs-computility/llm/chenzhi/huggingface_cache/models--mistralai--Mistral-7B-Instruct-v0.1/snapshots/9ab9e76e2b09f9f29ea2d56aa5bd139e4445c59e"
@@ -119,27 +121,34 @@ if __name__ == '__main__':
         embedder = BGEEmbedder('BAAI/bge-base-en-v1.5', device, max_length)
 
         datafiles = [
-            '/fs-computility/llm/chenzhi/datasets_processed/ELI5/train.jsonl', 
+            '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train.jsonl', 
             '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MultiNLI/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/Quora/train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train.jsonl'
+            '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train.jsonl'
         ]
 
         rank_datafile_map = {
-            0: [0, 1],
-            1: [2],
-            2: [3],
-            3: [4],
-            4: [6, 7],
-            5: [8],
-            6: [5],
+            0: [0, 1, 11],
+            1: [2, 12],
+            2: [3, 13],
+            3: [4, 14],
+            4: [6, 7, 17],
+            5: [8, 15],
+            6: [5, 16],
             7: [9, 10]
         }
 

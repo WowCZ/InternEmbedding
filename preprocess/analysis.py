@@ -216,23 +216,35 @@ def plot_mrl_doubley(mrl_file: str):
 
 
 if __name__ == '__main__':
+    # datafiles = [
+    #     '/fs-computility/llm/chenzhi/datasets_processed/ELI5/train.jsonl', 
+    #     '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/MultiNLI/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/Quora/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl'
+    # ]
+
     datafiles = [
-        '/fs-computility/llm/chenzhi/datasets_processed/ELI5/train.jsonl', 
-        '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MultiNLI/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/Quora/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl'
+        '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train.jsonl', 
+        '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train.jsonl',
+        '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl',
+        '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train.jsonl',
+        '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train.jsonl',
+        '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train.jsonl',
+        '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train.jsonl',
+        '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train.jsonl'
     ]
     backbone = "/fs-computility/llm/chenzhi/huggingface_cache/models--mistralai--Mistral-7B-Instruct-v0.1/snapshots/9ab9e76e2b09f9f29ea2d56aa5bd139e4445c59e"
-    # count_word(datafiles, backbone)
+    count_word(datafiles, backbone)
+
     # savefile = 'results/statistics/language_count.json'
     # # count_language(datafiles, savefile)
     # plot_language_distribution(savefile)
@@ -240,5 +252,5 @@ if __name__ == '__main__':
     # savefile = 'results/statistics/which_layer.json'
     # plot_whichlayer_doubley(savefile)
 
-    savefile = 'results/statistics/msmarco_ins_mrl.json'
-    plot_mrl_doubley(savefile)
+    # savefile = 'results/statistics/msmarco_ins_mrl.json'
+    # plot_mrl_doubley(savefile)

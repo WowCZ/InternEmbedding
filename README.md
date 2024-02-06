@@ -1,8 +1,8 @@
-<h1 align="center"> <img src="./resets/images/embedder_triangle2.png" alt="Editor" width="50"> InternEmbedding </h1>
+<h1 align="center"> <img src="./resets/images/embedder_triangle2.png" alt="embedder" width="50"> InternEmbedding </h1>
 
 ## 🚀Embedder Training & Evaluation
 -------
-### Training the embedder:
+### Train the embedder:
 ```shell
 python run.py train \
     --learning_rate=2e-4 \

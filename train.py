@@ -52,8 +52,8 @@ def train_embedder(args):
     train_loader = get_train_dataloader(args)
 
     num_training_steps = (args.num_epochs * len(train_loader))
-    num_training_steps = math.ceil(num_training_steps / accelerator.num_processes)
     optimizer, lr_scheduler = initial_opimizer_scheduler(args, embedder, num_training_steps)
+    num_training_steps = math.ceil(num_training_steps / accelerator.num_processes)
 
     if accelerator.is_main_process:
         accelerator.print('#'*10, f' Embedder Training Config ', '#'*10)

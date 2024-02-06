@@ -29,10 +29,10 @@ class EmbedderDatasets(Dataset):
                     qa_pairs.append((dataset_name, l))
 
         self.dataset_statistics = dataset_statistics
-        # print('>>> The statistics of training datasets as below:')
-        # print(json.dumps(dataset_statistics, indent=4))
+        
         self.qa_pairs = qa_pairs
         self.qa_num = len(qa_pairs)
+        self.dataset_statistics['TotalTrainingQAPairs'] = self.qa_num
         self.task_prompt = task_prompt
 
     def __len__(self):
