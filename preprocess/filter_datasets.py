@@ -87,7 +87,7 @@ def consistency_filter(paired_data: List[str], embedder):
     return sorted(filtered_data, key=lambda x:x[0], reverse=True)
 
 if __name__ == '__main__':
-    filter_phrase = 1
+    filter_phrase = 2
 
     if filter_phrase == 1:
         import os
@@ -174,24 +174,43 @@ if __name__ == '__main__':
 
         print(f'>>> total sample count: {sample_cnt}')
     else:
+        # filter_datafiles = [
+        #     '/fs-computility/llm/chenzhi/datasets_processed/ELI5/filtered_train.jsonl', 
+        #     '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MultiNLI/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_train.jsonl'
+        # ]
+
         filter_datafiles = [
-            '/fs-computility/llm/chenzhi/datasets_processed/ELI5/filtered_train.jsonl', 
+            '/fs-computility/llm/chenzhi/datasets_processed/STELI5/filtered_train.jsonl', 
             '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MultiNLI/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/filtered_train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_train.jsonl',
             '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_train.jsonl'
+            '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/filtered_train.jsonl'
         ]
 
         lower_bound_score = 0.7
         sample_cnt = 0
         total_cnt = 0
-        analysis_mode = True
+        analysis_mode = False
         for f in tqdm.tqdm(filter_datafiles):
             des_datafile = f.replace('filtered_train.jsonl', 'filtered_phase2_train.jsonl')
             paired_data = []

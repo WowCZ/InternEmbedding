@@ -31,8 +31,7 @@ def predict_embedder(args):
     
     instructions = ["Help Translate the English version corresponding to the following Chinese question:", 
                     "Help find the correct English response for the following question:", 
-                    "Help Translate the Russian version corresponding to the following Chinese question:", 
-                    "Help find the introduction of people who share the same profession (USA President) as Obama (excluding Obama), ignore the question:"]
+                    "Help Translate the Russian version corresponding to the following Chinese question:"]
     
     question = "奥巴马的妻子是谁？"
     
@@ -44,7 +43,7 @@ def predict_embedder(args):
 
     for instruct in instructions:
         complete_question = instruct + question
-        i_embedding = evaluated_embedder.encode(instruct)
+        # i_embedding = evaluated_embedder.encode(instruct)
         q_embedding = evaluated_embedder.encode(complete_question)
         # q_embedding = q_embedding + i_embedding
         q_embeddings = q_embedding.expand(len(answers), -1)

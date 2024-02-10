@@ -1,6 +1,6 @@
 <h1 align="center"> <img src="./resets/images/embedder_triangle2.png" alt="embedder" width="50"> InternEmbedding </h1>
 
-## 🚀Embedder Training & Evaluation
+## 🚀 Embedder Training & Evaluation
 -------
 ### Train the embedder:
 ```shell
