@@ -45,7 +45,7 @@ evaluating_parser.add_argument('--task_prompt', type=bool, default=True, help='U
 evaluating_parser.add_argument('--mytryoshka_size', type=int, default=4096, help='The selected size in matryoshka representation learning')
 evaluating_parser.add_argument('--embedding_norm', type=bool, default=False, help='Normalize the embedding or not')
 evaluating_parser.add_argument('--embedder_ckpt_path', type=str, default='', help='The evaluated checkpoint of the embedder')
-evaluating_parser.add_argument('--mteb_evaluation_tasks', nargs='+', type=str, default=["Banking77Classification", "AskUbuntuDupQuestions"], help='The evaluation tasks in MTEB')
+evaluating_parser.add_argument('--mteb_evaluation_tasks', nargs='+', type=str, default=["Banking77Classification", "EmotionClassification", "ImdbClassification", "MedrxivClusteringS2S", "TwitterSemEval2015", "AskUbuntuDupQuestions", "ArguAna", "NFCorpus", "SciFact", "BIOSSES", "STS17", "STSBenchmark"], help='The evaluation tasks in MTEB')
 evaluating_parser.add_argument('--device', type=str, default='cuda', help='loading device')
 evaluating_parser.set_defaults(func=evaluate_embedder)
 

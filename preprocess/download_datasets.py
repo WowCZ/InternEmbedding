@@ -443,15 +443,52 @@ def download_stembedding_datasets(dataset_name: str, save_dir: str):
     qp_pairs = []
     
     with open(dataset_name, 'r') as fr:
-        for l in fr.readlines():
+        for li, l in enumerate(fr.readlines()):
+            if li > 1000000:
+                break
+
             l = json.loads(l)
             
-            qp_pairs.append(json.dumps(
-                {
-                    'question': l[0],
-                    'response': l[1]
-                }
-            )+'\n')
+            if type(l) is list:
+                qp_pairs.append(json.dumps(
+                    {
+                        'question': l[0],
+                        'response': l[1]
+                    }
+                )+'\n')
+            elif type(l) is dict:
+                if 'set' in l:
+                    qp_pairs.append(json.dumps(
+                        {
+                            'question': l['set'][0],
+                            'response': l['set'][1]
+                        }
+                    )+'\n')
+                else:
+                    print('>>> Unknow keys: ', l.keys())
+                    exit(0)
+            else:
+                print('>>> Unknow Types: ', type(l))
+                exit(0)
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    with open(os.path.join(save_dir, 'train.jsonl'), 'w') as fw:
+        fw.write(''.join(qp_pairs))
+
+
+def download_multitrain_datasets(dataset_name: str, save_dir: str):
+    qp_pairs = []
+    dataset = load_dataset(dataset_name, split='train', cache_dir=HFCACHEDATASETS, trust_remote_code=True)
+    for d in dataset:
+        question, context = d['query'], d['pos']
+        qp_pairs.append(json.dumps(
+            {
+                'question': question,
+                'response': context
+            }
+        )+'\n')
 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
@@ -512,8 +549,19 @@ if __name__ == '__main__':
     # save_dir = '/fs-computility/llm/chenzhi/datasets_processed/YahooQA'
     # download_yahooqa_datasets('yahoo_answers_qa', save_dir)
 
-    dataset_dirs = ['st_allnli', 'st_eli5', 'st_gooqa', 'st_specter', 'st_stackexchange_dup', 'st_wikihow', 'st_yahoo_qa']
-    save_dirs = ['STAllNLI', 'STELI5', 'STGooQA', 'STSpecter', 'STStackexchangeDup', 'STWikiHow', 'STYahooQA']
+    # New Datasets
+    # huggingface_names = ['emb-wow-train', 'emb-trex-train', 'emb-medmcqa-train', 'emb-pubmed']
+    # save_dirs = ['MTWoW', 'MTTrex', 'MTMedMCQA', 'MTPubMed']
+    # for hfn, sd in zip(huggingface_names, save_dirs):
+    #     save_dir = f'/fs-computility/llm/chenzhi/datasets_processed/{sd}'
+    #     download_multitrain_datasets(f'multi-train/{hfn}', save_dir)
+    #     print(f'>>> Saved in {save_dir}!')
+
+    # dataset_dirs = ['st_allnli', 'st_eli5', 'st_gooqa', 'st_specter', 'st_stackexchange_dup', 'st_wikihow', 'st_yahoo_qa']
+    # save_dirs = ['STAllNLI', 'STELI5', 'STGooQA', 'STSpecter', 'STStackexchangeDup', 'STWikiHow', 'STYahooQA']
+
+    dataset_dirs = ['st_altlex', 'st_amazon_review', 'st_s2orc_ta', 'st_codesearchnet', 'st_npr', 'st_wikianswers', 'st_agnews', 'st_ccnews', 'st_flickr30k', 'st_xsum', 'st_paq']
+    save_dirs = ['STAltlex', 'STAmazonReview', 'STS2ORCTA', 'STCodeSearchNet', 'STNPR', 'STWikiAnswers', 'STAGNews', 'STCCNews', 'STFlickr30k', 'STXSum', 'STPAQ']
 
     for dataset, save_dir in tqdm.tqdm(zip(dataset_dirs, save_dirs)):
         dataset_root = f'/fs-computility/llm/chenzhi/datasets_cache/{dataset}'
@@ -524,3 +572,6 @@ if __name__ == '__main__':
                     if os.path.exists(dataset_name):
                         print('>>> download from ', dataset_name)
                         download_stembedding_datasets(dataset_name, f'/fs-computility/llm/chenzhi/datasets_processed/{save_dir}')
+
+
+    

@@ -232,16 +232,34 @@ if __name__ == '__main__':
     #     '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl'
     # ]
 
+    # datafiles = [
+    #     '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train.jsonl', 
+    #     '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train.jsonl',
+    #     '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train.jsonl'
+    # ]
+
     datafiles = [
-        '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train.jsonl', 
-        '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train.jsonl'
-    ]
+            '/fs-computility/llm/chenzhi/datasets_processed/STWikiAnswers/train.jsonl', 
+            '/fs-computility/llm/chenzhi/datasets_processed/STAGNews/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STAltlex/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STAmazonReview/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STCodeSearchNet/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STFlickr30k/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STNPR/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STPAQ/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STS2ORCTA/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STXSum/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STCCNews/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTWoW/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTTrex/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/train.jsonl'
+        ]
     backbone = "/fs-computility/llm/chenzhi/huggingface_cache/models--mistralai--Mistral-7B-Instruct-v0.1/snapshots/9ab9e76e2b09f9f29ea2d56aa5bd139e4445c59e"
     count_word(datafiles, backbone)
 

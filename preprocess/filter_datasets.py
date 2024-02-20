@@ -120,36 +120,61 @@ if __name__ == '__main__':
         # for bge embedder
         embedder = BGEEmbedder('BAAI/bge-base-en-v1.5', device, max_length)
 
+        # datafiles = [
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train.jsonl', 
+        #     '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/Quora/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train.jsonl'
+        # ]
+
+        # rank_datafile_map = {
+        #     0: [0, 1, 11],
+        #     1: [2, 12],
+        #     2: [3, 13],
+        #     3: [4, 14],
+        #     4: [6, 7, 17],
+        #     5: [8, 15],
+        #     6: [5, 16],
+        #     7: [9, 10]
+        # }
+
         datafiles = [
-            '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train.jsonl', 
-            '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/Quora/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train.jsonl'
+            '/fs-computility/llm/chenzhi/datasets_processed/STWikiAnswers/train.jsonl', 
+            '/fs-computility/llm/chenzhi/datasets_processed/STAGNews/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STAltlex/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STAmazonReview/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STCodeSearchNet/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STFlickr30k/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STNPR/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STPAQ/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STS2ORCTA/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STXSum/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STCCNews/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTWoW/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTTrex/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/train.jsonl'
         ]
 
         rank_datafile_map = {
-            0: [0, 1, 11],
-            1: [2, 12],
-            2: [3, 13],
-            3: [4, 14],
-            4: [6, 7, 17],
-            5: [8, 15],
-            6: [5, 16],
-            7: [9, 10]
+            0: [0, 1, 2, 3],
+            1: [4, 5, 6],
+            2: [8, 9, 10, 11],
+            3: [7, 12, 13, 14]
         }
 
         rank_datafiles = [datafiles[i] for i in rank_datafile_map[rank]]
@@ -188,23 +213,41 @@ if __name__ == '__main__':
         #     '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_train.jsonl'
         # ]
 
+        # filter_datafiles = [
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STELI5/filtered_train.jsonl', 
+        #     '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/filtered_train.jsonl',
+        #     '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/filtered_train.jsonl'
+        # ]
+
         filter_datafiles = [
-            '/fs-computility/llm/chenzhi/datasets_processed/STELI5/filtered_train.jsonl', 
-            '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/filtered_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/filtered_train.jsonl'
+            '/fs-computility/llm/chenzhi/datasets_processed/STWikiAnswers/filtered_train.jsonl', 
+            '/fs-computility/llm/chenzhi/datasets_processed/STAGNews/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STAltlex/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STAmazonReview/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STCodeSearchNet/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STFlickr30k/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STNPR/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STPAQ/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STS2ORCTA/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STXSum/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STCCNews/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTWoW/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTTrex/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/filtered_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/filtered_train.jsonl'
         ]
 
         lower_bound_score = 0.7

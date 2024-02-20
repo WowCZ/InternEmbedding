@@ -22,7 +22,7 @@ class EvaluatedEmbedder:
         self.embedding_norm = embedding_norm
         self.device = device
 
-    def encode(self, sentences: Union[str, list], batch_size=32, prompt=None):
+    def encode(self, sentences: Union[str, list], batch_size=32, prompt=None, **kwargs):
         if type(sentences) is str:
             sentences = [sentences]
             
@@ -34,14 +34,14 @@ class EvaluatedEmbedder:
         self.embedder.eval()
         sentence_embeddings = []
         with torch.no_grad():
-            # for bi in trange(batch_cnt):
-            for bi in range(batch_cnt):
+            for bi in trange(batch_cnt):
+            # for bi in range(batch_cnt):
                 cur_batch = sentences[bi*batch_size: (bi+1)* batch_size]
                 bi_input_ids, bi_attention_mask = make_text_batch(cur_batch, self.tokenizer, self.max_length)
                 bi_input_ids, bi_attention_mask = bi_input_ids.to(self.device), bi_attention_mask.to(self.device)
                 cur_embeddings = self.embedder.embedding(bi_input_ids, bi_attention_mask)
                 if self.embedding_norm:
-                    cur_embeddings = F.normalize(cur_embeddings, dim=-1)
+                    cur_embeddings = F.normalize(cur_embeddings, p=2, dim=-1)
                 sentence_embeddings.append(cur_embeddings)
 
         return torch.cat(sentence_embeddings, dim=0).detach().cpu()
@@ -56,7 +56,7 @@ class MTEBEvaluationWrapper:
     def evaluation(self, mteb_tasks: List[str]):
         results = []
         for task in mteb_tasks:
-            evaluation = MTEB(tasks=[task])
+            evaluation = MTEB(tasks=[task], task_langs=['en'])
             task_cls = evaluation.tasks[0]
             task_name = task_cls.description['name']
             task_type = task_cls.description['type']
