@@ -4,7 +4,7 @@ from transformers import AutoTokenizer
 from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampler
 
 def make_text_batch(t_ls: list, tokenizer: AutoTokenizer, max_length: int):
-    if t_ls[0] is None:
+    if any(x is None for x in t_ls):
         return None, None
     
     tokens = tokenizer(t_ls, padding='max_length', max_length=max_length, truncation=True)

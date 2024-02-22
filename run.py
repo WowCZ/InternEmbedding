@@ -18,6 +18,7 @@ training_parser.add_argument('--num_epochs', type=int, default=1, help='Training
 training_parser.add_argument('--max_length', type=int, default=512, help='The max token lenght of the training text')
 training_parser.add_argument('--task_prompt', type=bool, default=True, help='Using task prompt or not')
 training_parser.add_argument('--checkpoint_batch_size', type=int, default=10, help='The batch size in checkpointing training strategy')
+training_parser.add_argument('--gradcache_chunk_size', type=int, default=10, help='The chunk size in GradCache training strategy')
 training_parser.add_argument('--ckpt_saving_dir', type=str, default='/fs-computility/llm/chenzhi/ckpts', help='The saving path of the embedder checkpoint')
 training_parser.add_argument('--save_ckpt_steps', type=int, default=500, help='The saving steps of the embedder checkpoint')
 training_parser.add_argument('--only_last_ckpt', type=bool, default=False, help='Only saving the last checkpoint or not')

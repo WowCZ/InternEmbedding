@@ -439,6 +439,25 @@ def download_yahooqa_datasets(dataset_name: str, save_dir: str):
         fw.write(''.join(qp_pairs))
 
 
+def download_streddit_datasets(dataset_name: str, save_dir: str):
+    qp_pairs = []
+    dataset = load_dataset(dataset_name, split='train', cache_dir=HFCACHEDATASETS, trust_remote_code=True)
+    for d in dataset:
+        question, context = d['title'], d['body']
+        qp_pairs.append(json.dumps(
+            {
+                'question': question,
+                'response': context,
+            }
+        )+'\n')
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    with open(os.path.join(save_dir, 'train.jsonl'), 'w') as fw:
+        fw.write(''.join(qp_pairs))
+
+
 def download_stembedding_datasets(dataset_name: str, save_dir: str):
     qp_pairs = []
     
@@ -549,6 +568,9 @@ if __name__ == '__main__':
     # save_dir = '/fs-computility/llm/chenzhi/datasets_processed/YahooQA'
     # download_yahooqa_datasets('yahoo_answers_qa', save_dir)
 
+    save_dir = '/fs-computility/llm/chenzhi/datasets_processed/STReddit'
+    download_yahooqa_datasets('sentence-transformers/reddit-title-body', save_dir)
+
     # New Datasets
     # huggingface_names = ['emb-wow-train', 'emb-trex-train', 'emb-medmcqa-train', 'emb-pubmed']
     # save_dirs = ['MTWoW', 'MTTrex', 'MTMedMCQA', 'MTPubMed']
@@ -560,18 +582,18 @@ if __name__ == '__main__':
     # dataset_dirs = ['st_allnli', 'st_eli5', 'st_gooqa', 'st_specter', 'st_stackexchange_dup', 'st_wikihow', 'st_yahoo_qa']
     # save_dirs = ['STAllNLI', 'STELI5', 'STGooQA', 'STSpecter', 'STStackexchangeDup', 'STWikiHow', 'STYahooQA']
 
-    dataset_dirs = ['st_altlex', 'st_amazon_review', 'st_s2orc_ta', 'st_codesearchnet', 'st_npr', 'st_wikianswers', 'st_agnews', 'st_ccnews', 'st_flickr30k', 'st_xsum', 'st_paq']
-    save_dirs = ['STAltlex', 'STAmazonReview', 'STS2ORCTA', 'STCodeSearchNet', 'STNPR', 'STWikiAnswers', 'STAGNews', 'STCCNews', 'STFlickr30k', 'STXSum', 'STPAQ']
+    # dataset_dirs = ['st_altlex', 'st_amazon_review', 'st_s2orc_ta', 'st_codesearchnet', 'st_npr', 'st_wikianswers', 'st_agnews', 'st_ccnews', 'st_flickr30k', 'st_xsum', 'st_paq']
+    # save_dirs = ['STAltlex', 'STAmazonReview', 'STS2ORCTA', 'STCodeSearchNet', 'STNPR', 'STWikiAnswers', 'STAGNews', 'STCCNews', 'STFlickr30k', 'STXSum', 'STPAQ']
 
-    for dataset, save_dir in tqdm.tqdm(zip(dataset_dirs, save_dirs)):
-        dataset_root = f'/fs-computility/llm/chenzhi/datasets_cache/{dataset}'
-        for _, _, fs in os.walk(dataset_root):
-            for f in fs:
-                if f.endswith('.jsonl'):
-                    dataset_name = os.path.join(dataset_root, f)
-                    if os.path.exists(dataset_name):
-                        print('>>> download from ', dataset_name)
-                        download_stembedding_datasets(dataset_name, f'/fs-computility/llm/chenzhi/datasets_processed/{save_dir}')
+    # for dataset, save_dir in tqdm.tqdm(zip(dataset_dirs, save_dirs)):
+    #     dataset_root = f'/fs-computility/llm/chenzhi/datasets_cache/{dataset}'
+    #     for _, _, fs in os.walk(dataset_root):
+    #         for f in fs:
+    #             if f.endswith('.jsonl'):
+    #                 dataset_name = os.path.join(dataset_root, f)
+    #                 if os.path.exists(dataset_name):
+    #                     print('>>> download from ', dataset_name)
+    #                     download_stembedding_datasets(dataset_name, f'/fs-computility/llm/chenzhi/datasets_processed/{save_dir}')
 
 
     
