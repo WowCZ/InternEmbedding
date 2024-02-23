@@ -7,7 +7,6 @@ import torch
 import random
 import numpy as np
 from typing import List
-from contextlib import nullcontext
 from accelerate import Accelerator
 from embedding.train.loss import inbatch_negative_loss, hard_negative_loss
 from embedding.train.training_embedder import initial_model, initial_opimizer_scheduler, get_train_dataloader
@@ -30,13 +29,11 @@ def select_matryoshka_embedding(full_embeddings: List[torch.Tensor], select_ids:
         mytryoshka_embeddings.append(mytryoshka_embedding)
     return mytryoshka_embeddings
 
-def cache_gradients(embedder, query_embeds, passage_embeds, temperature):
+def cache_gradients(query_embeds, passage_embeds, temperature):
     query_embeds = query_embeds.detach().requires_grad_()
     passage_embeds = passage_embeds.detach().requires_grad_()
-    no_embedder_sync = embedder.no_sync if embedder.training else nullcontext
-    with no_embedder_sync():
-        loss = inbatch_negative_loss(query_embeds, passage_embeds, temperature)
-        loss.backward()
+    loss = inbatch_negative_loss(query_embeds, passage_embeds, temperature)
+    loss.backward()
 
     return query_embeds.grad, passage_embeds.grad, loss.detach()
 
@@ -117,28 +114,25 @@ def train_embedder(args):
                     passage_embeds = torch.concat(passage_embeds, dim=0)
 
                 # Step 2: Calculate the cached gradients of representation with inbatch negative loss
-                query_grad_cache, passage_grad_cache, loss = cache_gradients(embedder, query_embeds, passage_embeds, args.temperature)
+                query_grad_cache, passage_grad_cache, loss = cache_gradients(query_embeds, passage_embeds, args.temperature)
                 
                 # Step 3: Backpropagate the gradients according to the cached representation gradients
                 query_grad_cache = query_grad_cache.split(args.gradcache_chunk_size)
                 passage_grad_cache = passage_grad_cache.split(args.gradcache_chunk_size)
-                chunk_lenghts = len(query_grad_cache)
-                sync_contexts = [embedder.no_sync for _ in range(chunk_lenghts - 1)] + [nullcontext]
                 for ci, chunk_left in enumerate(range(0, args.batch_size_per_gpu, args.gradcache_chunk_size)):
                     chunk_right = args.gradcache_chunk_size + chunk_left
-                    sync_context = sync_contexts[ci]
-                    with sync_context():
-                        q_chunk_embeds = embedder.embedding(q_inputs[chunk_left: chunk_right], q_attention_mask[chunk_left: chunk_right])
-                        p_chunk_embeds = embedder.embedding(p_inputs[chunk_left: chunk_right], p_attention_mask[chunk_left: chunk_right])
+   
+                    q_chunk_embeds = embedder.embedding(q_inputs[chunk_left: chunk_right], q_attention_mask[chunk_left: chunk_right])
+                    p_chunk_embeds = embedder.embedding(p_inputs[chunk_left: chunk_right], p_attention_mask[chunk_left: chunk_right])
 
-                        q_chunk_cache = query_grad_cache[ci]
-                        p_chunk_cache = passage_grad_cache[ci]
+                    q_chunk_cache = query_grad_cache[ci]
+                    p_chunk_cache = passage_grad_cache[ci]
 
-                        qp_chunk_embeds = torch.concat([q_chunk_embeds, p_chunk_embeds], dim=1)
-                        qp_chunk_cache = torch.concat([q_chunk_cache, p_chunk_cache], dim=1)
+                    qp_chunk_embeds = torch.concat([q_chunk_embeds, p_chunk_embeds], dim=1)
+                    qp_chunk_cache = torch.concat([q_chunk_cache, p_chunk_cache], dim=1)
 
-                        surrogate = torch.dot(qp_chunk_embeds.flatten(), qp_chunk_cache.flatten())
-                        surrogate.backward()
+                    surrogate = torch.dot(qp_chunk_embeds.flatten(), qp_chunk_cache.flatten())
+                    accelerator.backward(surrogate)
 
             optimizer.step()
             lr_scheduler.step()

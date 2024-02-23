@@ -569,7 +569,7 @@ if __name__ == '__main__':
     # download_yahooqa_datasets('yahoo_answers_qa', save_dir)
 
     save_dir = '/fs-computility/llm/chenzhi/datasets_processed/STReddit'
-    download_yahooqa_datasets('sentence-transformers/reddit-title-body', save_dir)
+    download_streddit_datasets('sentence-transformers/reddit-title-body', save_dir)
 
     # New Datasets
     # huggingface_names = ['emb-wow-train', 'emb-trex-train', 'emb-medmcqa-train', 'emb-pubmed']
