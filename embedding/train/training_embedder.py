@@ -1,4 +1,5 @@
 
+import os
 import math
 import torch
 from transformers import AutoTokenizer, get_scheduler
@@ -19,7 +20,7 @@ def initial_model(args):
     
     else:
         raise TypeError(f'The type of backbone {args.backbone_type} has not been supported yet!')
-    
+
     return embedder
 
 def initial_opimizer_scheduler(args, embedder, num_training_steps):

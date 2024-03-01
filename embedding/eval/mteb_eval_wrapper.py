@@ -1,7 +1,7 @@
 import math
-from tqdm.rich import trange
 import torch
 from mteb import MTEB
+from tqdm.rich import trange
 from typing import List, Union
 from functools import partial
 from transformers import AutoTokenizer
@@ -11,7 +11,7 @@ from embedding.data.data_loader import make_text_batch
 from embedding.eval.eval_utils import get_task_def_by_task_name_and_type
 
 class EvaluatedEmbedder:
-    def __init__(self, embedder: Union[str, BaseEmbedder], tokenizer: AutoTokenizer, max_length: int, embedding_norm: bool=True, device: str='cuda:0'):
+    def __init__(self, embedder: Union[str, BaseEmbedder], tokenizer: AutoTokenizer, max_length: int, embedding_norm: bool=True, device: str='cuda:0', eval_batch_size: int=64):
         if type(embedder) is str:
             self.embedder = torch.load(embedder)
         else:
@@ -21,8 +21,10 @@ class EvaluatedEmbedder:
         self.max_length = max_length
         self.embedding_norm = embedding_norm
         self.device = device
+        self.eval_batch_size = eval_batch_size
 
-    def encode(self, sentences: Union[str, list], batch_size=32, prompt=None, **kwargs):
+    def encode(self, sentences: Union[str, list], prompt=None, batch_size=32, **kwargs):
+        # batch_size = self.eval_batch_size
         if type(sentences) is str:
             sentences = [sentences]
             
@@ -39,6 +41,7 @@ class EvaluatedEmbedder:
                 cur_batch = sentences[bi*batch_size: (bi+1)* batch_size]
                 bi_input_ids, bi_attention_mask = make_text_batch(cur_batch, self.tokenizer, self.max_length)
                 bi_input_ids, bi_attention_mask = bi_input_ids.to(self.device), bi_attention_mask.to(self.device)
+
                 cur_embeddings = self.embedder.embedding(bi_input_ids, bi_attention_mask)
                 if self.embedding_norm:
                     cur_embeddings = F.normalize(cur_embeddings, p=2, dim=-1)

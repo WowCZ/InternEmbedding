@@ -34,7 +34,8 @@ dataset_sampling_ratios = {
     'MTWoW': 1.0,
     'MTTrex': 1.0,
     'MTMedMCQA': 1.0,
-    'MTPubMed': 1.0
+    'MTPubMed': 1.0,
+    'NOMICTriples': 1.0
 }
 
 dataset_task_prompts = {
@@ -156,6 +157,9 @@ dataset_task_prompts = {
     ],
     'MTPubMed': [
         'Given a medical question, retrieve passages that answer the question'
+    ],
+    'NOMICTriples': [
+        ''
     ]
 }
 
@@ -233,35 +237,38 @@ dataset_task_prompts = {
 #             '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/filtered_phase2_train.jsonl',
 #             '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/filtered_phase2_train.jsonl']
 
+# training_datatset_files = [
+#             '/fs-computility/llm/chenzhi/datasets_processed/STELI5/filtered_phase2_train.jsonl', 
+#             '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STWikiAnswers/filtered_phase2_train.jsonl', 
+#             '/fs-computility/llm/chenzhi/datasets_processed/STAGNews/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STAltlex/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STAmazonReview/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STCodeSearchNet/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STFlickr30k/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STNPR/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STPAQ/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STS2ORCTA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STXSum/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STCCNews/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MTWoW/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MTTrex/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/filtered_phase2_train.jsonl']
+
 training_datatset_files = [
-            '/fs-computility/llm/chenzhi/datasets_processed/STELI5/filtered_phase2_train.jsonl', 
-            '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STWikiAnswers/filtered_phase2_train.jsonl', 
-            '/fs-computility/llm/chenzhi/datasets_processed/STAGNews/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STAltlex/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STAmazonReview/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STCodeSearchNet/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STFlickr30k/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STNPR/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STPAQ/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STS2ORCTA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STXSum/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STCCNews/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MTWoW/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MTTrex/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/filtered_phase2_train.jsonl']
+            '/fs-computility/llm/chenzhi/datasets_processed/NOMICTriples/train.jsonl']

@@ -1,16 +1,26 @@
 import math
 import torch
 from torch import nn
+from functools import partial
 from abc import ABC, abstractmethod
-from transformers import AutoModel
+from transformers import AutoModel, AutoConfig
 import torch.utils.checkpoint as checkpoint
 from peft import get_peft_config, get_peft_model, LoraConfig, TaskType
+from embedding.eval.mistral_sel_extend_patch import self_extend_forward, modify_method_of_instance
 
 class BaseBackboneWrapper(nn.Module, ABC):
-    def __init__(self, backbone, pool_type: str='position_weight', checkpoint_batch_size: int=-1, which_layer: int=-1, lora_config: bool=True):
+    def __init__(self, backbone, pool_type: str='position_weight', checkpoint_batch_size: int=-1, which_layer: int=-1, lora_config: bool=True, self_extend: bool=False):
         super(BaseBackboneWrapper, self).__init__()
         # initial backbone model
-        backbone = AutoModel.from_pretrained(backbone)
+        if self_extend:
+            mistral_self_extend_forward = partial(self_extend_forward, group_size_1=4, group_size_2=512)
+            config = AutoConfig.from_pretrained(backbone)
+            config.sliding_window = 200000000
+            backbone = AutoModel.from_pretrained(backbone, config=config)
+            modify_method_of_instance(backbone, "MistralAttention", "forward", mistral_self_extend_forward)
+        else:
+            backbone = AutoModel.from_pretrained(backbone)
+
         if hasattr(backbone, "enable_input_require_grads"):
             backbone.enable_input_require_grads()
         else:

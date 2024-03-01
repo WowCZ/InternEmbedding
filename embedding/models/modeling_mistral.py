@@ -5,8 +5,8 @@ from .base_model import BaseBackboneWrapper, BaseEmbedder
 
 
 class MistralBackboneWrapper(BaseBackboneWrapper):
-    def __init__(self, backbone: str, pool_type: str='cls', checkpoint_batch_size: int=-1, which_layer: int=-1, lora_config: Union[bool, LoraConfig]=True):
-        super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, lora_config)
+    def __init__(self, backbone: str, pool_type: str='cls', checkpoint_batch_size: int=-1, which_layer: int=-1, lora_config: Union[bool, LoraConfig]=True, self_extend: bool=True):
+        super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, lora_config, self_extend)
 
     def partial_encode(self, *inputs):
         input_embeddings, attention_mask = inputs

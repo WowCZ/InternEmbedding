@@ -27,6 +27,7 @@ training_parser.add_argument('--temperature', type=float, default=0.02, help='Th
 training_parser.add_argument('--learning_rate', type=float, default=1e-4, help='The learning rate')
 training_parser.add_argument('--warmup_rate', type=float, default=0.01, help='The warmup rate of the learning rate')
 training_parser.add_argument('--schedule_type', type=str, default='linear', help='The learning schedule type')
+training_parser.add_argument('--embedder_ckpt_path', type=str, default='', help='The evaluated checkpoint of the embedder')
 training_parser.add_argument('--mytryoshka_size', type=int, default=4096, help='The selected size in matryoshka representation learning')
 training_parser.add_argument('--matryoshka_adaptive_dims', nargs='+', type=int, default=[16, 32, 64, 128, 256, 512, 1024, 2048, 4096], help='The adpative dimensions in matryoshka representation learning')
 training_parser.add_argument('--record_log', type=str, default='wandb', help='The record type of the accelerator')

@@ -59,6 +59,12 @@ def train_embedder(args):
     embedder = initial_model(args)
     train_loader = get_train_dataloader(args)
 
+    if args.embedder_ckpt_path and os.path.exists(args.embedder_ckpt_path):
+        print(f'>>> initial the model with {args.embedder_ckpt_path}')
+        accelerator.wait_for_everyone()
+        unwrapped_embedder = accelerator.unwrap_model(embedder)
+        unwrapped_embedder.load_state_dict(torch.load(args.embedder_ckpt_path, map_location=torch.device(accelerator.device)))
+
     num_training_steps = (args.num_epochs * len(train_loader))
     optimizer, lr_scheduler = initial_opimizer_scheduler(args, embedder, num_training_steps)
     num_training_steps = math.ceil(num_training_steps / accelerator.num_processes)
@@ -92,13 +98,17 @@ def train_embedder(args):
                 for matryoshka_dim in args.matryoshka_adaptive_dims:
                     matryoshka_selected_ids = list(range(matryoshka_dim))
                     matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings = select_matryoshka_embedding([q_embeddings, p_embeddings, n_embeddings], matryoshka_selected_ids)
-                    if n_embeddings is not None and args.hard_negative_sampling:
+                    if args.hard_negative_sampling:
+                        if n_embeddings is None:
+                            raise RuntimeError('Negative embedding is None!')
+                        
                         loss += hard_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings, args.temperature)
                     else:
                         loss += inbatch_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, args.temperature)
 
                 accelerator.backward(loss)
             else:
+                # Refer to https://github.com/luyug/GradCache/tree/main & https://github.com/nomic-ai/contrastors/blob/main/src/contrastors/loss.py
                 # Step 1: Iterated inference process to get query and passage embeddings for each GradCache chunk
                 query_embeds = []
                 passage_embeds = []
