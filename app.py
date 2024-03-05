@@ -1,0 +1,3 @@
+from apps.vector_db.text_loading_chroma import create_gaokao_chromadb
+
+create_gaokao_chromadb()

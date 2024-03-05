@@ -1,8 +1,8 @@
 # !/bin/sh
-MODEL_NAME=mistral_embedder33_filter_pow1_prompt_ins_matryoshka1_temp1_lr15_bs300_ml512_3500_gradcache
-CKPT_DIR=mistral_filter33_gradcache_20240225040741
-CKPT_NAME=mistral_filter33_gradcache_3500.pt
-CUDA_RANK=2
+MODEL_NAME=mistral_embedder18_filter_eos1_prompt_ins_matryoshka1_temp1_lr15_bs300_ml512_1000_norm
+CKPT_DIR=mistral_filter18_20240303141730
+CKPT_NAME=mistral_filter18_1000.pt
+CUDA_RANK=1
 
 CUDA_VISIBLE_DEVICES=$CUDA_RANK python run.py evaluate --pool_type=eos --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME --embedder_name=$MODEL_NAME
 

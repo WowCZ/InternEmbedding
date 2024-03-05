@@ -270,5 +270,25 @@ dataset_task_prompts = {
 #             '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/filtered_phase2_train.jsonl',
 #             '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/filtered_phase2_train.jsonl']
 
+# training_datatset_files = [
+#             '/fs-computility/llm/chenzhi/datasets_processed/NOMICTriples/train.jsonl']
+
 training_datatset_files = [
-            '/fs-computility/llm/chenzhi/datasets_processed/NOMICTriples/train.jsonl']
+            '/fs-computility/llm/chenzhi/datasets_processed/STELI5/filtered_phase2_train.jsonl', 
+            '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/filtered_phase2_train.jsonl',
+            '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/filtered_phase2_train.jsonl']
