@@ -9,7 +9,7 @@ from peft import get_peft_config, get_peft_model, LoraConfig, TaskType
 from embedding.eval.mistral_sel_extend_patch import self_extend_forward, modify_method_of_instance
 
 class BaseBackboneWrapper(nn.Module, ABC):
-    def __init__(self, backbone, pool_type: str='position_weight', checkpoint_batch_size: int=-1, which_layer: int=-1, lora_config: bool=True, self_extend: bool=False):
+    def __init__(self, backbone, pool_type: str='position_weight', checkpoint_batch_size: int=-1, which_layer: int=-1, lora_config: bool=False, self_extend: bool=False):
         super(BaseBackboneWrapper, self).__init__()
         # initial backbone model
         if self_extend:
@@ -124,7 +124,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
 
 
 class BaseEmbedder(nn.Module, ABC):
-    def __init__(self, backbone: str, backbone_wrapper: BaseBackboneWrapper, pool_type: str = 'cls', checkpoint_batch_size=-1, embed_dim: int=-1, which_layer: int=-1, lora_config: bool=True, mytryoshka_indexes: list=None):
+    def __init__(self, backbone: str, backbone_wrapper: BaseBackboneWrapper, pool_type: str = 'cls', checkpoint_batch_size=-1, embed_dim: int=-1, which_layer: int=-1, lora_config: bool=False, mytryoshka_indexes: list=None):
         super(BaseEmbedder, self).__init__()
 
         self.encoder = backbone_wrapper(backbone, pool_type, checkpoint_batch_size, which_layer, lora_config)
