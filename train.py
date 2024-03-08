@@ -86,14 +86,22 @@ def train_embedder(args):
 
     embedder.train()
     train_step = 0
+    if accelerator.is_main_process:
+        if args.hard_negative_sampling:
+            lfunc = 'hard_negative_loss'
+        else:
+            lfunc = 'inbatch_negative_loss'
+        accelerator.print(f'>>> Training loss function is {lfunc}')
+        
     for epoch in range(args.num_epochs):
         if accelerator.is_main_process:
             accelerator.print('#'*10, f' Epoch {epoch} Starting ', '#'*10)
         for pq in train_loader:
-            q_inputs, q_attention_mask, p_inputs, p_attention_mask, n_inputs, n_attention_mask = (item.to(accelerator.device) if item is not None else None for item in pq)
+            q_inputs, q_attention_mask, p_inputs, p_attention_mask = (item.to(accelerator.device) if item is not None else None for item in pq[:4])
+            n_list_inputs, n_list_attention_mask = ([i.to(accelerator.device) for i in item] if item is not None else None for item in pq[4:])
 
             if args.gradcache_chunk_size < 1:
-                q_embeddings, p_embeddings, n_embeddings = embedder(q_inputs, q_attention_mask, p_inputs, p_attention_mask, n_inputs, n_attention_mask)
+                q_embeddings, p_embeddings, n_embeddings = embedder(q_inputs, q_attention_mask, p_inputs, p_attention_mask, n_list_inputs, n_list_attention_mask)
                 loss = 0
                 for matryoshka_dim in args.matryoshka_adaptive_dims:
                     matryoshka_selected_ids = list(range(matryoshka_dim))

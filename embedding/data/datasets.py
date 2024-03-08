@@ -45,15 +45,19 @@ class EmbedderDatasets(Dataset):
         sample = json.loads(sample)
         if 'negative_response' not in sample:
             sample['negative_response'] = None
-        question, response, negative = sample['question'], sample['response'], sample['negative_response']
+        question, response, negatives = sample['question'], sample['response'], sample['negative_response']
         if self.task_prompt:
             sampled_prompt = random.choice(dataset_task_prompts[dataset_name])
             question = sampled_prompt + ': ' + question
             response = sampled_prompt + ': ' + response
-            if negative is not None:
-                negative = sampled_prompt + ': ' + negative
+            if negatives is not None:
+                if type(negatives) is not list:
+                    if type(negatives) is not str:
+                        raise TypeError(f'>>> Unknow negative sample types: {type(negatives)}')
+                    negatives = [negatives]
+                negatives = [sampled_prompt + ': ' + n for n in negatives]
             
-        return (question, response, negative)
+        return (question, response, negatives)
 
     def __getitem__(self, index):
         dataset_name, qa_sample = self.qa_pairs[index]

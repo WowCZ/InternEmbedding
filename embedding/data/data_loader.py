@@ -18,9 +18,18 @@ def make_query_passage_batch(qp_ls: list, tokenizer: AutoTokenizer, max_length: 
 
     q_inputs, q_attention_mask = make_text_batch(q_ls, tokenizer, max_length)
     p_inputs, p_attention_mask = make_text_batch(p_ls, tokenizer, max_length)
-    n_inputs, n_attention_mask = make_text_batch(n_ls, tokenizer, max_length)
 
-    return q_inputs, q_attention_mask, p_inputs, p_attention_mask, n_inputs, n_attention_mask
+    if any(x is None for x in n_ls):
+        n_list_inputs, n_list_attention_mask = None, None
+    else:
+        n_list_inputs, n_list_attention_mask = [], []
+        negative_cnt = len(n_ls[0])
+        for nid in range(negative_cnt):
+            n_inputs, n_attention_mask = make_text_batch([ns[nid] for ns in n_ls], tokenizer, max_length)
+            n_list_inputs.append(n_inputs)
+            n_list_attention_mask.append(n_attention_mask)
+
+    return q_inputs, q_attention_mask, p_inputs, p_attention_mask, n_list_inputs, n_list_attention_mask
 
 
 def train_dataloader(qp_pairs: Dataset, tokenizer: AutoTokenizer, max_length: int, sampler: str, batch_size: int):
