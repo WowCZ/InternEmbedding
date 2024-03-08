@@ -28,7 +28,7 @@ def hard_negative_loss(q_embeddings, p_embeddings, n_embeddings, temperature=0.0
     return (loss_pq + loss_qp) / 2
     """
     loss = InfoNCE(negative_mode='paired', temperature=temperature)
-    return loss(q_embeddings, p_embeddings, n_embeddings.unsqueeze(1))
+    return loss(q_embeddings, p_embeddings, n_embeddings)
 
 
 def gradcache_loss():
