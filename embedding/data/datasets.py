@@ -8,7 +8,7 @@ from embedding.data.data_utils import dataset_sampling_ratios, dataset_task_prom
 random.seed(20)
 
 class EmbedderDatasets(Dataset):
-    def __init__(self, datatset_files: List[str], task_prompt: bool=False):
+    def __init__(self, datatset_files: List[str], task_prompt: bool=False, negative_num: int=3):
         qa_pairs = []
         dataset_statistics = dict()
         for datatset_file in datatset_files:
@@ -34,6 +34,7 @@ class EmbedderDatasets(Dataset):
         self.qa_num = len(qa_pairs)
         self.dataset_statistics['TotalTrainingQAPairs'] = self.qa_num
         self.task_prompt = task_prompt
+        self.negative_num = negative_num
 
     def __len__(self):
         return self.qa_num
@@ -55,7 +56,7 @@ class EmbedderDatasets(Dataset):
                     if type(negatives) is not str:
                         raise TypeError(f'>>> Unknow negative sample types: {type(negatives)}')
                     negatives = [negatives]
-                negatives = [sampled_prompt + ': ' + n for n in negatives]
+                negatives = [sampled_prompt + ': ' + n for n in negatives[:self.negative_num]]
             
         return (question, response, negatives)
 

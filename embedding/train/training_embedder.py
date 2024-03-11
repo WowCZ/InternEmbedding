@@ -41,7 +41,7 @@ def get_train_dataloader(args):
         # uncomment: when padding token is not set, like Mistral 
         tokenizer.pad_token = tokenizer.eos_token
 
-    paired_embedding_dataset = EmbedderDatasets(training_datatset_files, task_prompt=args.task_prompt)
+    paired_embedding_dataset = EmbedderDatasets(training_datatset_files, task_prompt=args.task_prompt, negative_num=args.hard_negative_num)
     train_loader = train_dataloader(paired_embedding_dataset, tokenizer, max_length=args.max_length, sampler='random', batch_size=args.batch_size_per_gpu)
     return train_loader
 

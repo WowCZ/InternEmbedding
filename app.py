@@ -4,7 +4,7 @@ from apps.retrieval.internembedder_rag import test_internembedder
 
 # create_gaokao_chromadb()
 # create_internembedder_chromadb()
-# test_math()
+test_math()
 # test_internembedder()
 
 # exit(0)
@@ -126,50 +126,50 @@ from apps.retrieval.internembedder_rag import test_internembedder
 # print(f'>>> hard negative samples: {hard_negative_cnt}')
 # print(json.dumps(score_statis, indent=4))
 
-training_datatset_files = [
-        '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train_bge_retrieval_triples.jsonl', 
-        '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/Quora/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STWikiAnswers/train_bge_retrieval_triples.jsonl', 
-        '/fs-computility/llm/chenzhi/datasets_processed/STAGNews/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STAltlex/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STAmazonReview/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STCodeSearchNet/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STFlickr30k/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STNPR/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STPAQ/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STS2ORCTA/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STXSum/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STCCNews/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MTWoW/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MTTrex/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/train_bge_retrieval_triples.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/train_bge_retrieval_triples.jsonl']
+# training_datatset_files = [
+#         '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train_bge_retrieval_triples.jsonl', 
+#         '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/Quora/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STWikiAnswers/train_bge_retrieval_triples.jsonl', 
+#         '/fs-computility/llm/chenzhi/datasets_processed/STAGNews/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STAltlex/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STAmazonReview/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STCodeSearchNet/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STFlickr30k/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STNPR/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STPAQ/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STS2ORCTA/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STXSum/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/STCCNews/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/MTWoW/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/MTTrex/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/train_bge_retrieval_triples.jsonl',
+#         '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/train_bge_retrieval_triples.jsonl']
 
-import tqdm
-tlen = 0
-for file in tqdm.tqdm(training_datatset_files):
-    fr = open(file, 'r').readlines()
-    flen = len(fr)
-    fname = file.split('/')[-2]
-    if flen > 100000:
-        print(f'{fname}: {100000/flen}')
-        flen = 100000
-    tlen += flen
+# import tqdm
+# tlen = 0
+# for file in tqdm.tqdm(training_datatset_files):
+#     fr = open(file, 'r').readlines()
+#     flen = len(fr)
+#     fname = file.split('/')[-2]
+#     if flen > 100000:
+#         print(f'{fname}: {100000/flen}')
+#         flen = 100000
+#     tlen += flen
 
-print(f'>>> Total triple negative samples: {tlen}')
+# print(f'>>> Total triple negative samples: {tlen}')
