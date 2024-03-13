@@ -5,6 +5,7 @@ import torch
 from transformers import AutoTokenizer, get_scheduler
 from embedding.models.modeling_bert import BertEmbedder
 from embedding.models.modeling_mistral import MistralEmbedder
+from embedding.models.modeling_bge import BGECustomEmbedder
 from embedding.data.data_loader import train_dataloader
 from embedding.data.datasets import EmbedderDatasets
 from embedding.data.data_utils import training_datatset_files
@@ -17,6 +18,10 @@ def initial_model(args):
         # TODO: when pool_type is eos, the loss is NaN
         mytryoshka_indexes = list(range(args.mytryoshka_size))
         embedder = MistralEmbedder(args.init_backbone, pool_type=args.pool_type, checkpoint_batch_size=args.checkpoint_batch_size, lora_config=args.peft_lora, which_layer=args.which_layer, mytryoshka_indexes=mytryoshka_indexes)
+    
+    elif args.backbone_type == 'BGE':
+        mytryoshka_indexes = list(range(args.mytryoshka_size))
+        embedder = BGECustomEmbedder(args.init_backbone, pool_type=args.pool_type, checkpoint_batch_size=args.checkpoint_batch_size, lora_config=False, which_layer=args.which_layer, mytryoshka_indexes=mytryoshka_indexes)
     
     else:
         raise TypeError(f'The type of backbone {args.backbone_type} has not been supported yet!')

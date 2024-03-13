@@ -84,6 +84,8 @@ def train_embedder(args):
 
     progress_bar = tqdm.tqdm(range(num_training_steps))
 
+    # TODO: SFR dataloading & mixture training loss
+    # TODO: negative sampling with margin scale refer to https://gombru.github.io/2019/04/03/ranking_loss/
     embedder.train()
     train_step = 0
     if accelerator.is_main_process:
@@ -106,13 +108,14 @@ def train_embedder(args):
                 for matryoshka_dim in args.matryoshka_adaptive_dims:
                     matryoshka_selected_ids = list(range(matryoshka_dim))
                     matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings = select_matryoshka_embedding([q_embeddings, p_embeddings, n_embeddings], matryoshka_selected_ids)
+                    
+                    loss += inbatch_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, args.temperature)
+                    
                     if args.hard_negative_sampling:
                         if n_embeddings is None:
                             raise RuntimeError('Negative embedding is None!')
                         
-                        loss += hard_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings, args.temperature)
-                    else:
-                        loss += inbatch_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, args.temperature)
+                        loss += hard_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings, args.temperature)                        
 
                 accelerator.backward(loss)
             else:

@@ -1,6 +1,7 @@
 import math
 import torch
 from torch import nn
+from typing import Optional
 from functools import partial
 from abc import ABC, abstractmethod
 from transformers import AutoModel, AutoConfig

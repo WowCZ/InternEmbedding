@@ -1,12 +1,34 @@
+import json
 from apps.vector_db.text_loading_chroma import create_gaokao_chromadb, create_internembedder_chromadb
 from apps.retrieval.gaokao_rag import test_math
 from apps.retrieval.internembedder_rag import test_internembedder
+from apps.clustering.gaokao import create_subject_keypoint_db, evaluate_subject_keypoint_match, subject_zh_en_map, extract_keypoint_embedding_data
 
 # create_gaokao_chromadb()
 # create_internembedder_chromadb()
-test_math()
+# test_math()
 # test_internembedder()
+# create_subject_keypoint_db()
 
+save_dir = '/fs-computility/llm/chenzhi/datasets_processed/GAOKAO/'
+startk = 30
+hard_num = 7
+subjects = ['mathematics', 'biology',  'physics', 'chemistry', 'history']
+for subject in subjects:
+    print(f'>>> Extract {subject} embedding triples....')
+    extract_keypoint_embedding_data(subject, startk, hard_num, save_dir)
+exit(0)
+
+topk = 5
+subject_statistics = dict()
+for major, subject in subject_zh_en_map.items():
+    recall_statitics = evaluate_subject_keypoint_match(subject, topk)
+    subject_statistics[subject] = recall_statitics
+    subject_statistics[subject]['major'] = major
+
+print(json.dumps(subject_statistics, indent=4, ensure_ascii=False))
+with open(f'results/gaokao/subject_top{topk}_statistics.json', 'w') as fw:
+    json.dump(subject_statistics, fw, indent=4, ensure_ascii=False)
 # exit(0)
 
 # datafiles = [

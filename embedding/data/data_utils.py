@@ -35,7 +35,8 @@ dataset_sampling_ratios = {
     'MTTrex': 1.0,
     'MTMedMCQA': 1.0,
     'MTPubMed': 1.0,
-    'NOMICTriples': 1.0
+    'NOMICTriples': 1.0,
+    'GAOKAO': 1.0
 }
 
 # dataset_sampling_ratios = {
@@ -75,7 +76,8 @@ dataset_sampling_ratios = {
 #     'MTTrex': 0.327,
 #     'MTMedMCQA': 1.0,
 #     'MTPubMed': 0.734,
-#     'NOMICTriples': 1.0
+#     'NOMICTriples': 1.0,
+#     'GAOKAO': 1.0
 # }
 
 dataset_task_prompts = {
@@ -190,7 +192,7 @@ dataset_task_prompts = {
         'Given a question, retrieve wikipedia passages that answer the question'
     ],
     'MTTrex': [
-        'Given a relation claim, retrieve documents that extract the realtion'
+        'Given a relation claim, retrieve documents that can extract the relation'
     ],
     'MTMedMCQA': [
         'Given a medical question, retrieve the corresponding answer of the give question'
@@ -199,6 +201,9 @@ dataset_task_prompts = {
         'Given a medical question, retrieve passages that answer the question'
     ],
     'NOMICTriples': [
+        ''
+    ],
+    'GAOKAO': [
         ''
     ]
 }
@@ -313,25 +318,25 @@ dataset_task_prompts = {
 # training_datatset_files = [
 #             '/fs-computility/llm/chenzhi/datasets_processed/NOMICTriples/train.jsonl']
 
-training_datatset_files = [
-            '/fs-computility/llm/chenzhi/datasets_processed/STELI5/filtered_phase2_train.jsonl', 
-            '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/filtered_phase2_train.jsonl',
-            '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/filtered_phase2_train.jsonl']
+# training_datatset_files = [
+#             '/fs-computility/llm/chenzhi/datasets_processed/STELI5/filtered_phase2_train.jsonl', 
+#             '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/Quora/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/FEVER/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/filtered_phase2_train.jsonl',
+#             '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/filtered_phase2_train.jsonl']
 
 # training_datatset_files = [
 #         '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train_bge_retrieval_triples.jsonl', 
@@ -377,3 +382,7 @@ training_datatset_files = [
 #         '/fs-computility/llm/chenzhi/datasets_processed/MTTrex/train_bge_retrieval_triples.jsonl',
 #         '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/train_bge_retrieval_triples.jsonl',
 #         '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/train_bge_retrieval_triples.jsonl']
+
+training_datatset_files = [
+        '/fs-computility/llm/chenzhi/datasets_processed/GAOKAO/train.jsonl', 
+]
