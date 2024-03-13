@@ -5,7 +5,7 @@ TaskName: "embedding"
 # 自定义训练任务描述
 Description: ""
 # 运行入口命令
-Entrypoint: "/root/miniconda3/envs/embedding/bin/accelerate launch --config_file /fs-computility/llm/chenzhi/InternEmbedding/configs/accelerate_config.yaml /fs-computility/llm/chenzhi/InternEmbedding/run.py train --pool_type=eos --gradcache_chunk_size=-1 --temperature=0.01 --learning_rate=1e-4 --hard_negative_sampling --task_prompt --peft_lora --hard_negative_num=2 --batch_size_per_gpu=300 --embedder_name=mistral_triple33"
+Entrypoint: "/root/miniconda3/envs/embedding/bin/accelerate launch --config_file /fs-computility/llm/chenzhi/InternEmbedding/configs/mistral_accelerate_config.yaml /fs-computility/llm/chenzhi/InternEmbedding/run.py train --pool_type=eos --gradcache_chunk_size=-1 --temperature=0.01 --learning_rate=1e-4 --hard_negative_sampling --task_prompt --peft_lora --hard_negative_num=2 --batch_size_per_gpu=300 --embedder_name=mistral_triple33"
 # 标签
 Tags: [] 
 # # 待上传代码的本地路径, 如是目录且以 '/' 结尾, 则将该目录下的所有内容上传到 RemoteMountCodePath,

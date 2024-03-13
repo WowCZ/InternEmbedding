@@ -157,7 +157,7 @@ class BaseEmbedder(nn.Module, ABC):
     def forward(self, q_ids, q_attention_mask, p_ids, p_attention_mask, n_list_ids, n_list_attention_mask):
         q_embeddings = self.embedding(q_ids, q_attention_mask)
         p_embeddings = self.embedding(p_ids, p_attention_mask)
-        n_embeddings = None
+        n_m_embeddings = None
         if n_list_ids is not None:
             if type(n_list_ids) is not list:
                 n_list_ids = [n_list_ids]
@@ -168,4 +168,4 @@ class BaseEmbedder(nn.Module, ABC):
                 n_embeddings = self.embedding(n_ids, n_attention_mask)
                 n_m_embeddings.append(n_embeddings.unsqueeze(1))
 
-        return q_embeddings, p_embeddings, torch.cat(n_m_embeddings, dim=1)
+        return q_embeddings, p_embeddings, torch.cat(n_m_embeddings, dim=1) if n_m_embeddings is not None else None
