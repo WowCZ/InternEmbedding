@@ -12,7 +12,8 @@ class BGEFunction(EmbeddingFunction):
         super(BGEFunction, self).__init__(*args, **kwargs)
         self.bge_name = bge_name
         print(f'>>> Loading BGE embedder from {self.bge_name}')
-        self.embedder = BGEEmbedder(self.bge_name, device='cuda', max_length=512)
+        ckpt = '/fs-computility/llm/chenzhi/ckpts/bge_keypoint_triple5_20240313033633/bge_keypoint_triple5_49.pt'
+        self.embedder = BGEEmbedder(self.bge_name, device='cuda', max_length=512, ckpt=ckpt)
 
     def __call__(self, input: Documents) -> Embeddings:
         # embed the documents

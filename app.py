@@ -10,18 +10,22 @@ from apps.clustering.gaokao import create_subject_keypoint_db, evaluate_subject_
 # test_internembedder()
 # create_subject_keypoint_db()
 
-save_dir = '/fs-computility/llm/chenzhi/datasets_processed/GAOKAO/'
-startk = 30
-hard_num = 7
-subjects = ['mathematics', 'biology',  'physics', 'chemistry', 'history']
-for subject in subjects:
-    print(f'>>> Extract {subject} embedding triples....')
-    extract_keypoint_embedding_data(subject, startk, hard_num, save_dir)
-exit(0)
+# # Extract dataset
+# save_dir = '/fs-computility/llm/chenzhi/datasets_processed/GAOKAO/'
+# startk = 30
+# hard_num = 7
+# subjects = ['mathematics', 'biology',  'physics', 'chemistry', 'history']
+# for subject in subjects:
+#     print(f'>>> Extract {subject} embedding triples....')
+#     extract_keypoint_embedding_data(subject, startk, hard_num, save_dir)
+# exit(0)
 
-topk = 5
+topk = 1
 subject_statistics = dict()
 for major, subject in subject_zh_en_map.items():
+    if subject not in ['history']:
+        continue
+
     recall_statitics = evaluate_subject_keypoint_match(subject, topk)
     subject_statistics[subject] = recall_statitics
     subject_statistics[subject]['major'] = major

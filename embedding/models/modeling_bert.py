@@ -16,6 +16,6 @@ class BERTBackboneWrapper(BaseBackboneWrapper):
         return super().backbone_forward(input_ids, attention_mask)
     
 
-class BGECustomEmbedder(BaseEmbedder):
+class BertEmbedder(BaseEmbedder):
     def __init__(self, backbone: str, backbone_wrapper: BaseBackboneWrapper=BERTBackboneWrapper, pool_type: str = 'cls', checkpoint_batch_size=-1, embed_dim: int = -1, which_layer: int = -1, lora_config: bool = False, mytryoshka_indexes: list = None):
         super().__init__(backbone, backbone_wrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, lora_config, mytryoshka_indexes)

@@ -1,3 +1,4 @@
+import os
 import torch
 from transformers import AutoModel, AutoTokenizer
 from .base_model import BaseBackboneWrapper, BaseEmbedder
@@ -22,10 +23,15 @@ class BGECustomEmbedder(BaseEmbedder):
         super().__init__(backbone, backbone_wrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, lora_config, mytryoshka_indexes)
 
 class BGEEmbedder():
-    def __init__(self, backbone: str, device: str, max_length: int) -> None:
+    def __init__(self, backbone: str, device: str, max_length: int, ckpt: str=None) -> None:
         # Load model from HuggingFace Hub
         tokenizer = AutoTokenizer.from_pretrained(backbone)
         model = AutoModel.from_pretrained(backbone)
+        if ckpt:
+            if os.path.exists(ckpt):
+                model.load_state_dict(torch.load(ckpt))
+                print(f'>>> Loading BGEEmbedder from {ckpt}')
+
         model.eval()
         self.model = model.to(device)
         self.tokenizer = tokenizer
