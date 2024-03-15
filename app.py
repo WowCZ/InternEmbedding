@@ -20,13 +20,17 @@ from apps.clustering.gaokao import create_subject_keypoint_db, evaluate_subject_
 #     extract_keypoint_embedding_data(subject, startk, hard_num, save_dir)
 # exit(0)
 
-topk = 1
+ckpt = '/fs-computility/llm/chenzhi/ckpts/bge_keypoint_triple5_20240314072748/bge_keypoint_triple5_2000.pt'
+
+# create_subject_keypoint_db('biology', ckpt)
+
+topk = 100
 subject_statistics = dict()
 for major, subject in subject_zh_en_map.items():
-    if subject not in ['history']:
+    if subject not in ['mathematics']:
         continue
 
-    recall_statitics = evaluate_subject_keypoint_match(subject, topk)
+    recall_statitics = evaluate_subject_keypoint_match(subject, topk, ckpt)
     subject_statistics[subject] = recall_statitics
     subject_statistics[subject]['major'] = major
 

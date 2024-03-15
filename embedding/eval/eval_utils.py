@@ -5,13 +5,13 @@ Copy from https://github.com/microsoft/unilm/blob/master/e5/utils.py
 """
 def get_task_def_by_task_name_and_type(task_name: str, task_type: str) -> str:
     if task_type in ['STS']:
-        return "Retrieve semantically similar text."
+        return "Retrieve semantically similar text"
 
     if task_type in ['Summarization']:
         return "Given a news summary, retrieve other semantically similar summaries"
 
     if task_type in ['BitextMining']:
-        return "Retrieve parallel sentences."
+        return "Retrieve parallel sentences"
 
     if task_type in ['Classification']:
         task_name_to_instruct: Dict[str, str] = {

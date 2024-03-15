@@ -68,34 +68,35 @@ class BaseBackboneWrapper(nn.Module, ABC):
         return self.backbone.embeddings(input_ids)
 
     @abstractmethod
-    def backbone_forward(self, input_ids, attention_mask):
+    def backbone_forward(self, input_items):
         # return the hidden state of the backbone
-        return self.backbone(input_ids.to(self.backbone.device), attention_mask=attention_mask.to(self.backbone.device))[0]
+        return self.backbone(**input_items)[0]
 
-    def grad_cache_checkpoint(self, input_ids, attention_mask):
+    def grad_cache_checkpoint(self, input_items):
         # if input batch size is much larger then checkpoint_batch_size, we need to use checkpoint to aggragate the gradient cache.
-        if self.checkpoint_batch_size == -1 or input_ids.size(0) < self.checkpoint_batch_size:
-            return self.backbone_forward(input_ids, attention_mask)
+        if self.checkpoint_batch_size == -1 or input_items['input_ids'].size(0) < self.checkpoint_batch_size:
+            return self.backbone_forward(input_items)
         else:
             backbone_output_list = []
-            cache_nums = math.ceil(input_ids.size(0) / self.checkpoint_batch_size)
+            cache_nums = math.ceil(input_items['input_ids'].size(0) / self.checkpoint_batch_size)
             for step in range(cache_nums):
-                cur_input_ids = input_ids[step*self.checkpoint_batch_size: (step+1)*self.checkpoint_batch_size]
+                left, right = step*self.checkpoint_batch_size, (step+1)*self.checkpoint_batch_size
+                cur_input_ids = input_items['input_ids'][left: right]
                 cur_input_embeddings = self.backbone_embedding(cur_input_ids)
-                cur_attention_masks = attention_mask[step*self.checkpoint_batch_size: (step+1)*self.checkpoint_batch_size]
+                cur_attention_masks = input_items['attention_mask'][left: right]
                 cur_backbone_outputs = checkpoint.checkpoint(self.partial_encode, cur_input_embeddings, cur_attention_masks, use_reentrant=False)
                 backbone_output_list.append(cur_backbone_outputs)
             return torch.cat(backbone_output_list, dim=0)
 
-    def encode(self, input_ids, attention_masks):
+    def encode(self, input_items):
         # return the presentation vectors at the last layer of the backbone
-        cached_backbone_outputs = self.grad_cache_checkpoint(input_ids, attention_masks)
+        cached_backbone_outputs = self.grad_cache_checkpoint(input_items)
 
         # pooling operation
-        batch_size = attention_masks.size(0)
+        batch_size = input_items['attention_mask'].size(0)
         # identify the padding strategy in the batch (left padding or right padding)
-        left_padding = (attention_masks[:, -1].sum() == batch_size)
-        input_lens = attention_masks.sum(dim=1)
+        left_padding = (input_items['attention_mask'][:, -1].sum() == batch_size)
+        input_lens = input_items['attention_mask'].sum(dim=1)
         if self.pool_type == 'cls':
             if not left_padding:
                 return cached_backbone_outputs[:, 0]
@@ -107,20 +108,35 @@ class BaseBackboneWrapper(nn.Module, ABC):
             else:
                 return cached_backbone_outputs[:, -1]
         elif self.pool_type == 'position_weight':
-            position_weight = attention_masks.cumsum(dim=-1)
+            position_weight = input_items['attention_mask'].cumsum(dim=-1)
             position_weight = position_weight / position_weight.sum(dim=1).unsqueeze(1)
             return (cached_backbone_outputs * position_weight.unsqueeze(2)).sum(dim=1)
         elif self.pool_type == 'mean':
-            mean_weight = attention_masks / attention_masks.sum(dim=1).unsqueeze(1)
+            mean_weight = input_items['attention_mask'] / input_items['attention_mask'].sum(dim=1).unsqueeze(1)
             return (cached_backbone_outputs * mean_weight.unsqueeze(2)).sum(dim=1)
         
         raise TypeError(f"There is an unidentified pooling type {self.pool_type}.")
     
     @property
     def backbone_dim(self):
-        tmp_ids = torch.LongTensor([[0]])
-        tmp_msk = torch.LongTensor([[1]])
-        backbone_dim = self.backbone_forward(tmp_ids, attention_mask=tmp_msk).size(-1)
+        try:
+            tmp_ids = torch.LongTensor([[0]])
+            tmp_type = torch.LongTensor([[0]])
+            tmp_msk = torch.LongTensor([[1]])
+            tmp_item = {
+                'input_ids': tmp_ids,
+                'attention_mask': tmp_msk,
+                'token_type_ids': tmp_type
+            }
+            backbone_dim = self.backbone_forward(tmp_item).size(-1)
+        except:
+            tmp_ids = torch.LongTensor([[0]])
+            tmp_msk = torch.LongTensor([[1]])
+            tmp_item = {
+                'input_ids': tmp_ids,
+                'attention_mask': tmp_msk
+            }
+            backbone_dim = self.backbone_forward(tmp_item).size(-1)
         return backbone_dim
 
 
@@ -141,8 +157,8 @@ class BaseEmbedder(nn.Module, ABC):
         self.which_layer = which_layer
         self.mytryoshka_indexes = mytryoshka_indexes
 
-    def embedding(self, input_ids, attention_masks):
-        embeddings = self.encoder.encode(input_ids, attention_masks)
+    def embedding(self, input_items):
+        embeddings = self.encoder.encode(input_items)
         if self.project is not None:
             embeddings = self.project(embeddings)
 
@@ -154,18 +170,17 @@ class BaseEmbedder(nn.Module, ABC):
 
         return mytryoshka_embedding
     
-    def forward(self, q_ids, q_attention_mask, p_ids, p_attention_mask, n_list_ids, n_list_attention_mask):
-        q_embeddings = self.embedding(q_ids, q_attention_mask)
-        p_embeddings = self.embedding(p_ids, p_attention_mask)
+    def forward(self, q_ids, p_ids, n_list_ids):
+        q_embeddings = self.embedding(q_ids)
+        p_embeddings = self.embedding(p_ids)
         n_m_embeddings = None
         if n_list_ids is not None:
             if type(n_list_ids) is not list:
                 n_list_ids = [n_list_ids]
-                n_list_attention_mask = [n_list_attention_mask]
             
             n_m_embeddings = []
-            for n_ids, n_attention_mask in zip(n_list_ids, n_list_attention_mask):
-                n_embeddings = self.embedding(n_ids, n_attention_mask)
+            for n_ids in n_list_ids:
+                n_embeddings = self.embedding(n_ids)
                 n_m_embeddings.append(n_embeddings.unsqueeze(1))
 
         return q_embeddings, p_embeddings, torch.cat(n_m_embeddings, dim=1) if n_m_embeddings is not None else None

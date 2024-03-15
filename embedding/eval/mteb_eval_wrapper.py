@@ -39,10 +39,9 @@ class EvaluatedEmbedder:
             for bi in trange(batch_cnt):
             # for bi in range(batch_cnt):
                 cur_batch = sentences[bi*batch_size: (bi+1)* batch_size]
-                bi_input_ids, bi_attention_mask = make_text_batch(cur_batch, self.tokenizer, self.max_length)
-                bi_input_ids, bi_attention_mask = bi_input_ids.to(self.device), bi_attention_mask.to(self.device)
+                bi_inputs = make_text_batch(cur_batch, self.tokenizer, self.max_length, self.device)
 
-                cur_embeddings = self.embedder.embedding(bi_input_ids, bi_attention_mask)
+                cur_embeddings = self.embedder.embedding(bi_inputs)
                 if self.embedding_norm:
                     cur_embeddings = F.normalize(cur_embeddings, p=2, dim=-1)
                 sentence_embeddings.append(cur_embeddings)
@@ -67,7 +66,7 @@ class MTEBEvaluationWrapper:
             if self.prompt:
                 prompt = get_task_def_by_task_name_and_type(task_name=task_name, task_type=task_type)
                 self.evaluated_embedder.encode = partial(self.evaluated_embedder.encode, prompt=prompt)
-            result = evaluation.run(self.evaluated_embedder, output_folder=f"results/{self.model_name}")
+            result = evaluation.run(self.evaluated_embedder, output_folder=f"/fs-computility/llm/chenzhi/InternEmbedding/results/{self.model_name}")
             results.append(result)
 
         return results

@@ -4,6 +4,7 @@ import torch
 from transformers import AutoTokenizer
 from embedding.models.modeling_bert import BertEmbedder
 from embedding.models.modeling_mistral import MistralEmbedder
+from embedding.models.modeling_bge import BGECustomEmbedder
 from embedding.eval.mteb_eval_wrapper import MTEBEvaluationWrapper
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
@@ -15,7 +16,9 @@ def evaluate_embedder(args):
     elif args.backbone_type == 'Mistral':
         tokenizer.pad_token = tokenizer.eos_token
         embedder = MistralEmbedder(args.init_backbone, pool_type=args.pool_type, checkpoint_batch_size=10, embed_dim=-1, lora_config=args.peft_lora, which_layer=args.which_layer, mytryoshka_indexes=mytryoshka_indexes).to(args.device)
-    
+    elif args.backbone_type == 'BGE':
+        embedder = BGECustomEmbedder(args.init_backbone, pool_type=args.pool_type, checkpoint_batch_size=10, embed_dim=-1, lora_config=args.peft_lora, which_layer=args.which_layer, mytryoshka_indexes=mytryoshka_indexes).to(args.device)
+
     if os.path.exists(args.embedder_ckpt_path):
         embedder.load_state_dict(torch.load(args.embedder_ckpt_path))
 

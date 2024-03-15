@@ -18,8 +18,8 @@ class MistralBackboneWrapper(BaseBackboneWrapper):
     def backbone_embedding(self, input_ids):
         return self.backbone.embed_tokens(input_ids)
 
-    def backbone_forward(self, input_ids, attention_mask):
-        backbone_outputs = self.backbone(input_ids, attention_mask=attention_mask, output_hidden_states=True, return_dict=True)
+    def backbone_forward(self, input_items):
+        backbone_outputs = self.backbone(**input_items, output_hidden_states=True, return_dict=True)
         backbone_full_embedding = backbone_outputs['hidden_states'][self.which_layer]
 
         return backbone_full_embedding

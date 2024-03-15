@@ -36,7 +36,7 @@ def keypoint_match(source: str, target: str):
         
     return False
 
-def create_subject_keypoint_db(subject: str=''):
+def create_subject_keypoint_db(subject: str='', ckpt: str=None):
     gaokao_file: str='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
 
     gaokao_metadatas = []
@@ -46,13 +46,16 @@ def create_subject_keypoint_db(subject: str=''):
             l = json.loads(l)
             keypoint = ' | '.join(l['keypoint']) if all(k is not None for k in l['keypoint']) else ''
             major = l['major']
-            subject = subject_zh_en_map[major]
+            cur_s = subject_zh_en_map[major]
+            if len(keypoint) == 0 or cur_s != subject:
+                continue
+
             gaokao_metadatas.append({
                 'question': l['prompt'],
                 'answer': l['output'],
                 'grade_class': l['grade_class'],
                 'major': major,
-                'subject': subject,
+                'subject': cur_s,
                 'area': l['area'],
                 'language': l['language'],
                 'keypoint': keypoint,
@@ -60,13 +63,13 @@ def create_subject_keypoint_db(subject: str=''):
                 'q_type': l['q_type']
             })
             
-            if subject not in subjects:
-                subjects[subject] = {}
+            if cur_s not in subjects:
+                subjects[cur_s] = {}
 
-            keypoints = subjects[subject]
+            keypoints = subjects[cur_s]
             if keypoint and keypoint not in keypoints:
                 kid = len(keypoints)
-                keypoints[keypoint] = f'{subject}_keypoint_{kid}'
+                keypoints[keypoint] = f'{cur_s}_keypoint_{kid}'
 
     print(f'>>> Count of Subjects: {len(subjects)}')
     print(list(subjects.keys()))
@@ -76,8 +79,9 @@ def create_subject_keypoint_db(subject: str=''):
 
         chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{s}_keypoints'
         client = chromadb.PersistentClient(path=str(chroma_path))
-        # client.delete_collection(name="internembedder")
-        collection = client.get_or_create_collection(name="keypoints", embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5'), metadata={"hnsw:space": "cosine"})
+        # client.delete_collection(name="keypoints_train")
+        print(client.list_collections())
+        collection = client.get_or_create_collection(name="keypoints_train", embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt), metadata={"hnsw:space": "cosine"})
 
         chromadb_process_limit = 41665
         keypoint_ids = list(keypoints.values())
@@ -90,15 +94,8 @@ def create_subject_keypoint_db(subject: str=''):
                 ids=keypoint_ids[left: right]
             )
 
-    # query_texts = collection.query(
-    #     query_texts=["中学生小红因连续旷课，被学校处分。从法定义务的角度看，小红没有"],
-    #     n_results=2
-    # )
 
-    # print(query_texts)
-
-
-def evaluate_subject_keypoint_match(subject: str='information_technology', topk: int=1):
+def evaluate_subject_keypoint_match(subject: str='information_technology', topk: int=1, ckpt: str=None):
     gaokao_file: str='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
 
     gaokao_metadatas = []
@@ -126,11 +123,11 @@ def evaluate_subject_keypoint_match(subject: str='information_technology', topk:
 
     chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{subject}_keypoints'
     client = chromadb.PersistentClient(path=str(chroma_path))
-    collection = client.get_collection(name="keypoints", embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5'))
+    collection = client.get_collection(name="keypoints_train", embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt))
     cluster_cnt = collection.count()
 
     match_cnt = 0
-    gaokao_metadatas = gaokao_metadatas[:1000]
+    gaokao_metadatas = gaokao_metadatas[:100]
 
     query_texts = collection.query(
         query_texts=[q['question'] for q in gaokao_metadatas],
@@ -213,10 +210,10 @@ def extract_keypoint_embedding_data(subject: str='information_technology', start
                 fw.write(json.dumps(t)+'\n')
     
     # TODO: we can also choose the training set including all subject keypoints
-    gaokao_train_metadatas = gaokao_metadatas[1500:51500]
+    gaokao_train_metadatas = gaokao_metadatas[1500:]
     gaokao_eval_metadatas = gaokao_metadatas[1000: 1500]
     chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{subject}_keypoints'
     client = chromadb.PersistentClient(path=str(chroma_path))
-    collection = client.get_collection(name="keypoints", embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5'))
+    collection = client.get_collection(name="keypoints", embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=None))
     extract_triples_from_metadatas(collection, gaokao_eval_metadatas, startk, hard_num, save_dir, f'eval_{subject}')
     extract_triples_from_metadatas(collection, gaokao_train_metadatas, startk, hard_num, save_dir, f'train_{subject}')

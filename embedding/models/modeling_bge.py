@@ -14,8 +14,8 @@ class BGEBackboneWrapper(BaseBackboneWrapper):
     def backbone_embedding(self, input_ids):
         return super().backbone_embedding(input_ids)
 
-    def backbone_forward(self, input_ids, attention_mask):
-        return super().backbone_forward(input_ids, attention_mask)
+    def backbone_forward(self, input_items):
+        return super().backbone_forward(input_items)
     
 
 class BGECustomEmbedder(BaseEmbedder):
@@ -29,8 +29,8 @@ class BGEEmbedder():
         model = AutoModel.from_pretrained(backbone)
         if ckpt:
             if os.path.exists(ckpt):
+                print(f'>>> Loading BGEEmbedder CKPT from {ckpt}')
                 model.load_state_dict(torch.load(ckpt))
-                print(f'>>> Loading BGEEmbedder from {ckpt}')
 
         model.eval()
         self.model = model.to(device)

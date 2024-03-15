@@ -99,24 +99,27 @@ def train_embedder(args):
         if accelerator.is_main_process:
             accelerator.print('#'*10, f' Epoch {epoch} Starting ', '#'*10)
         for pq in train_loader:
-            q_inputs, q_attention_mask, p_inputs, p_attention_mask = (item.to(accelerator.device) if item is not None else None for item in pq[:4])
-            n_list_inputs, n_list_attention_mask = ([i.to(accelerator.device) for i in item] if item is not None else None for item in pq[4:])
+            q_inputs, p_inputs, n_list_inputs = pq
+            q_inputs = dict([(k, v.to(accelerator.device)) for k, v in q_inputs.items()])
+            p_inputs = dict([(k, v.to(accelerator.device)) for k, v in p_inputs.items()])
+            if n_list_inputs:
+                n_list_inputs = [dict([(k, v.to(accelerator.device)) for k, v in n_inputs.items()]) for n_inputs in n_list_inputs]
 
             if args.gradcache_chunk_size < 1:
-                q_embeddings, p_embeddings, n_embeddings = embedder(q_inputs, q_attention_mask, p_inputs, p_attention_mask, n_list_inputs, n_list_attention_mask)
+                q_embeddings, p_embeddings, n_embeddings = embedder(q_inputs, p_inputs, n_list_inputs)
                 loss = 0
                 for matryoshka_dim in args.matryoshka_adaptive_dims:
                     matryoshka_selected_ids = list(range(matryoshka_dim))
                     matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings = select_matryoshka_embedding([q_embeddings, p_embeddings, n_embeddings], matryoshka_selected_ids)
                     
                     loss += inbatch_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, args.temperature)
-                    
+
                     if args.hard_negative_sampling:
                         if n_embeddings is None:
                             raise RuntimeError('Negative embedding is None!')
                         
                         loss += hard_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings, args.temperature)                        
-
+                        
                 accelerator.backward(loss)
             else:
                 # Refer to https://github.com/luyug/GradCache/tree/main & https://github.com/nomic-ai/contrastors/blob/main/src/contrastors/loss.py
@@ -126,8 +129,8 @@ def train_embedder(args):
                 with torch.no_grad():
                     for chunk_left in range(0, args.batch_size_per_gpu, args.gradcache_chunk_size):
                         chunk_right = args.gradcache_chunk_size + chunk_left
-                        q_chunk_embeds = embedder.embedding(q_inputs[chunk_left: chunk_right], q_attention_mask[chunk_left: chunk_right])
-                        p_chunk_embeds = embedder.embedding(p_inputs[chunk_left: chunk_right], p_attention_mask[chunk_left: chunk_right])
+                        q_chunk_embeds = embedder.embedding(dict([(k, v[chunk_left: chunk_right]) for k, v in q_inputs.items()]))
+                        p_chunk_embeds = embedder.embedding(dict([(k, v[chunk_left: chunk_right]) for k, v in p_inputs.items()]))
                         query_embeds.append(q_chunk_embeds)
                         passage_embeds.append(p_chunk_embeds)
 
@@ -143,8 +146,8 @@ def train_embedder(args):
                 for ci, chunk_left in enumerate(range(0, args.batch_size_per_gpu, args.gradcache_chunk_size)):
                     chunk_right = args.gradcache_chunk_size + chunk_left
    
-                    q_chunk_embeds = embedder.embedding(q_inputs[chunk_left: chunk_right], q_attention_mask[chunk_left: chunk_right])
-                    p_chunk_embeds = embedder.embedding(p_inputs[chunk_left: chunk_right], p_attention_mask[chunk_left: chunk_right])
+                    q_chunk_embeds = embedder.embedding(dict([(k, v[chunk_left: chunk_right]) for k, v in q_inputs.items()]))
+                    p_chunk_embeds = embedder.embedding(dict([(k, v[chunk_left: chunk_right]) for k, v in p_inputs.items()]))
 
                     q_chunk_cache = query_grad_cache[ci]
                     p_chunk_cache = passage_grad_cache[ci]
