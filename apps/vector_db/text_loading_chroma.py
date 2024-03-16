@@ -1,60 +1,17 @@
-import os
-import math
 import json
 import tqdm
-import torch
 import chromadb
-from embedding.models.modeling_bge import BGECustomEmbedder
-from chromadb import Documents, EmbeddingFunction, Embeddings
-from transformers import AutoTokenizer
-from embedding.data.data_loader import make_text_batch
-import torch.nn.functional as F
+from apps.embedder.bge import BGEFunction
+from apps.clustering.gaokao import subject_zh_en_map
 
+def create_gaokao_chromadb(gaokao_file: str, chromadb_path: str, chromabd_name: str, subject: str, ckpt: str):
+    client = chromadb.PersistentClient(path=str(chromadb_path))
+    try:
+        client.delete_collection(chromabd_name)
+    except:
+        print(client.list_collections())
 
-class BGEFunction(EmbeddingFunction):
-    def __init__(self, bge_name, bge_ckpt: str, *args, **kwargs):
-        super(BGEFunction, self).__init__(*args, **kwargs)
-        self.bge_name = bge_name
-        print(f'>>> Loading BGE embedder from {self.bge_name}')
-        # self.embedder = BGEEmbedder(self.bge_name, device='cuda', max_length=512, ckpt=ckpt)
-        self.device = 'cuda'
-        self.embedder = BGECustomEmbedder(bge_name, pool_type='cls', checkpoint_batch_size=-1, embed_dim=-1, lora_config=False, which_layer=-1, mytryoshka_indexes=None).to(self.device)
-        if bge_ckpt:
-            if os.path.exists(bge_ckpt):
-                print(f'>>> Loading BGEEmbedder CKPT from {bge_ckpt}')
-                self.embedder.load_state_dict(torch.load(bge_ckpt))
-        
-        self.embedder.eval()
-        self.tokenizer = AutoTokenizer.from_pretrained(bge_name)
-        self.max_length = 512
-
-    def __call__(self, input: Documents) -> Embeddings:
-        # embed the documents
-        doc_cnt = len(input)
-        batch_size = 128 * 15
-        batch_num = math.ceil(doc_cnt / batch_size)
-
-        doc_embeddings = []
-        for bi in tqdm.tqdm(range(batch_num)):
-            cur_batch = input[bi*batch_size : (bi+1)*batch_size]
-            bi_inputs = make_text_batch(cur_batch, self.tokenizer, self.max_length, self.device)
-            
-            with torch.no_grad():
-                cur_embeddings = self.embedder.embedding(bi_inputs)
-                cur_embeddings = F.normalize(cur_embeddings, p=2, dim=1)
-
-            doc_embeddings.append(cur_embeddings)
-
-        return torch.cat(doc_embeddings, dim=0).detach().cpu().numpy().tolist()
-
-
-def create_gaokao_chromadb(gaokao_file: str='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'):
-    client = chromadb.HttpClient(host='localhost', port=8000)
-    collection = client.get_or_create_collection(name="gaokao", embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5'))
-
-    # client.delete_collection(name="gaokao")
-    # collection = client.create_collection(name="gaokao", embedding_function=BGEFunction(), metadata={"hnsw:space": "cosine"})
-    # collection = client.get_collection(name="gaokao")
+    collection = client.get_or_create_collection(name=chromabd_name, embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt))
 
     gaokao = []
     gaokao_metadatas = []
@@ -62,37 +19,40 @@ def create_gaokao_chromadb(gaokao_file: str='/fs-computility/llm/shared/leizhika
     with open(gaokao_file, 'r') as fr:
         for li, l in enumerate(fr.readlines()):
             l = json.loads(l)
+
+            major = l['major']
+            keypoint = ' | '.join(l['keypoint']) if all(k is not None for k in l['keypoint']) else ''
+            cur_s = subject_zh_en_map[major]
+            if len(keypoint) == 0 or cur_s != subject:
+                continue
+
             gaokao.append(l['prompt'])
             gaokao_metadatas.append({
                 'answer': l['output'],
                 'grade_class': l['grade_class'],
                 'major': l['major'],
+                'subject': cur_s,
                 'area': l['area'],
                 'language': l['language'],
                 'keypoint': ' | '.join(l['keypoint']) if all(k is not None for k in l['keypoint']) else '',
                 'hard_level': l['hard_level'],
                 'q_type': l['q_type']
             })
-            gaokao_ids.append(f'gaokao_id{li}')
+            gaokao_ids.append(f'gaokao_{cur_s}_id{li}')
 
-            if li > 0 and li % 41665 == 0:
-                collection.add(
-                    documents=gaokao,
-                    metadatas=gaokao_metadatas,
-                    ids=gaokao_ids
-                )
 
-                gaokao = []
-                gaokao_metadatas = []
-                gaokao_ids = []
+    gaokao = gaokao[1500:]
+    gaokao_metadatas = gaokao_metadatas[1500:]
+    gaokao_ids = gaokao_ids[1500:]
 
-                print(f'>>> Proceed {li+1} instanses!')
+    chromadb_process_limit = 41665
+    for left in range(0, len(gaokao), chromadb_process_limit):
+        right = left + chromadb_process_limit
 
-    if len(gaokao) > 0:
         collection.add(
-            documents=gaokao,
-            metadatas=gaokao_metadatas,
-            ids=gaokao_ids
+            documents=gaokao[left: right],
+            metadatas=gaokao_metadatas[left: right],
+            ids=gaokao_ids[left: right]
         )
 
 

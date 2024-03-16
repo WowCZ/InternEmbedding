@@ -1,12 +1,7 @@
 import os
-import math
 import json
-import tqdm
-import torch
 import chromadb
-from embedding.models.modeling_bge import BGEEmbedder
-from chromadb import Documents, EmbeddingFunction, Embeddings
-from apps.vector_db.text_loading_chroma import BGEFunction
+from apps.embedder.bge import BGEFunction
 
 subject_zh_en_map = {
     '政治': 'politics',
@@ -36,7 +31,7 @@ def keypoint_match(source: str, target: str):
         
     return False
 
-def create_subject_keypoint_db(subject: str='', ckpt: str=None):
+def create_subject_keypoint_db(subject: str='biology', ckpt: str=None):
     gaokao_file: str='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
 
     gaokao_metadatas = []
@@ -79,8 +74,10 @@ def create_subject_keypoint_db(subject: str='', ckpt: str=None):
 
         chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{s}_keypoints'
         client = chromadb.PersistentClient(path=str(chroma_path))
-        # client.delete_collection(name="keypoints_train")
-        print(client.list_collections())
+        try:
+            client.delete_collection(name="keypoints_train")
+        except:
+            print(client.list_collections())
         collection = client.get_or_create_collection(name="keypoints_train", embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt), metadata={"hnsw:space": "cosine"})
 
         chromadb_process_limit = 41665
@@ -95,7 +92,7 @@ def create_subject_keypoint_db(subject: str='', ckpt: str=None):
             )
 
 
-def evaluate_subject_keypoint_match(subject: str='information_technology', topk: int=1, ckpt: str=None):
+def evaluate_subject_keypoint_match(subject: str='biology', topk: int=1, ckpt: str=None):
     gaokao_file: str='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
 
     gaokao_metadatas = []
@@ -127,7 +124,7 @@ def evaluate_subject_keypoint_match(subject: str='information_technology', topk:
     cluster_cnt = collection.count()
 
     match_cnt = 0
-    gaokao_metadatas = gaokao_metadatas[:100]
+    gaokao_metadatas = gaokao_metadatas[:1000]
 
     query_texts = collection.query(
         query_texts=[q['question'] for q in gaokao_metadatas],
@@ -152,7 +149,7 @@ def evaluate_subject_keypoint_match(subject: str='information_technology', topk:
     }
 
 
-def extract_keypoint_embedding_data(subject: str='information_technology', startk: int=0, hard_num: int=1, save_dir: str='.'):
+def extract_keypoint_embedding_data(subject: str='biology', startk: int=0, hard_num: int=1, save_dir: str='.'):
     gaokao_file: str='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
 
     gaokao_metadatas = []

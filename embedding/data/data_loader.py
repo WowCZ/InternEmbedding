@@ -3,6 +3,14 @@ from functools import partial
 from transformers import AutoTokenizer
 from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampler
 
+def expand_list(nested_list):
+    for item in nested_list:
+        if isinstance(item, (list, tuple)):
+            for sub_item in expand_list(item):
+                yield sub_item
+        else:
+            yield item
+
 def make_text_batch(t_ls: list, tokenizer: AutoTokenizer, max_length: int, device: str=None):
     if any(x is None for x in t_ls):
         return None, None
@@ -21,7 +29,7 @@ def make_query_passage_batch(qp_ls: list, tokenizer: AutoTokenizer, max_length: 
     q_inputs = make_text_batch(q_ls, tokenizer, max_length)
     p_inputs = make_text_batch(p_ls, tokenizer, max_length)
 
-    if any(x is None for x in n_ls):
+    if any(x for x in list(expand_list(n_ls))):
         n_list_inputs = None
     else:
         n_list_inputs = []

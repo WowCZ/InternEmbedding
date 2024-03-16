@@ -1,12 +1,7 @@
-import math
 import json
 import tqdm
-import torch
 import chromadb
-from embedding.models.modeling_bge import BGEEmbedder
-from chromadb import Documents, EmbeddingFunction, Embeddings
-from apps.vector_db.text_loading_chroma import BGEFunction
-
+from apps.embedder.bge import BGEFunction
 
 def test_internembedder():
     import os

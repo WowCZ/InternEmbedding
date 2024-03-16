@@ -19,7 +19,7 @@ def evaluate_embedder(args):
     elif args.backbone_type == 'BGE':
         embedder = BGECustomEmbedder(args.init_backbone, pool_type=args.pool_type, checkpoint_batch_size=10, embed_dim=-1, lora_config=args.peft_lora, which_layer=args.which_layer, mytryoshka_indexes=mytryoshka_indexes).to(args.device)
 
-    if os.path.exists(args.embedder_ckpt_path):
+    if args.embedder_ckpt_path and os.path.exists(args.embedder_ckpt_path):
         embedder.load_state_dict(torch.load(args.embedder_ckpt_path))
 
     mteb_evaluator = MTEBEvaluationWrapper(embedder, tokenizer=tokenizer, max_length=args.max_length, model_name=args.embedder_name, prompt=args.task_prompt, embedding_norm=args.embedding_norm, device=args.device)
