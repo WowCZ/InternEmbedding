@@ -171,7 +171,7 @@ class BaseEmbedder(nn.Module, ABC):
             mytryoshka_embedding = embeddings
 
         if self.normalize:
-            mytryoshka_embedding = F.
+            mytryoshka_embedding = F.normalize(mytryoshka_embedding, p=2, dim=-1)
         return mytryoshka_embedding
     
     def forward(self, q_ids, p_ids, n_list_ids):
