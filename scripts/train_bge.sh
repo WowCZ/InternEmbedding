@@ -7,11 +7,11 @@
                                            --backbone_type=BGE \
                                            --task_prompt \
                                            --warmup_rate=0.1 \
-                                           --checkpoint_batch_size=156 \
-                                           --gradcache_chunk_size=156 \
+                                           --checkpoint_batch_size=150 \
+                                           --gradcache_chunk_size=150 \
                                            --temperature=0.01 \
                                            --learning_rate=1e-5 \
                                            --matryoshka_adaptive_dims=768 \
                                            --mytryoshka_size=768 \
-                                           --batch_size_per_gpu=1560 \
-                                           --embedder_name=bge_sfr49
+                                           --batch_size_per_gpu=600 \
+                                           --embedder_name=bge_full_sfr49
