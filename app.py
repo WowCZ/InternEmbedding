@@ -72,21 +72,6 @@ with open(saved_retrieval_file, 'r') as fr:
 with open('keypoint_retrieval_response.json', 'w') as fw:
     json.dump(kp_retrieval_qa, fw, indent=4, ensure_ascii=False)
 
-# response = openai.ChatCompletion.create(
-#     api_base='http://172.28.32.57:20240/v1',
-#     api_key='EMPTY',
-#     model='internlm2-chat-20b',
-#     messages=[
-#         {"role": "user", "content": 'hello, ????'},
-#         ],
-#     max_tokens=256,
-#     temperature=1.2,
-#     top_p=0.95,
-#     n=1,
-# )
-# print(response['choices'][0]['message']['content'])
-    
-
 
 
 # create_internembedder_chromadb()

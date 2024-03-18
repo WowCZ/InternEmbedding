@@ -57,7 +57,6 @@ def create_gaokao_chromadb(gaokao_file: str, chromadb_path: str, chromabd_name: 
 
 
 def create_internembedder_chromadb():
-    # client = chromadb.HttpClient(host='localhost', port=8002)
     import os
     rank = int(os.environ['CUDA_VISIBLE_DEVICES'])
     chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadb_{rank}'

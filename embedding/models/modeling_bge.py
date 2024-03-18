@@ -19,8 +19,8 @@ class BGEBackboneWrapper(BaseBackboneWrapper):
     
 
 class BGECustomEmbedder(BaseEmbedder):
-    def __init__(self, backbone: str, backbone_wrapper: BaseBackboneWrapper=BGEBackboneWrapper, pool_type: str = 'cls', checkpoint_batch_size=-1, embed_dim: int = -1, which_layer: int = -1, lora_config: bool = False, mytryoshka_indexes: list = None):
-        super().__init__(backbone, backbone_wrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, lora_config, mytryoshka_indexes)
+    def __init__(self, backbone: str, backbone_wrapper: BaseBackboneWrapper=BGEBackboneWrapper, pool_type: str = 'cls', checkpoint_batch_size=-1, embed_dim: int = -1, which_layer: int = -1, lora_config: bool = False, mytryoshka_indexes: list = None, normalize: bool = False):
+        super().__init__(backbone, backbone_wrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, lora_config, mytryoshka_indexes, normalize)
 
 class BGEEmbedder():
     def __init__(self, backbone: str, device: str, max_length: int, ckpt: str=None) -> None:

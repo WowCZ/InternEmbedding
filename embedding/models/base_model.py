@@ -3,6 +3,7 @@ import torch
 from torch import nn
 from typing import Optional
 from functools import partial
+import torch.nn.functional as F
 from abc import ABC, abstractmethod
 from transformers import AutoModel, AutoConfig
 import torch.utils.checkpoint as checkpoint
@@ -141,7 +142,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
 
 
 class BaseEmbedder(nn.Module, ABC):
-    def __init__(self, backbone: str, backbone_wrapper: BaseBackboneWrapper, pool_type: str = 'cls', checkpoint_batch_size=-1, embed_dim: int=-1, which_layer: int=-1, lora_config: bool=True, mytryoshka_indexes: list=None):
+    def __init__(self, backbone: str, backbone_wrapper: BaseBackboneWrapper, pool_type: str = 'cls', checkpoint_batch_size=-1, embed_dim: int=-1, which_layer: int=-1, lora_config: bool=True, mytryoshka_indexes: list=None, normalize: bool=False):
         super(BaseEmbedder, self).__init__()
 
         self.encoder = backbone_wrapper(backbone, pool_type, checkpoint_batch_size, which_layer, lora_config)
@@ -156,6 +157,7 @@ class BaseEmbedder(nn.Module, ABC):
         # print(f'>>> The dimension of {backbone} is {self.embed_dim}.')
         self.which_layer = which_layer
         self.mytryoshka_indexes = mytryoshka_indexes
+        self.normalize = normalize
 
     def embedding(self, input_items):
         embeddings = self.encoder.encode(input_items)
@@ -168,6 +170,8 @@ class BaseEmbedder(nn.Module, ABC):
         else:
             mytryoshka_embedding = embeddings
 
+        if self.normalize:
+            mytryoshka_embedding = F.
         return mytryoshka_embedding
     
     def forward(self, q_ids, p_ids, n_list_ids):
