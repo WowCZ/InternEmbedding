@@ -43,6 +43,43 @@ def download_eli5_datasets(dataset_name: str, save_dir: str):
         fw.write(''.join(qa_pairs))
 
 
+def download_eli5reranking_datasets(dataset_name: str, save_dir: str):
+    def get_question(example):
+        title = example["title"]
+        selftext = example["selftext"]
+        if selftext:
+            if selftext[-1] not in [".", "?", "!"]:
+                seperator = ". "
+            else:
+                seperator = " "
+            question = title + seperator + selftext
+        else:
+            question = title
+        example["question"] = question
+        example["response"] = example["answers"]["text"][0]
+        example["negative_response"] = example["answers"]["text"][1:]
+        return example
+
+    dataset = load_dataset(dataset_name, cache_dir=HFCACHEDATASETS, trust_remote_code=True)
+    dataset = dataset.map(get_question)
+
+    qa_pairs = []
+    for d in dataset['train']:
+        qa_pairs.append(json.dumps(
+            {
+                'question': d["question"],
+                'response': d["response"],
+                'negative_response': d["negative_response"]
+            }
+        )+'\n')
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    with open(os.path.join(save_dir, 'train.jsonl'), 'w') as fw:
+        fw.write(''.join(qa_pairs))
+
+
 def download_hotpotqa_datasets(dataset_name: str, save_dir: str):
     def get_related_sents(example):
         related_sentence_ids = example["supporting_facts"]["sent_id"]
@@ -109,7 +146,7 @@ def download_msmarco_datasets(dataset_name: str, save_dir: str):
                     {
                         'question': question,
                         'response': random.choice(related_passages),
-                        'negative_response': random.choice(negative_passages)
+                        'negative_response': negative_passages
                     }
                 )+'\n')
 
@@ -190,19 +227,21 @@ def download_miracl_datasets(dataset_name: str, save_dir: str):
 
 
 def download_mrtydi_datasets(dataset_name: str, save_dir: str):
-    subsets = ['arabic', 'bengali', 'english', 'finnish', 'indonesian', 'japanese', 'korean', 'russian', 'swahili', 'telugu', 'thai']
+    # subsets = ['arabic', 'bengali', 'english', 'finnish', 'indonesian', 'japanese', 'korean', 'russian', 'swahili', 'telugu', 'thai']
+    subsets = ['english']
     qp_pairs = []
     for subset in subsets:
         dataset = load_dataset(dataset_name, subset, cache_dir=HFCACHEDATASETS, trust_remote_code=True)
         for d in dataset['train']:
-            query, positive_passages = d['query'], d['positive_passages']
-            for passage in positive_passages:
-                qp_pairs.append(json.dumps(
-                    {
-                        'question': query,
-                        'response': passage['text']
-                    }
-                )+'\n')
+            query, positive_passages, negative_passages = d['query'], d['positive_passages'], d['negative_passages']
+            # for passage in positive_passages:
+            qp_pairs.append(json.dumps(
+                {
+                    'question': query,
+                    'response': positive_passages[0]['text'],
+                    'negative_response': [np['text'] for np in negative_passages]
+                }
+            )+'\n')
 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
@@ -259,12 +298,16 @@ def download_triviaqa_datasets(dataset_name: str, save_dir: str):
         question, search_results = d['question'], d['search_results']
         search_ranks = search_results['rank']
         search_max_rank_ids = [ri for ri, r in enumerate(search_ranks) if r == max(search_ranks)]
+        search_negative_ids = [ri for ri, r in enumerate(search_ranks) if r < max(search_ranks)]
         selected_searches = [search_results['search_context'][ri] for ri in search_max_rank_ids]
-        for search in selected_searches:
+        negative_searches = [search_results['search_context'][ri] for ri in search_negative_ids]
+        # for search in selected_searches:
+        if selected_searches:
             qp_pairs.append(json.dumps(
                 {
                     'question': question,
-                    'response': search
+                    'response': selected_searches[0],
+                    'negative_response': negative_searches
                 }
             )+'\n')
 
@@ -343,7 +386,7 @@ def download_t2ranking_datasets(dataset_name: str, save_dir: str):
         qp_id_pairs[qid].append((pid, score))
 
     for qid, ps in qp_id_pairs.items():
-        qp_id_pairs[qid] = sorted(ps, key=lambda x: x[1], reverse=True)[0][0]
+        qp_id_pairs[qid] = [p[0] for p in sorted(ps, key=lambda x: x[1], reverse=True)]
 
     query_map = dict()
     for qid, text in zip(queries['qid'], queries['text']):
@@ -353,11 +396,12 @@ def download_t2ranking_datasets(dataset_name: str, save_dir: str):
     for pid, text in zip(collection['pid'], collection['text']):
         passage_map[pid] = text
 
-    for qid, pid in qp_id_pairs.items():
+    for qid, pids in qp_id_pairs.items():
         qp_pairs.append(json.dumps(
             {
                 'question': query_map[qid],
-                'response': passage_map[pid]
+                'response': passage_map[pids[0]],
+                'negative_response': [passage_map[pid] for pid in pids[1:]]
             }
         )+'\n')
 
@@ -377,7 +421,7 @@ def download_negation_datasets(dataset_name: str, save_dir: str):
             {
                 'question': question,
                 'response': context,
-                'negative_response': hard_negative
+                'negative_response': [hard_negative]
             }
         )+'\n')
 
@@ -424,11 +468,36 @@ def download_yahooqa_datasets(dataset_name: str, save_dir: str):
     qp_pairs = []
     dataset = load_dataset(dataset_name, split='train', cache_dir=HFCACHEDATASETS, trust_remote_code=True)
     for d in dataset:
-        question, context = d['question'], d['answer']
+        question, context, nbest = d['question'], d['answer'], d['nbestanswers']
         qp_pairs.append(json.dumps(
             {
                 'question': question,
                 'response': context,
+                'negative_response': nbest[1:]
+            }
+        )+'\n')
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    with open(os.path.join(save_dir, 'train.jsonl'), 'w') as fw:
+        fw.write(''.join(qp_pairs))
+
+
+def download_yahooqaclustering_datasets(dataset_name: str, save_dir: str):
+    qp_pairs = []
+    dataset = load_dataset(dataset_name, split='train', cache_dir=HFCACHEDATASETS, trust_remote_code=True)
+    all_categories = []
+    for d in dataset:
+        if d['main_category'] not in all_categories:
+            all_categories.append(d['main_category'])
+    for d in dataset:
+        question, category = d['question'], d['main_category']
+        qp_pairs.append(json.dumps(
+            {
+                'question': question,
+                'response': category,
+                'negative_response': [c for c in all_categories if c != category]
             }
         )+'\n')
 
@@ -461,6 +530,7 @@ def download_streddit_datasets(dataset_name: str, save_dir: str):
 def download_stembedding_datasets(dataset_name: str, save_dir: str):
     qp_pairs = []
     
+    data_format = ''
     with open(dataset_name, 'r') as fr:
         for li, l in enumerate(fr.readlines()):
             if li > 1000000:
@@ -469,12 +539,24 @@ def download_stembedding_datasets(dataset_name: str, save_dir: str):
             l = json.loads(l)
             
             if type(l) is list:
-                qp_pairs.append(json.dumps(
-                    {
-                        'question': l[0],
-                        'response': l[1]
-                    }
-                )+'\n')
+                if len(l) == 2:
+                    qp_pairs.append(json.dumps(
+                        {
+                            'question': l[0],
+                            'response': l[1]
+                        }
+                    )+'\n')
+                    data_format = 'Pairs'
+                else:
+                    assert len(l) > 2
+                    qp_pairs.append(json.dumps(
+                        {
+                            'question': l[0],
+                            'response': l[1],
+                            'negative_response': l[2]
+                        }
+                    )+'\n')
+                    data_format = 'Triplets'
             elif type(l) is dict:
                 if 'set' in l:
                     qp_pairs.append(json.dumps(
@@ -483,9 +565,26 @@ def download_stembedding_datasets(dataset_name: str, save_dir: str):
                             'response': l['set'][1]
                         }
                     )+'\n')
+                    data_format = 'Sets'
                 else:
-                    print('>>> Unknow keys: ', l.keys())
-                    exit(0)
+                    assert 'query' in l
+                    if 'neg' in l:
+                        qp_pairs.append(json.dumps(
+                            {
+                                'question': l['query'],
+                                'response': l['pos'][0],
+                                'negative_response': l['neg']
+                            }
+                        )+'\n')
+                        data_format = 'Query-Triplets'
+                    else:
+                        qp_pairs.append(json.dumps(
+                            {
+                                'question': l['query'],
+                                'response': l['pos'][0]
+                            }
+                        )+'\n')
+                        data_format = 'Query-Pairs'
             else:
                 print('>>> Unknow Types: ', type(l))
                 exit(0)
@@ -495,6 +594,8 @@ def download_stembedding_datasets(dataset_name: str, save_dir: str):
 
     with open(os.path.join(save_dir, 'train.jsonl'), 'w') as fw:
         fw.write(''.join(qp_pairs))
+    
+    return data_format
 
 
 def download_multitrain_datasets(dataset_name: str, save_dir: str):
@@ -502,12 +603,25 @@ def download_multitrain_datasets(dataset_name: str, save_dir: str):
     dataset = load_dataset(dataset_name, split='train', cache_dir=HFCACHEDATASETS, trust_remote_code=True)
     for d in dataset:
         question, context = d['query'], d['pos']
-        qp_pairs.append(json.dumps(
-            {
-                'question': question,
-                'response': context
-            }
-        )+'\n')
+        neg = None
+        if 'neg' in d:
+            neg = d['neg']
+        
+        if neg:
+            qp_pairs.append(json.dumps(
+                {
+                    'question': question,
+                    'response': context,
+                    'negative_reponse': [neg]
+                }
+            )+'\n')
+        else:
+            qp_pairs.append(json.dumps(
+                {
+                    'question': question,
+                    'response': context
+                }
+            )+'\n')
 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
@@ -568,32 +682,61 @@ if __name__ == '__main__':
     # save_dir = '/fs-computility/llm/chenzhi/datasets_processed/YahooQA'
     # download_yahooqa_datasets('yahoo_answers_qa', save_dir)
 
-    save_dir = '/fs-computility/llm/chenzhi/datasets_processed/STReddit'
-    download_streddit_datasets('sentence-transformers/reddit-title-body', save_dir)
+    # save_dir = '/fs-computility/llm/chenzhi/datasets_processed/STReddit'
+    # download_streddit_datasets('sentence-transformers/reddit-title-body', save_dir)
 
-    # New Datasets
+    # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/ELI5Category'
+    # download_eli5reranking_datasets('eli5_category', save_dir)
+
+    # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/MSMARCOTriple'
+    # download_msmarco_datasets('ms_marco', save_dir)
+
+    # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/MrTyDiTriple'
+    # download_mrtydi_datasets('castorini/mr-tydi', save_dir)
+
+    # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/TriviaQARanking'
+    # download_triviaqa_datasets('trivia_qa', save_dir)
+
+    # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/T2Ranking'
+    # download_t2ranking_datasets('THUIR/T2Ranking', save_dir)
+
+    # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/JinaAINegation'
+    # download_negation_datasets('jinaai/negation-dataset-v2', save_dir)
+
+    # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/YahooQARanking'
+    # download_yahooqa_datasets('yahoo_answers_qa', save_dir)
+
+    # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/YahooQAClustering'
+    # download_yahooqaclustering_datasets('yahoo_answers_qa', save_dir)
+
+    
+    # print('>>> Process Multi Train...')
+    # # New Datasets
     # huggingface_names = ['emb-wow-train', 'emb-trex-train', 'emb-medmcqa-train', 'emb-pubmed']
     # save_dirs = ['MTWoW', 'MTTrex', 'MTMedMCQA', 'MTPubMed']
     # for hfn, sd in zip(huggingface_names, save_dirs):
-    #     save_dir = f'/fs-computility/llm/chenzhi/datasets_processed/{sd}'
+    #     save_dir = f'/fs-computility/llm/shared/chenzhi/internembedding_datasets/{sd}'
     #     download_multitrain_datasets(f'multi-train/{hfn}', save_dir)
     #     print(f'>>> Saved in {save_dir}!')
 
     # dataset_dirs = ['st_allnli', 'st_eli5', 'st_gooqa', 'st_specter', 'st_stackexchange_dup', 'st_wikihow', 'st_yahoo_qa']
     # save_dirs = ['STAllNLI', 'STELI5', 'STGooQA', 'STSpecter', 'STStackexchangeDup', 'STWikiHow', 'STYahooQA']
 
+    print('>>> Process Sentence Transformer...')
     # dataset_dirs = ['st_altlex', 'st_amazon_review', 'st_s2orc_ta', 'st_codesearchnet', 'st_npr', 'st_wikianswers', 'st_agnews', 'st_ccnews', 'st_flickr30k', 'st_xsum', 'st_paq']
     # save_dirs = ['STAltlex', 'STAmazonReview', 'STS2ORCTA', 'STCodeSearchNet', 'STNPR', 'STWikiAnswers', 'STAGNews', 'STCCNews', 'STFlickr30k', 'STXSum', 'STPAQ']
+    dataset_dirs = ['st_allnli', 'st_specter', 'st_stackexchange_dup', 'st_wikihow']
+    save_dirs = ['STAllNLI', 'STSpecter', 'STStackexchangeDup', 'STWikiHow']
 
-    # for dataset, save_dir in tqdm.tqdm(zip(dataset_dirs, save_dirs)):
-    #     dataset_root = f'/fs-computility/llm/chenzhi/datasets_cache/{dataset}'
-    #     for _, _, fs in os.walk(dataset_root):
-    #         for f in fs:
-    #             if f.endswith('.jsonl'):
-    #                 dataset_name = os.path.join(dataset_root, f)
-    #                 if os.path.exists(dataset_name):
-    #                     print('>>> download from ', dataset_name)
-    #                     download_stembedding_datasets(dataset_name, f'/fs-computility/llm/chenzhi/datasets_processed/{save_dir}')
 
+    for dataset, save_dir in tqdm.tqdm(zip(dataset_dirs, save_dirs)):
+        dataset_root = f'/fs-computility/llm/chenzhi/datasets_cache/{dataset}'
+        for _, _, fs in os.walk(dataset_root):
+            for f in fs:
+                if f.endswith('.jsonl'):
+                    dataset_name = os.path.join(dataset_root, f)
+                    if os.path.exists(dataset_name):
+                        data_format = download_stembedding_datasets(dataset_name, f'/fs-computility/llm/shared/chenzhi/internembedding_datasets/{save_dir}')
+                        print(f'>>> Type {data_format} download from ', dataset_name)
 
     

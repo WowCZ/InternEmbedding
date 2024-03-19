@@ -3,36 +3,32 @@ import random
 import math
 from typing import List
 from torch.utils.data import Dataset
-from embedding.data.data_utils import dataset_sampling_ratios, dataset_task_prompts
+from embedding.data.data_utils import extract_dataset_configs
 
 random.seed(20)
 
 class EmbedderDatasets(Dataset):
-    def __init__(self, datatset_files: List[str], task_prompt: bool=False, negative_num: int=3):
+    def __init__(self, datatset_config: str, task_prompt: bool=False, negative_num: int=3):
         qa_pairs = []
-        dataset_statistics = dict()
-        for datatset_file in datatset_files:
-            dataset_name = datatset_file.split('/')[-2]
-            with open(datatset_file, 'r') as fr:
+        dataset_infos = extract_dataset_configs(datatset_config)
+        for dataset_name, dataset_info in dataset_infos.items():
+            with open(dataset_info['disk_path'], 'r') as fr:
                 lines = fr.readlines()
-                dataset_statistics[dataset_name] = len(lines)
-                if dataset_name in dataset_sampling_ratios:
-                    sampling_cnt = math.ceil(dataset_sampling_ratios[dataset_name] * dataset_statistics[dataset_name])
-                else:
-                    sampling_cnt = dataset_statistics[dataset_name]
+                dataset_infos[dataset_name]['sample_cnt'] = len(lines)
+                sampling_cnt = math.ceil(dataset_info['sampling_ratio'] * dataset_infos[dataset_name]['sample_cnt'])
 
-                dataset_statistics[dataset_name] = sampling_cnt
+                dataset_infos[dataset_name]['sample_cnt'] = sampling_cnt
                 for li, l in enumerate(lines):
                     if li > sampling_cnt:
                         break
 
                     qa_pairs.append((dataset_name, l))
 
-        self.dataset_statistics = dataset_statistics
+        self.dataset_infos = dataset_infos
         
         self.qa_pairs = qa_pairs
         self.qa_num = len(qa_pairs)
-        self.dataset_statistics['TotalTrainingQAPairs'] = self.qa_num
+        self.dataset_infos['TotalTrainingNum'] = self.qa_num
         self.task_prompt = task_prompt
         self.negative_num = negative_num
 
@@ -40,7 +36,7 @@ class EmbedderDatasets(Dataset):
         return self.qa_num
     
     def __str__(self) -> str:
-        return json.dumps(self.dataset_statistics, indent=4)
+        return json.dumps(self.dataset_infos, indent=4)
 
     def make_sample(self, dataset_name, sample):
         sample = json.loads(sample)
@@ -48,7 +44,7 @@ class EmbedderDatasets(Dataset):
             sample['negative_response'] = None
         question, response, negatives = sample['question'], sample['response'], sample['negative_response']
         if self.task_prompt:
-            sampled_prompt = random.choice(dataset_task_prompts[dataset_name])
+            sampled_prompt = random.choice(self.dataset_infos[dataset_name]['prompts'])
             question = sampled_prompt + ': ' + question
             response = sampled_prompt + ': ' + response
             if negatives is not None:

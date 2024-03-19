@@ -1,5 +1,8 @@
+import os
 import json
 import tqdm
+import math
+import yaml
 import chromadb
 from apps.embedder.bge import BGEFunction
 from apps.clustering.gaokao import subject_zh_en_map
@@ -57,68 +60,53 @@ def create_gaokao_chromadb(gaokao_file: str, chromadb_path: str, chromabd_name: 
 
 
 def create_internembedder_chromadb():
-    import os
     rank = int(os.environ['CUDA_VISIBLE_DEVICES'])
-    chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadb_{rank}'
+    with open('/fs-computility/llm/chenzhi/InternEmbedding/configs/datasets.yaml','r') as f:
+        dataset_info = yaml.load(f, Loader=yaml.FullLoader)
+
+    dataset_root_dir = dataset_info['root_path']
+    datafiles = []
+    for dataset in dataset_info['internembedder_datasets']:
+        dname = dataset['name']
+        if dataset['task_type'] in ['Classification', 'Clustering']:
+            continue
+        loading_file = os.path.join(dataset_root_dir, dname, 'train.jsonl')
+        if os.path.exists(loading_file):
+            datafiles.append(os.path.join(dataset_root_dir, dname, 'train.jsonl'))
+
+    rank_capacity = len(datafiles) // 8
+    for ri, i in enumerate(range(0, len(datafiles), rank_capacity)):            
+        if ri == rank:
+            if ri < 7:
+                rank_datafiles = datafiles[i: i+rank_capacity]
+            else:
+                rank_datafiles = datafiles[i:]
+            break
+
+    llen = 0
+    for file in rank_datafiles:
+        llen += len(open(file, 'r').readlines())
+
+    print(json.dumps(rank_datafiles, indent=4))
+    print('>>> Number of files: ', len(rank_datafiles))
+    print('>>> Number of examples: ', llen)
+
+    chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/internembedder_dataset_docs_{rank}'
     client = chromadb.PersistentClient(path=str(chroma_path))
-    collection = client.get_or_create_collection(name="internembedder", embedding_function=BGEFunction(bge_name='BAAI/bge-base-en-v1.5'), metadata={"hnsw:space": "cosine"})
-
-    datafiles = [
-        '/fs-computility/llm/chenzhi/datasets_processed/STELI5/train.jsonl', 
-        '/fs-computility/llm/chenzhi/datasets_processed/HotpotQA/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MSMARCO/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STAllNLI/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/Quora/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MIRACL/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MrTyDi/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/SQuAD/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/NautralQuestions/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/TriviaQA/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/FEVER/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/DuReader/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/T2Ranking/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STGooQA/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STSpecter/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STStackexchangeDup/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STWikiHow/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STYahooQA/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STWikiAnswers/train.jsonl', 
-        '/fs-computility/llm/chenzhi/datasets_processed/STAGNews/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STAltlex/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STAmazonReview/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STCodeSearchNet/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STFlickr30k/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STNPR/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STPAQ/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STS2ORCTA/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STXSum/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/STCCNews/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MTWoW/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MTTrex/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MTMedMCQA/train.jsonl',
-        '/fs-computility/llm/chenzhi/datasets_processed/MTPubMed/train.jsonl'
-    ]
-    
-    rank_datafile_map = {
-            0: list(range(0,8)),
-            1: list(range(8,16)),
-            2: list(range(16,24)),
-            3: list(range(24,33))
-    }
-
-    rank_datafiles = [datafiles[i] for i in rank_datafile_map[rank]]
+    # client.delete_collection(name="internembedder")
+    collection = client.get_or_create_collection(name="internembedder", embedding_function=BGEFunction(bge_name='BAAI/bge-base-en-v1.5', bge_ckpt=None), metadata={"hnsw:space": "cosine"})
 
     li = 0
     docs = []
     doc_ids = []
-    for file in tqdm.tqdm(rank_datafiles):
+    for file in tqdm.tqdm(datafiles):
         fname = file.split('/')[-2]
         fi = 0
         for l in open(file, 'r').readlines():
-            if li <= 6166420:
-                li += 1
-                fi += 1
-                continue
+            # if li <= (cur_collection_cnt-1):
+            #     li += 1
+            #     fi += 1
+            #     continue
             
             l = json.loads(l)
             doc = l['response']

@@ -30,7 +30,6 @@ class EvaluatedEmbedder:
             
         if prompt: 
             sentences = [prompt + ': ' + s for s in sentences]
-            # print('>>> prompt: ' + prompt)
 
         batch_cnt = math.ceil(len(sentences) / batch_size)
         sentence_embeddings = []

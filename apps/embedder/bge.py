@@ -16,7 +16,7 @@ class BGEFunction(EmbeddingFunction):
         print(f'>>> Loading BGE embedder from {self.bge_name}')
         # self.embedder = BGEEmbedder(self.bge_name, device='cuda', max_length=512, ckpt=ckpt)
         self.device = 'cuda'
-        self.embedder = BGECustomEmbedder(bge_name, pool_type='cls', checkpoint_batch_size=-1, embed_dim=-1, lora_config=False, which_layer=-1, mytryoshka_indexes=None).to(self.device)
+        self.embedder = BGECustomEmbedder(bge_name, pool_type='cls', checkpoint_batch_size=-1, embed_dim=-1, lora_config=False, which_layer=-1, mytryoshka_indexes=None, normalize=True).to(self.device)
         if bge_ckpt:
             if os.path.exists(bge_ckpt):
                 print(f'>>> Loading BGEEmbedder CKPT from {bge_ckpt}')
@@ -39,7 +39,6 @@ class BGEFunction(EmbeddingFunction):
             
             with torch.no_grad():
                 cur_embeddings = self.embedder.embedding(bi_inputs)
-                cur_embeddings = F.normalize(cur_embeddings, p=2, dim=1)
 
             doc_embeddings.append(cur_embeddings)
 

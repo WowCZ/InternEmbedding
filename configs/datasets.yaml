@@ -1,0 +1,237 @@
+root_path: /fs-computility/llm/shared/chenzhi/internembedding_datasets
+internembedder_datasets:
+  - name: ELI5Category
+    data_type: s2s
+    task_type: Reranking
+    prompts: ["Provided a user question, retrieve the highest voted answers on Reddit ELI5 forum"]
+    sampling_ratio: 1.0
+  - name: HotpotQA
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a multi-hop question, retrieve documents that can help answer the question"]
+    sampling_ratio: 1.0
+  - name: MSMARCOTriple
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a web search query, retrieve relevant passages that answer the query", "Given a web search query, retrieve relevant documents that answer the query"]
+    sampling_ratio: 1.0
+  - name: MultiNLI
+    data_type: s2s
+    task_type: PairClassification
+    prompts: ["Given a premise, retrieve a hypothesis that is entailed by the premise", "Retrieve semantically similar text"]
+    sampling_ratio: 1.0
+  - name: Quora
+    data_type: s2s
+    task_type: PairClassification
+    prompts: ["Given a question, retrieve questions that are semantically equivalent to the given question", "Find questions that have the same meaning as the input question"]
+    sampling_ratio: 1.0
+  - name: MrTyDiTriple
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a question, retrieve Wikipedia passages that answer the question", "Retrieve Wikipedia passages that answer the question"]
+    sampling_ratio: 1.0
+  - name: SQuAD
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a question, retrieve Wikipedia passages that answer the question", "Retrieve Wikipedia passages that answer the question"]
+    sampling_ratio: 1.0
+  - name: TriviaQARanking
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a question, retrieve Wikipedia passages that answer the question", "Retrieve Wikipedia passages that answer the question"]
+    sampling_ratio: 1.0
+  - name: FEVER
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a claim, retrieve documents that support or refute the claim"]
+    sampling_ratio: 1.0
+  - name: DuReader
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a Chinese search query, retrieve web passages that answer the question"]
+    sampling_ratio: 1.0
+  - name: JinaAINegation
+    data_type: s2s
+    task_type: STS
+    prompts: ["Given a premise, retrieve a hypothesis that is entailed by the premise", "Retrieve semantically similar text"]
+    sampling_ratio: 1.0
+  - name: YahooQARanking
+    data_type: s2s
+    task_type: Reranking
+    prompts: ["Provided a Yahoo question, retrieve the highest voted answers"]
+    sampling_ratio: 1.0
+  - name: YahooQAClustering
+    data_type: s2s
+    task_type: Clustering
+    prompts: ["Identify the main category of the Yahoo question"]
+    sampling_ratio: 1.0
+  - name: STELI5
+    data_type: s2s
+    task_type: Reranking
+    prompts: ["Provided a user question, retrieve the highest voted answers on Reddit ELI5 forum"]
+    sampling_ratio: 1.0
+  - name: STAllNLI
+    data_type: s2s
+    task_type: STS
+    prompts: ["Given a premise, retrieve a hypothesis that is entailed by the premise", "Retrieve semantically similar text"]
+    sampling_ratio: 1.0
+  - name: STGooQA
+    data_type: s2s
+    task_type: Reranking
+    prompts: ["Provided a google question, retrieve the highest voted answers"]
+    sampling_ratio: 1.0
+  - name: STSpecter
+    data_type: s2s
+    task_type: Retrieval
+    prompts: ["Provided a title of the scientific publication, retrieve the related title of the publication"]
+    sampling_ratio: 1.0
+  - name: STStackexchangeDup
+    data_type: s2s
+    task_type: STS
+    prompts: ["Given a question, retrieve questions that are semantically equivalent to the given question", "Find questions that have the same meaning as the input question"]
+    sampling_ratio: 1.0
+  - name: STWikiHow
+    data_type: p2p
+    task_type: Retrieval
+    prompts: ["Given a summary, retrieve the corresponding documents"]
+    sampling_ratio: 1.0
+  - name: STYahooQA
+    data_type: s2s
+    task_type: Reranking
+    prompts: ["Provided a Yahoo question, retrieve the highest voted answers"]
+    sampling_ratio: 1.0
+  - name: STWikiAnswers
+    data_type: s2s
+    task_type: STS
+    prompts: ["Retrieve wikipedia query that are semantically similar to the given query"]
+    sampling_ratio: 1.0
+  - name: STAGNews
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given an AGNews title, retrieve the corresponding news description"]
+    sampling_ratio: 1.0
+  - name: STAltlex
+    data_type: p2p
+    task_type: Retrieval
+    prompts: ["Given a wikipedia passage, retrieve the simplified version"]
+    sampling_ratio: 1.0
+  - name: STAmazonReview
+    data_type: s2s
+    task_type: Retrieval
+    prompts: ["Given an Amazon review title, retrieve the corresponding review content"]
+    sampling_ratio: 1.0
+  - name: STCodeSearchNet
+    data_type: s2c
+    task_type: Retrieval
+    prompts: ["Given a code comment, retrieve the corresponding code"]
+    sampling_ratio: 1.0
+  - name: STFlickr30k
+    data_type: s2s
+    task_type: STS
+    prompts: ["Find image captions that have the same meaning as the input caption"]
+    sampling_ratio: 1.0
+  - name: STNPR
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given an Pushshift title, retrieve the corresponding Pushshift body"]
+    sampling_ratio: 1.0
+  - name: STPAQ
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a question, retrieve web passages that answer the question"]
+    sampling_ratio: 1.0
+  - name: STS2ORCTA
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a title of a scientist paper, retrieve the corresponding paper abstract"]
+    sampling_ratio: 1.0
+  - name: STXSum
+    data_type: p2p
+    task_type: Retrieval
+    prompts: ["Given an news summary, retrieve the corresponding news article"]
+    sampling_ratio: 1.0
+  - name: STCCNews
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given an news title, retrieve the corresponding news article"]
+    sampling_ratio: 1.0
+  - name: MTWoW
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a question, retrieve wikipedia passages that answer the question"]
+    sampling_ratio: 1.0
+  - name: MTTrex
+    data_type: s2p
+    task_type: Retrieval
+    prompts: ["Given a relation claim, retrieve documents that can extract the relation"]
+    sampling_ratio: 1.0
+  - name: MTMedMCQA
+    data_type: s2s
+    task_type: Reranking
+    prompts: ["Given a medical question, retrieve the corresponding answer of the give question"]
+    sampling_ratio: 1.0
+  - name: MTPubMed
+    data_type: s2s
+    task_type: Reranking
+    prompts: ["Given a medical question, retrieve passages that answer the question"]
+    sampling_ratio: 1.0
+  - name: GAOKAO
+    data_type: s2s
+    task_type: Clustering
+    prompts: ["Identify the main keypoint of subject based on the question"]
+    sampling_ratio: 1.0
+  - name: SFREmotion
+    data_type: s2s
+    task_type: Classification
+    prompts: ["Classify the emotion expressed in the given Twitter message into one of the six emotions: anger, fear, joy, love, sadness, and surprise"]
+    sampling_ratio: 1.0
+  - name: SFRFiQA
+    data_type: s2s
+    task_type: Retrieval
+    prompts: ["Given a financial question, retrieve user replies that best answer the question"]
+    sampling_ratio: 1.0
+  - name: SFRMTOPIntent
+    data_type: s2s
+    task_type: Classification
+    prompts: ["Classify the intent of the given utterance in task-oriented conversation"]
+    sampling_ratio: 1.0
+  - name: SFRSTS12
+    data_type: s2s
+    task_type: STS
+    prompts: ["Retrieve semantically similar text"]
+    sampling_ratio: 1.0
+  - name: SFRSTS22
+    data_type: s2s
+    task_type: STS
+    prompts: ["Retrieve semantically similar text"]
+    sampling_ratio: 1.0
+  - name: SFRSTSBenchmark
+    data_type: s2s
+    task_type: STS
+    prompts: ["Retrieve semantically similar text"]
+    sampling_ratio: 1.0
+  - name: SFRToxicConversation
+    data_type: s2s
+    task_type: Classification
+    prompts: ["Classify the given comments as either toxic or not toxic"]
+    sampling_ratio: 1.0
+  - name: SFRTweetSentiment
+    data_type: s2s
+    task_type: Classification
+    prompts: ["Classify the sentiment of a given tweet as either positive, negative, or neutral"]
+    sampling_ratio: 1.0
+  - name: SFRbioRxiv
+    data_type: p2s
+    task_type: Clustering
+    prompts: ["Identify the main category of Biorxiv papers based on the titles and abstracts"]
+    sampling_ratio: 1.0
+  - name: SFRmedRxiv
+    data_type: p2s
+    task_type: Clustering
+    prompts: ["Identify the main category of Medrxiv papers based on the titles and abstracts"]
+    sampling_ratio: 1.0
+  - name: SFRSciDocs
+    data_type: s2s
+    task_type: Reranking
+    prompts: ["Given a title of a scientific paper, retrieve the titles of other relevant papers"]
+    sampling_ratio: 1.0
