@@ -91,7 +91,7 @@ def create_internembedder_chromadb():
     print('>>> Number of files: ', len(rank_datafiles))
     print('>>> Number of examples: ', llen)
 
-    chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/internembedder_dataset_docs_{rank}'
+    chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/internembedder_independent_dataset_docs_{rank}'
     client = chromadb.PersistentClient(path=str(chroma_path))
     # client.delete_collection(name="internembedder")
     collection = client.get_or_create_collection(name="internembedder", embedding_function=BGEFunction(bge_name='BAAI/bge-base-en-v1.5', bge_ckpt=None), metadata={"hnsw:space": "cosine"})
@@ -99,7 +99,7 @@ def create_internembedder_chromadb():
     li = 0
     docs = []
     doc_ids = []
-    for file in tqdm.tqdm(datafiles):
+    for file in tqdm.tqdm(rank_datafiles):
         fname = file.split('/')[-2]
         fi = 0
         for l in open(file, 'r').readlines():

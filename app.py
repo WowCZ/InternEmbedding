@@ -18,15 +18,9 @@ create_internembedder_chromadb()
 # saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
 # retrieval_from_gaokao(gaokao_file, chromadb_path, chromabd_name, subject, topk, ckpt, saved_retrieval_file)
 
-# import yaml
-
-# with open('configs/datasets.yaml','r') as f:
-#     data = yaml.load(f, Loader=yaml.FullLoader)
-# print(data['processed_datasets'][0]['name'])
-# print(data['processed_datasets'][0]['prompts'])
 # exit(0)
 
-# subject = 'biology'
+# subject = 'mathematics'
 # saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
 # llm_name = 'internlm2-chat-20b'
 
@@ -54,9 +48,11 @@ create_internembedder_chromadb()
 #     kp_match_cnt = 0
 #     kp_retrieval_qa = []
 #     for li, l in enumerate(lines):
-#         if li >= 50:
-#             break
-#         print(f'>>> Processing {subject} samle: {li}')
+
+#         # if li >= 50:
+#         #     break
+#         # print(f'>>> Processing {subject} samle: {li}')
+
 #         l = json.loads(l)
 #         retrieval_kps = [r['keypoint'] for r in l['retrieval']][:4]
 #         cur_kp = l['keypoint']
@@ -67,15 +63,15 @@ create_internembedder_chromadb()
 #         retrieval_q = l['retrieval'][0]['prompt']
 #         retrieval_a = l['retrieval'][0]['answer']
 
-#         response = get_llm_response(question)
-#         kp_question = biology_prompt.format(retrieval_q=retrieval_q, retrieval_a=retrieval_a, q=question)
-#         kp_response = get_llm_response(kp_question)
-#         kp_retrieval_qa.append({
-#             'question': question,
-#             'llm_response': response,
-#             'llm_kp_response': kp_response,
-#             'golden': answer
-#         })
+#         # response = get_llm_response(question)
+#         # kp_question = biology_prompt.format(retrieval_q=retrieval_q, retrieval_a=retrieval_a, q=question)
+#         # kp_response = get_llm_response(kp_question)
+#         # kp_retrieval_qa.append({
+#         #     'question': question,
+#         #     'llm_response': response,
+#         #     'llm_kp_response': kp_response,
+#         #     'golden': answer
+#         # })
 
 #         if cur_kp in retrieval_kps:
 #             kp_match_cnt += 1

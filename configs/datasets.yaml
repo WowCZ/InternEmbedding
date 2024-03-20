@@ -65,20 +65,10 @@ internembedder_datasets:
     task_type: Clustering
     prompts: ["Identify the main category of the Yahoo question"]
     sampling_ratio: 1.0
-  - name: STELI5
-    data_type: s2s
-    task_type: Reranking
-    prompts: ["Provided a user question, retrieve the highest voted answers on Reddit ELI5 forum"]
-    sampling_ratio: 1.0
   - name: STAllNLI
     data_type: s2s
     task_type: STS
     prompts: ["Given a premise, retrieve a hypothesis that is entailed by the premise", "Retrieve semantically similar text"]
-    sampling_ratio: 1.0
-  - name: STGooQA
-    data_type: s2s
-    task_type: Reranking
-    prompts: ["Provided a google question, retrieve the highest voted answers"]
     sampling_ratio: 1.0
   - name: STSpecter
     data_type: s2s
@@ -94,11 +84,6 @@ internembedder_datasets:
     data_type: p2p
     task_type: Retrieval
     prompts: ["Given a summary, retrieve the corresponding documents"]
-    sampling_ratio: 1.0
-  - name: STYahooQA
-    data_type: s2s
-    task_type: Reranking
-    prompts: ["Provided a Yahoo question, retrieve the highest voted answers"]
     sampling_ratio: 1.0
   - name: STWikiAnswers
     data_type: s2s
@@ -174,11 +159,6 @@ internembedder_datasets:
     data_type: s2s
     task_type: Reranking
     prompts: ["Given a medical question, retrieve passages that answer the question"]
-    sampling_ratio: 1.0
-  - name: GAOKAO
-    data_type: s2s
-    task_type: Clustering
-    prompts: ["Identify the main keypoint of subject based on the question"]
     sampling_ratio: 1.0
   - name: SFREmotion
     data_type: s2s

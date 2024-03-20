@@ -6,12 +6,17 @@
                                            --pool_type=cls \
                                            --backbone_type=BGE \
                                            --task_prompt \
+                                           --embedding_norm \
+                                           --task_adaptation \
+                                           --sampler=indataset \
+                                           --hard_negative_sampling \
+                                           --hard_negative_num=2 \
                                            --warmup_rate=0.1 \
-                                           --checkpoint_batch_size=150 \
-                                           --gradcache_chunk_size=150 \
+                                           --checkpoint_batch_size=200 \
+                                           --gradcache_chunk_size=200 \
                                            --temperature=0.01 \
                                            --learning_rate=1e-5 \
                                            --matryoshka_adaptive_dims=768 \
                                            --mytryoshka_size=768 \
-                                           --batch_size_per_gpu=600 \
-                                           --embedder_name=bge_full_sfr49
+                                           --batch_size_per_gpu=1000 \
+                                           --embedder_name=bge_indataset43_adaptive

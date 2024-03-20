@@ -5,8 +5,7 @@ import torch
 from embedding.models import MODEL_MAPPING
 from transformers import AutoTokenizer, get_scheduler
 from embedding.data.data_loader import train_dataloader
-from embedding.data.datasets import EmbedderDatasets
-from embedding.data.data_utils import training_datatset_files
+from embedding.data.datasets import EmbedderDatasets, EmbedderConcatDataset
 
 def initial_model(args):
     mytryoshka_indexes = list(range(args.mytryoshka_size))
@@ -74,10 +73,23 @@ def get_train_dataloader(args):
         # uncomment: when padding token is not set, like Mistral 
         tokenizer.pad_token = tokenizer.eos_token
 
-    paired_embedding_dataset = EmbedderDatasets(training_datatset_files, 
-                                                task_prompt=args.task_prompt, 
-                                                negative_num=args.hard_negative_num)
-    train_loader = train_dataloader(paired_embedding_dataset, tokenizer, max_length=args.max_length, sampler='random', batch_size=args.batch_size_per_gpu)
+    if args.sampler in ['random']:
+        embedding_dataset = EmbedderDatasets(args.dataset_config, 
+                                             task_prompt=args.task_prompt, 
+                                             negative_num=args.hard_negative_num)
+    else:
+        assert args.sampler in ['indataset']
+        embedding_dataset = EmbedderConcatDataset(args.dataset_config, 
+                                                  task_prompt=args.task_prompt, 
+                                                  negative_num=args.hard_negative_num)
+
+
+    train_loader = train_dataloader(embedding_dataset, 
+                                    tokenizer, 
+                                    max_length=args.max_length, 
+                                    sampler=args.sampler, 
+                                    batch_size=args.batch_size_per_gpu)
+    
     return train_loader
 
 def get_eval_dataloader():
