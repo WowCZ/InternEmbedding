@@ -112,6 +112,8 @@ class InDatasetBatchSampler(BatchSampler):
 
         for bi in sampler_iter:
             batch = self.batched_dataset_indxs[bi]
+            if len(batch) < self.batch_size:
+                batch = batch + [batch[0]] * (self.batch_size - len(batch))
             yield batch
 
     def __len__(self) -> int:
