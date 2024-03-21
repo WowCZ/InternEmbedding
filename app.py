@@ -5,82 +5,82 @@ from apps.retrieval.internembedder_rag import test_internembedder
 from apps.clustering.gaokao import create_subject_keypoint_db, evaluate_subject_keypoint_match, subject_zh_en_map, extract_keypoint_embedding_data
 
 
-create_internembedder_chromadb()
+# create_internembedder_chromadb()
 
-# subject = 'mathematics'
-# chromadb_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{subject}_gaokao_questions'
-# gaokao_file ='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
-# ckpt = '/fs-computility/llm/chenzhi/ckpts/bge_keypoint_triple5_20240314072748/bge_keypoint_triple5_2000.pt'
-# chromabd_name = 'questions_train'
+subject = 'biology'
+chromadb_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{subject}_gaokao_questions'
+gaokao_file ='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
+ckpt = '/fs-computility/llm/chenzhi/ckpts/bge_keypoint_triple5_20240314072748/bge_keypoint_triple5_2000.pt'
+chromabd_name = 'questions_train'
 # create_gaokao_chromadb(gaokao_file, chromadb_path, chromabd_name, subject, ckpt)
 
-# topk = 10
-# saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
-# retrieval_from_gaokao(gaokao_file, chromadb_path, chromabd_name, subject, topk, ckpt, saved_retrieval_file)
+topk = 10
+saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
+retrieval_from_gaokao(gaokao_file, chromadb_path, chromabd_name, subject, topk, ckpt, saved_retrieval_file)
 
-# exit(0)
+exit(0)
 
-# subject = 'mathematics'
-# saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
-# llm_name = 'internlm2-chat-20b'
+subject = 'mathematics'
+saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
+llm_name = 'internlm2-chat-20b'
 
-# import openai
-# def get_llm_response(question: str):
-#     response = openai.ChatCompletion.create(
-#         api_base='http://172.28.32.57:20240/v1',
-#         api_key='EMPTY',
-#         model=llm_name,
-#         messages=[
-#             {"role": "user", "content": f'{question}'},
-#             ],
-#         max_tokens=4096,
-#         temperature=1.2,
-#         top_p=0.95,
-#         n=1,
-#     )
-#     return response['choices'][0]['message']['content']
+import openai
+def get_llm_response(question: str):
+    response = openai.ChatCompletion.create(
+        api_base='http://172.28.32.57:20240/v1',
+        api_key='EMPTY',
+        model=llm_name,
+        messages=[
+            {"role": "user", "content": f'{question}'},
+            ],
+        max_tokens=4096,
+        temperature=1.2,
+        top_p=0.95,
+        n=1,
+    )
+    return response['choices'][0]['message']['content']
 
-# biology_prompt = '以下是一个生物考试题的例子：\n{retrieval_q}{retrieval_a}\n 请参考以上题，回答下面具备相同知识点的题目：{q}'
+biology_prompt = '以下是一个生物考试题的例子：\n{retrieval_q}{retrieval_a}\n 请参考以上题，回答下面具备相同知识点的题目：{q}'
 
-# with open(saved_retrieval_file, 'r') as fr:
-#     lines = fr.readlines()
-#     llen = len(lines)
-#     kp_match_cnt = 0
-#     kp_retrieval_qa = []
-#     for li, l in enumerate(lines):
+with open(saved_retrieval_file, 'r') as fr:
+    lines = fr.readlines()
+    llen = len(lines)
+    kp_match_cnt = 0
+    kp_retrieval_qa = []
+    for li, l in enumerate(lines):
 
-#         # if li >= 50:
-#         #     break
-#         # print(f'>>> Processing {subject} samle: {li}')
+        # if li >= 50:
+        #     break
+        # print(f'>>> Processing {subject} samle: {li}')
 
-#         l = json.loads(l)
-#         retrieval_kps = [r['keypoint'] for r in l['retrieval']][:4]
-#         cur_kp = l['keypoint']
+        l = json.loads(l)
+        retrieval_kps = [r['keypoint'] for r in l['retrieval']][:4]
+        cur_kp = l['keypoint']
 
-#         question = l['prompt']
-#         answer = l['answer']
+        question = l['prompt']
+        answer = l['answer']
 
-#         retrieval_q = l['retrieval'][0]['prompt']
-#         retrieval_a = l['retrieval'][0]['answer']
+        retrieval_q = l['retrieval'][0]['prompt']
+        retrieval_a = l['retrieval'][0]['answer']
 
-#         # response = get_llm_response(question)
-#         # kp_question = biology_prompt.format(retrieval_q=retrieval_q, retrieval_a=retrieval_a, q=question)
-#         # kp_response = get_llm_response(kp_question)
-#         # kp_retrieval_qa.append({
-#         #     'question': question,
-#         #     'llm_response': response,
-#         #     'llm_kp_response': kp_response,
-#         #     'golden': answer
-#         # })
+        # response = get_llm_response(question)
+        # kp_question = biology_prompt.format(retrieval_q=retrieval_q, retrieval_a=retrieval_a, q=question)
+        # kp_response = get_llm_response(kp_question)
+        # kp_retrieval_qa.append({
+        #     'question': question,
+        #     'llm_response': response,
+        #     'llm_kp_response': kp_response,
+        #     'golden': answer
+        # })
 
-#         if cur_kp in retrieval_kps:
-#             kp_match_cnt += 1
+        if cur_kp in retrieval_kps:
+            kp_match_cnt += 1
     
-#     print(f'>>> Recall Accuracy on Subject {subject}: {kp_match_cnt/llen}')
+    print(f'>>> Recall Accuracy on Subject {subject}: {kp_match_cnt/llen}')
 
-# with open(f'/fs-computility/llm/chenzhi/InternEmbedding/results/gaokao/{subject}_keypoint_retrieval_{llm_name}_response.json', 'w') as fw:
-#     json.dump(kp_retrieval_qa, fw, indent=4, ensure_ascii=False)
-# exit(0)
+with open(f'/fs-computility/llm/chenzhi/InternEmbedding/results/gaokao/{subject}_keypoint_retrieval_{llm_name}_response.json', 'w') as fw:
+    json.dump(kp_retrieval_qa, fw, indent=4, ensure_ascii=False)
+exit(0)
 
 
 # create_internembedder_chromadb()

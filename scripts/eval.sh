@@ -25,30 +25,28 @@
 #                                         --embedder_name=$MODEL_NAME &
 
 # For BGE Model
-MODEL_NAME=bge_embedder28_sfr_eos1_prompt_ins_matryoshka1_temp1_lr15_bs1024_ml512_1000_norm
-CKPT_DIR=bge_sfr28_20240315063027
-CKPT_NAME=bge_sfr28_1000.pt
+MODEL_NAME=bge_embedder43_indataset_cls1_prompt_ins_matryoshka1_temp1_lr15_bs1000_ml512_1000
+CKPT_DIR=bge_indataset43_adaptive_20240320112848
+CKPT_NAME=bge_indataset43_adaptive_1000.pt
 
 CUDA_VISIBLE_DEVICES=0 /root/miniconda3/envs/embedding/bin/python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
                                         --backbone_type=BGE \
                                         --init_backbone=BAAI/bge-base-en-v1.5 \
                                         --pool_type=cls \
                                         --task_prompt \
-                                        --embedding_norm \
                                         --mytryoshka_size=768 \
                                         --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
                                         --embedder_name=$MODEL_NAME &
 
-MODEL_NAME=bge_embedder28_sfr_eos1_prompt_ins_matryoshka1_temp1_lr15_bs1024_ml512_1447_norm
-CKPT_DIR=bge_sfr28_20240315063027
-CKPT_NAME=bge_sfr28_1447.pt
+MODEL_NAME=bge_embedder43_indataset_cls1_prompt_ins_matryoshka1_temp1_lr15_bs1000_ml512_1500
+CKPT_DIR=bge_indataset43_adaptive_20240320112848
+CKPT_NAME=bge_indataset43_adaptive_1500.pt
 
 CUDA_VISIBLE_DEVICES=1 /root/miniconda3/envs/embedding/bin/python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
                                         --backbone_type=BGE \
                                         --init_backbone=BAAI/bge-base-en-v1.5 \
                                         --pool_type=cls \
                                         --task_prompt \
-                                        --embedding_norm \
                                         --mytryoshka_size=768 \
                                         --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
                                         --embedder_name=$MODEL_NAME &

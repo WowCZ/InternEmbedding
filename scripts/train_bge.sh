@@ -15,8 +15,8 @@
                                            --checkpoint_batch_size=200 \
                                            --gradcache_chunk_size=200 \
                                            --temperature=0.01 \
-                                           --learning_rate=1e-5 \
+                                           --learning_rate=3e-5 \
                                            --matryoshka_adaptive_dims=768 \
                                            --mytryoshka_size=768 \
                                            --batch_size_per_gpu=1000 \
-                                           --embedder_name=bge_indataset43_adaptive
+                                           --embedder_name=bge_indataset43_adaptive_paired_prompt

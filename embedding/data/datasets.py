@@ -2,10 +2,33 @@ import json
 import random
 import math
 import bisect
+from typing import List
 from torch.utils.data import Dataset
 from embedding.data.data_utils import extract_dataset_configs, extract_and_validate_datasets
 
 random.seed(20)
+
+def prompt_wrapper(question: str, response: str, negatives: List[str], task_type: str, prompt_candidates: List[str]):
+    q_prompt = random.choice(prompt_candidates)
+
+    if task_type in ['Clustering', 'Classification']:
+        r_prompt = 'The corresponding category'
+    elif task_type in ['Retrieval', 'Reranking', 'PairClassification', 'Summarization']:
+        r_prompt = 'The corresponding document text'
+    else:
+        r_prompt = q_prompt
+
+    question = q_prompt + ': ' + question
+    response = r_prompt + ': ' + response
+    if negatives is not None:
+        if type(negatives) is not list:
+            if type(negatives) is not str:
+                raise TypeError(f'>>> Unknow negative sample types: {type(negatives)}')
+            else:
+                negatives = [negatives]
+        negatives = [r_prompt + ': ' + n for n in negatives]
+    
+    return question, response, negatives
 
 class EmbedderDatasets(Dataset):
     def __init__(self, datatset_config: str, task_prompt: bool=False, negative_num: int=3):
@@ -40,21 +63,24 @@ class EmbedderDatasets(Dataset):
 
     def make_sample(self, dataset_name, sample):
         sample = json.loads(sample)
+
+        task_type = self.dataset_infos[dataset_name]['task_type']
+
         if 'negative_response' not in sample:
             sample['negative_response'] = None
+        else:
+            sample['negative_response'] = sample['negative_response'][:self.negative_num]
+
         question, response, negatives = sample['question'], sample['response'], sample['negative_response']
+
         if self.task_prompt:
-            sampled_prompt = random.choice(self.dataset_infos[dataset_name]['prompts'])
-            question = sampled_prompt + ': ' + question
-            response = sampled_prompt + ': ' + response
-            if negatives is not None:
-                if type(negatives) is not list:
-                    if type(negatives) is not str:
-                        raise TypeError(f'>>> Unknow negative sample types: {type(negatives)}')
-                    negatives = [negatives]
-                negatives = [sampled_prompt + ': ' + n for n in negatives[:self.negative_num]]
-            
-        return (question, response, negatives, self.dataset_infos[dataset_name]['task_type'])
+             question, response, negatives = prompt_wrapper(question, 
+                                                            response, 
+                                                            negatives, 
+                                                            task_type, 
+                                                            self.dataset_infos[dataset_name]['prompts'])
+
+        return (question, response, negatives, task_type)
 
     def __getitem__(self, index):
         dataset_name, qa_sample = self.qa_pairs[index]
@@ -96,19 +122,22 @@ class EmbedderIndependentDataset(Dataset):
 
     def make_sample(self, sample):
         sample = json.loads(sample)
+
+        task_type = self.dataset_info['task_type']
+
         if 'negative_response' not in sample:
             sample['negative_response'] = None
+        else:
+            sample['negative_response'] = sample['negative_response'][:self.negative_num]
+
         question, response, negatives = sample['question'], sample['response'], sample['negative_response']
+        
         if self.task_prompt:
-            sampled_prompt = random.choice(self.dataset_info['prompts'])
-            question = sampled_prompt + ': ' + question
-            response = sampled_prompt + ': ' + response
-            if negatives is not None:
-                if type(negatives) is not list:
-                    if type(negatives) is not str:
-                        raise TypeError(f'>>> Unknow negative sample types: {type(negatives)}')
-                    negatives = [negatives]
-                negatives = [sampled_prompt + ': ' + n for n in negatives[:self.negative_num]]
+            question, response, negatives = prompt_wrapper(question, 
+                                                           response, 
+                                                           negatives, 
+                                                           task_type, 
+                                                           self.dataset_info['prompts'])
             
         return (question, response, negatives, self.dataset_info['task_type'])
 
