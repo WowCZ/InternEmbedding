@@ -8,15 +8,19 @@ from embedding.data.data_utils import extract_dataset_configs, extract_and_valid
 
 random.seed(20)
 
+def custom_corpus_prompt(query_prompt: str, task_type: str):
+    if task_type in ['Clustering', 'Classification']:
+        corpus_prompt = 'The corresponding category'
+    elif task_type in ['Retrieval', 'PairClassification', 'Summarization', 'Reranking']:
+        corpus_prompt = 'The corresponding document text'
+    else:
+        corpus_prompt = query_prompt
+
+    return corpus_prompt
+
 def prompt_wrapper(question: str, response: str, negatives: List[str], task_type: str, prompt_candidates: List[str]):
     q_prompt = random.choice(prompt_candidates)
-
-    if task_type in ['Clustering', 'Classification']:
-        r_prompt = 'The corresponding category'
-    elif task_type in ['Retrieval', 'Reranking', 'PairClassification', 'Summarization']:
-        r_prompt = 'The corresponding document text'
-    else:
-        r_prompt = q_prompt
+    r_prompt = custom_corpus_prompt(q_prompt, task_type)
 
     question = q_prompt + ': ' + question
     response = r_prompt + ': ' + response
@@ -29,6 +33,7 @@ def prompt_wrapper(question: str, response: str, negatives: List[str], task_type
         negatives = [r_prompt + ': ' + n for n in negatives]
     
     return question, response, negatives
+
 
 class EmbedderDatasets(Dataset):
     def __init__(self, datatset_config: str, task_prompt: bool=False, negative_num: int=3):

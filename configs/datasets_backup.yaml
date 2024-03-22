@@ -1,10 +1,5 @@
 root_path: /fs-computility/llm/shared/chenzhi/internembedding_datasets
 internembedder_datasets:
-  - name: ELI5Category
-    data_type: s2s
-    task_type: Preference
-    prompts: ["Provided a user question, retrieve the highest voted answers on Reddit ELI5 forum"]
-    sampling_ratio: 1.0
   - name: HotpotQA
     data_type: s2p
     task_type: Retrieval
@@ -14,11 +9,6 @@ internembedder_datasets:
     data_type: s2p
     task_type: Retrieval
     prompts: ["Given a web search query, retrieve relevant passages that answer the query", "Given a web search query, retrieve relevant documents that answer the query"]
-    sampling_ratio: 1.0
-  - name: MultiNLI
-    data_type: s2s
-    task_type: PairClassification
-    prompts: ["Given a premise, retrieve a hypothesis that is entailed by the premise", "Retrieve semantically similar text"]
     sampling_ratio: 1.0
   - name: Quora
     data_type: s2s
@@ -44,21 +34,6 @@ internembedder_datasets:
     data_type: s2p
     task_type: Retrieval
     prompts: ["Given a claim, retrieve documents that support or refute the claim"]
-    sampling_ratio: 1.0
-  - name: DuReader
-    data_type: s2p
-    task_type: Retrieval
-    prompts: ["Given a Chinese search query, retrieve web passages that answer the question"]
-    sampling_ratio: 1.0
-  - name: JinaAINegation
-    data_type: s2s
-    task_type: STS
-    prompts: ["Given a premise, retrieve a hypothesis that is entailed by the premise", "Retrieve semantically similar text"]
-    sampling_ratio: 1.0
-  - name: YahooQARanking
-    data_type: s2s
-    task_type: Preference
-    prompts: ["Provided a Yahoo question, retrieve the highest voted answers"]
     sampling_ratio: 1.0
   - name: YahooQAClustering
     data_type: s2s
@@ -130,11 +105,6 @@ internembedder_datasets:
     task_type: Retrieval
     prompts: ["Given a title of a scientist paper, retrieve the corresponding paper abstract"]
     sampling_ratio: 1.0
-  - name: STXSum
-    data_type: p2p
-    task_type: Retrieval
-    prompts: ["Given an news summary, retrieve the corresponding news article"]
-    sampling_ratio: 1.0
   - name: STCCNews
     data_type: s2p
     task_type: Retrieval
@@ -174,11 +144,6 @@ internembedder_datasets:
     data_type: s2s
     task_type: Classification
     prompts: ["Classify the intent of the given utterance in task-oriented conversation"]
-    sampling_ratio: 1.0
-  - name: SFRSTS12
-    data_type: s2s
-    task_type: STS
-    prompts: ["Retrieve semantically similar text"]
     sampling_ratio: 1.0
   - name: SFRSTS22
     data_type: s2s
