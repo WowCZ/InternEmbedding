@@ -7,11 +7,15 @@
                                            --task_prompt \
                                            --peft_lora \
                                            --embedding_norm \
-                                           --sampler=random \
+                                           --task_adaptation \
+                                           --sampler=indataset \
+                                           --hard_negative_sampling \
+                                           --hard_negative_num=1 \
                                            --warmup_rate=0.1 \
                                            --checkpoint_batch_size=10 \
                                            --gradcache_chunk_size=10 \
                                            --temperature=0.01 \
-                                           --learning_rate=3e-5 \
-                                           --batch_size_per_gpu=600 \
-                                           --embedder_name=mistral_indataset_sfr35
+                                           --learning_rate=1e-5 \
+                                           --batch_size_per_gpu=1000 \
+                                           --dataset_config=/fs-computility/llm/chenzhi/InternEmbedding/configs/datasets_backup.yaml \
+                                           --embedder_name=mistral_indataset43

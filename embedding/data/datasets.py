@@ -94,6 +94,9 @@ class EmbedderDatasets(Dataset):
 
 class EmbedderIndependentDataset(Dataset):
     def __init__(self, dataset_info: dict, task_prompt: bool=False, negative_num: int=3):
+        # if dataset_info['task_type'] in ['Clustering', 'Classification']:
+        #     negative_num = 200000000
+
         qa_pairs = []
         with open(dataset_info['disk_path'], 'r') as fr:
             lines = fr.readlines()

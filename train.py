@@ -212,6 +212,8 @@ def train_embedder(args):
 
                     accelerator.backward(surrogate)
 
+            if args.clip_gradient:
+                torch.nn.utils.clip_grad_norm_(embedder.parameters(), 1.0)
             optimizer.step()
             lr_scheduler.step()
             optimizer.zero_grad()
