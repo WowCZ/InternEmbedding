@@ -1,26 +1,26 @@
 import json
 from apps.vector_db.text_loading_chroma import create_gaokao_chromadb, create_internembedder_chromadb
 from apps.retrieval.gaokao_rag import retrieval_from_gaokao
-from apps.retrieval.internembedder_rag import test_internembedder
+from apps.retrieval.internembedder_rag import retrieval_for_internembedder_datasets
 from apps.clustering.gaokao import create_subject_keypoint_db, evaluate_subject_keypoint_match, subject_zh_en_map, extract_keypoint_embedding_data
 
 
 # create_internembedder_chromadb()
 
-# subject = 'biology'
-# chromadb_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{subject}_gaokao_questions'
-# gaokao_file ='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
-# ckpt = '/fs-computility/llm/chenzhi/ckpts/bge_keypoint_triple5_20240314072748/bge_keypoint_triple5_2000.pt'
-# chromabd_name = 'questions_train'
-# # create_gaokao_chromadb(gaokao_file, chromadb_path, chromabd_name, subject, ckpt)
+subject = 'biology'
+chromadb_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{subject}_gaokao_questions'
+gaokao_file ='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
+ckpt = '/fs-computility/llm/chenzhi/ckpts/bge_keypoint_triple5_20240314072748/bge_keypoint_triple5_2000.pt'
+chromabd_name = 'questions_train'
+create_gaokao_chromadb(gaokao_file, chromadb_path, chromabd_name, subject, ckpt)
 
-# topk = 10
-# saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
-# retrieval_from_gaokao(gaokao_file, chromadb_path, chromabd_name, subject, topk, ckpt, saved_retrieval_file)
+topk = 10
+saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
+retrieval_from_gaokao(gaokao_file, chromadb_path, chromabd_name, subject, topk, ckpt, saved_retrieval_file)
 
 # exit(0)
 
-subject = 'mathematics'
+subject = 'biology'
 saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
 llm_name = 'internlm2-chat-20b'
 
@@ -80,8 +80,6 @@ with open(saved_retrieval_file, 'r') as fr:
 
 with open(f'/fs-computility/llm/chenzhi/InternEmbedding/results/gaokao/{subject}_keypoint_retrieval_{llm_name}_response.json', 'w') as fw:
     json.dump(kp_retrieval_qa, fw, indent=4, ensure_ascii=False)
-exit(0)
-
 
 # create_internembedder_chromadb()
 # test_math()

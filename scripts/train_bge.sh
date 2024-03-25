@@ -19,5 +19,5 @@
                                            --matryoshka_adaptive_dims=768 \
                                            --mytryoshka_size=768 \
                                            --batch_size_per_gpu=1600 \
-                                           --dataset_config=/fs-computility/llm/chenzhi/InternEmbedding/configs/datasets_backup.yaml \
-                                           --embedder_name=bge_indataset43_adaptive_paired_prompt
+                                           --dataset_config=/fs-computility/llm/chenzhi/InternEmbedding/configs/dataset_configs/datasets_test.yaml \
+                                           --embedder_name=bge_indataset48_adaptive_paired_prompt

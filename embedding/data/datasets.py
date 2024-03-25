@@ -4,7 +4,7 @@ import math
 import bisect
 from typing import List
 from torch.utils.data import Dataset
-from embedding.data.data_utils import extract_dataset_configs, extract_and_validate_datasets
+from embedding.data.data_utils import extract_dataset_configs
 
 random.seed(20)
 
@@ -94,8 +94,8 @@ class EmbedderDatasets(Dataset):
 
 class EmbedderIndependentDataset(Dataset):
     def __init__(self, dataset_info: dict, task_prompt: bool=False, negative_num: int=3):
-        # if dataset_info['task_type'] in ['Clustering', 'Classification']:
-        #     negative_num = 200000000
+        if dataset_info['task_type'] in ['Clustering', 'Classification']:
+            negative_num = 10
 
         qa_pairs = []
         with open(dataset_info['disk_path'], 'r') as fr:
@@ -109,7 +109,7 @@ class EmbedderIndependentDataset(Dataset):
                     break
                 
                 ll = json.loads(l)
-                if 'negative_response' in ll and len(ll['negative_response']) < negative_num:
+                if 'negative_response' in ll and len(ll['negative_response']) < negative_num and dataset_info['task_type'] not in ['Clustering', 'Classification']:
                     continue
 
                 qa_pairs.append(l)
@@ -176,7 +176,6 @@ class EmbedderConcatDataset(Dataset):
         super().__init__()
         datasets = []
         dataset_infos = extract_dataset_configs(datatset_config)
-        # dataset_infos, invalidated_datasets = extract_and_validate_datasets(datatset_config)
 
         for dataset_info in dataset_infos.values():
             datasets.append(

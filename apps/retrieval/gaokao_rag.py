@@ -1,5 +1,6 @@
 import json
 import chromadb
+from typing import List
 from apps.embedder.bge import BGEFunction
 from apps.clustering.gaokao import subject_zh_en_map
 
@@ -7,7 +8,7 @@ from apps.clustering.gaokao import subject_zh_en_map
 def retrieval_from_gaokao(gaokao_file: str, chromadb_path: str, chromabd_name: str, subject: str, topk: int, ckpt: str, saved_retrieval_file: str):
     client = chromadb.PersistentClient(path=str(chromadb_path))
     collection = client.get_collection(name=chromabd_name, embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt))
-    question_cnt = collection.count()
+    # question_cnt = collection.count()
     
     gaokao = []
     gaokao_metadatas = []
@@ -35,24 +36,58 @@ def retrieval_from_gaokao(gaokao_file: str, chromadb_path: str, chromabd_name: s
                 'q_type': l['q_type']
             })
 
-    gaokao = gaokao[:1000]
-    gaokao_metadatas = gaokao_metadatas[:1000]
+    # gaokao = gaokao[:1000]
+    # gaokao_metadatas = gaokao_metadatas[:1000]
     
-    query_texts = collection.query(
-            query_texts=gaokao,
-            n_results=min(topk, question_cnt))
+    # query_texts = collection.query(
+    #         query_texts=gaokao,
+    #         n_results=min(topk, question_cnt))
     
+    # retrieved_gaokao_metadatas = []
+    # for qi, q in enumerate(gaokao_metadatas):
+    #     retrieval_metadates = query_texts['metadatas'][qi]
+    #     retrieval_questions = query_texts['documents'][qi]
+        
+    #     for pi, p in enumerate(retrieval_questions):
+    #         retrieval_metadates[pi]['prompt'] = p
+            
+    #     q['retrieval'] = retrieval_metadates
+    #     retrieved_gaokao_metadatas.append(q)
+    retrieved_gaokao_metadatas = retrieval_from_question(collection, topk, gaokao[:1000], gaokao_metadatas[:1000])
+    
+    with open(saved_retrieval_file, 'w') as fw:
+        for q in retrieved_gaokao_metadatas:
+            fw.write(json.dumps(q)+'\n')
+
+
+def retrieval_from_question(collection, topk: int, questions: List[str], question_metadatas: List[dict]):
+    question_cnt = collection.count()
+
+    chromadb_process_limit = 41665
+    query_texts = []
+    for left in range(0, len(questions), chromadb_process_limit):
+        right = left + chromadb_process_limit
+
+        cur_query_texts = collection.query(
+                query_texts=questions[left: right],
+                n_results=min(topk, question_cnt))
+        query_texts.extend(cur_query_texts)
+
     retrieved_gaokao_metadatas = []
-    for qi, q in enumerate(gaokao_metadatas):
+    for qi in range(len(questions)):
         retrieval_metadates = query_texts['metadatas'][qi]
         retrieval_questions = query_texts['documents'][qi]
         
         for pi, p in enumerate(retrieval_questions):
             retrieval_metadates[pi]['prompt'] = p
-            
-        q['retrieval'] = retrieval_metadates
-        retrieved_gaokao_metadatas.append(q)
-    
-    with open(saved_retrieval_file, 'w') as fw:
-        for q in retrieved_gaokao_metadatas:
-            fw.write(json.dumps(q)+'\n')
+        
+        if question_metadatas is not None:
+            question_metadatas[qi]['retrieval'] = retrieval_metadates
+            retrieved_gaokao_metadatas.append(question_metadatas[qi])
+        else:
+            retrieved_gaokao_metadatas.append({
+                'prompt': questions[qi],
+                'retrieval': retrieval_metadates
+            })
+
+    return retrieved_gaokao_metadatas

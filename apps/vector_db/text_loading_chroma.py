@@ -9,10 +9,14 @@ from apps.clustering.gaokao import subject_zh_en_map
 
 def create_gaokao_chromadb(gaokao_file: str, chromadb_path: str, chromabd_name: str, subject: str, ckpt: str):
     client = chromadb.PersistentClient(path=str(chromadb_path))
-    try:
-        client.delete_collection(chromabd_name)
-    except:
-        print(client.list_collections())
+    if chromabd_name in client.list_collections():
+        print(f'>>> {chromabd_name} is existed!')
+        return
+
+    # try:
+    #     client.delete_collection(chromabd_name)
+    # except:
+    #     print(client.list_collections())
 
     collection = client.get_or_create_collection(name=chromabd_name, embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt))
 
