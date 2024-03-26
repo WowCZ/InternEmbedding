@@ -11,7 +11,7 @@ random.seed(20)
 def custom_corpus_prompt(query_prompt: str, task_type: str):
     if task_type in ['Clustering', 'Classification']:
         corpus_prompt = 'The corresponding category'
-    elif task_type in ['Retrieval', 'PairClassification', 'Summarization', 'Reranking']:
+    elif task_type in ['Retrieval', 'Summarization', 'Reranking']:
         corpus_prompt = 'The corresponding document text'
     else:
         corpus_prompt = query_prompt

@@ -11,7 +11,8 @@
                                            --sampler=indataset \
                                            --hard_negative_sampling \
                                            --hard_negative_num=1 \
-                                           --warmup_rate=0.1 \
+                                           --warmup_rate=0.01 \
+                                           --clip_gradient \
                                            --checkpoint_batch_size=200 \
                                            --gradcache_chunk_size=200 \
                                            --temperature=0.01 \
@@ -20,4 +21,5 @@
                                            --mytryoshka_size=768 \
                                            --batch_size_per_gpu=1600 \
                                            --dataset_config=/fs-computility/llm/chenzhi/InternEmbedding/configs/dataset_configs/datasets_test.yaml \
-                                           --embedder_name=bge_indataset48_adaptive_paired_prompt
+                                           --embedder_name=bge_indataset48_adaptive_paired_prompt &
+wait

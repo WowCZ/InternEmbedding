@@ -18,7 +18,7 @@ Envs: []
 # 镜像 URL 地址, 执行任务时, 会自动下载该地址的镜像并使用
 ImageUrl: "fs-computility-cn-shanghai.cr.volces.com/devinstance-archive/embedding:v4"
 # 提交到火山引擎机器学习平台的某个队列 ID, 可以访问https://console.volcengine.com/ml-platform/resourceQueue 查看有权限的队列
-ResourceQueueID : "q-20240114171437-h89zl"
+ResourceQueueID : "q-20240114171437-h89zl" # hsllm_r: q-20240114171437-h89zl, hsllm_e: q-20240114171611-z7bmt, hsllm_d: q-20240114171246-fm7p4
 # 训练框架，支持：TensorFlowPS, PyTorchDDP, Horvod, BytePS, Custom
 Framework: "Custom"
 # 实例配置, 包含角色名称(RoleName), 角色数量(RoleReplicas)以及具体的实例规格(Flavor)：2机4卡

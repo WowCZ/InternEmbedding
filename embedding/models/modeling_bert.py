@@ -14,6 +14,9 @@ class BERTBackboneWrapper(BaseBackboneWrapper):
 
     def backbone_forward(self, input_ids, attention_mask):
         return super().backbone_forward(input_ids, attention_mask)
+
+    def lora_wrapper(self, model):
+        return super().lora_wrapper(model)
     
 
 class BertEmbedder(BaseEmbedder):

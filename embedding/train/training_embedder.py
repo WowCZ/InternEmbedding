@@ -68,7 +68,7 @@ def initial_opimizer_scheduler(args, embedder, num_training_steps):
     return optimizer, lr_scheduler
 
 def get_train_dataloader(args):
-    tokenizer = AutoTokenizer.from_pretrained(args.init_backbone)
+    tokenizer = AutoTokenizer.from_pretrained(args.init_backbone, trust_remote_code=True)
     if args.backbone_type in ['Mistral']:
         # uncomment: when padding token is not set, like Mistral 
         tokenizer.pad_token = tokenizer.eos_token

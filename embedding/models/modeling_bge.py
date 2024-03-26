@@ -16,6 +16,9 @@ class BGEBackboneWrapper(BaseBackboneWrapper):
 
     def backbone_forward(self, input_items):
         return super().backbone_forward(input_items)
+
+    def lora_wrapper(self, model):
+        return super().lora_wrapper(model)
     
 
 class BGECustomEmbedder(BaseEmbedder):

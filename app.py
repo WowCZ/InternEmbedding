@@ -1,6 +1,6 @@
 import json
 from apps.vector_db.text_loading_chroma import create_gaokao_chromadb, create_internembedder_chromadb
-from apps.retrieval.gaokao_rag import retrieval_from_gaokao
+from apps.retrieval.gaokao_rag import retrieval_from_gaokao, retrieval_from_raw_questions
 from apps.retrieval.internembedder_rag import retrieval_for_internembedder_datasets
 from apps.clustering.gaokao import create_subject_keypoint_db, evaluate_subject_keypoint_match, subject_zh_en_map, extract_keypoint_embedding_data
 
@@ -12,33 +12,36 @@ chromadb_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{subject}_gaokao_
 gaokao_file ='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
 ckpt = '/fs-computility/llm/chenzhi/ckpts/bge_keypoint_triple5_20240314072748/bge_keypoint_triple5_2000.pt'
 chromabd_name = 'questions_train'
-create_gaokao_chromadb(gaokao_file, chromadb_path, chromabd_name, subject, ckpt)
+questions = ['选择某蛋鸡品种进行了3个交配组合，下列叙述不正确的是（       ）  \nⅠ深色胫♂ × 浅色胫♀ → 子代公鸡为浅色胫、母鸡为深色胫  \nⅡ深色胫♂ × 深色胫♀ → 子代均为深色胫  \nⅢ浅色胫♂ × 深色胫♀ → 子代公鸡和母鸡均有深色胫和浅色胫\n\n\nA:蛋鸡胫色遗传是伴性遗传\nB:蛋鸡深色胫是显性性状\nC:交配组合Ⅲ中父本是杂合子\nD:胫色基因位于Z染色体上']
+# create_gaokao_chromadb(gaokao_file, chromadb_path, chromabd_name, subject, ckpt)
 
 topk = 10
-saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
-retrieval_from_gaokao(gaokao_file, chromadb_path, chromabd_name, subject, topk, ckpt, saved_retrieval_file)
+# saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
+# retrieval_from_gaokao(gaokao_file, chromadb_path, chromabd_name, subject, topk, ckpt, saved_retrieval_file)
 
-# exit(0)
+saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_raw_retrieval_from_keypoint_bge.jsonl'
+retrieval_from_raw_questions(questions, chromadb_path, chromabd_name, topk, ckpt, saved_retrieval_file)
+exit(0)
 
 subject = 'biology'
 saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_retrieval_from_keypoint_bge.jsonl'
 llm_name = 'internlm2-chat-20b'
 
-import openai
-def get_llm_response(question: str):
-    response = openai.ChatCompletion.create(
-        api_base='http://172.28.32.57:20240/v1',
-        api_key='EMPTY',
-        model=llm_name,
-        messages=[
-            {"role": "user", "content": f'{question}'},
-            ],
-        max_tokens=4096,
-        temperature=1.2,
-        top_p=0.95,
-        n=1,
-    )
-    return response['choices'][0]['message']['content']
+# import openai
+# def get_llm_response(question: str):
+#     response = openai.ChatCompletion.create(
+#         api_base='http://172.28.32.57:20240/v1',
+#         api_key='EMPTY',
+#         model=llm_name,
+#         messages=[
+#             {"role": "user", "content": f'{question}'},
+#             ],
+#         max_tokens=4096,
+#         temperature=1.2,
+#         top_p=0.95,
+#         n=1,
+#     )
+#     return response['choices'][0]['message']['content']
 
 biology_prompt = '以下是一个生物考试题的例子：\n{retrieval_q}{retrieval_a}\n 请参考以上题，回答下面具备相同知识点的题目：{q}'
 

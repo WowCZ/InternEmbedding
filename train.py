@@ -107,7 +107,6 @@ def train_embedder(args):
 
     progress_bar = tqdm.tqdm(range(num_training_steps))
 
-    # TODO: SFR dataloading & mixture training loss
     # TODO: negative sampling with margin scale refer to https://gombru.github.io/2019/04/03/ranking_loss/
     embedder.train()
     train_step = 0
@@ -212,6 +211,7 @@ def train_embedder(args):
 
                     accelerator.backward(surrogate)
 
+            # TODO: NO Effection
             if args.clip_gradient:
                 torch.nn.utils.clip_grad_norm_(embedder.parameters(), 1.0)
             optimizer.step()

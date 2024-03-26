@@ -1,13 +1,11 @@
 import math
 import torch
 from torch import nn
-from typing import Optional
 from functools import partial
 import torch.nn.functional as F
 from abc import ABC, abstractmethod
 from transformers import AutoModel, AutoConfig
 import torch.utils.checkpoint as checkpoint
-from peft import get_peft_config, get_peft_model, LoraConfig, TaskType
 from embedding.eval.mistral_sel_extend_patch import self_extend_forward, modify_method_of_instance
 
 class BaseBackboneWrapper(nn.Module, ABC):
@@ -21,7 +19,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
             backbone = AutoModel.from_pretrained(backbone, config=config)
             modify_method_of_instance(backbone, "MistralAttention", "forward", mistral_self_extend_forward)
         else:
-            backbone = AutoModel.from_pretrained(backbone)
+            backbone = AutoModel.from_pretrained(backbone, trust_remote_code=True)
 
         if hasattr(backbone, "enable_input_require_grads"):
             backbone.enable_input_require_grads()
@@ -34,17 +32,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
         # backbone.gradient_checkpointing_enable()
 
         if lora_config:
-            if type(lora_config) is bool:
-                peft_config = LoraConfig(task_type=TaskType.FEATURE_EXTRACTION, 
-                                         r=8, 
-                                         lora_alpha=32, # 32
-                                         lora_dropout=0.05,
-                                         target_modules=['q_proj', 'v_proj'], # None
-                                         bias='none')
-            else:
-                peft_config = lora_config
-
-            backbone = get_peft_model(backbone, peft_config)
+            backbone = self.lora_wrapper(backbone)
             # backbone.print_trainable_parameters()
 
         backbone.config.use_cache = False
@@ -55,6 +43,11 @@ class BaseBackboneWrapper(nn.Module, ABC):
         self.pool_type = pool_type
         self.checkpoint_batch_size = checkpoint_batch_size
         self.which_layer = which_layer
+        self.lora_config = lora_config
+
+    @abstractmethod
+    def lora_wrapper(self, model):
+        return model
 
     @abstractmethod
     def partial_encode(self, *inputs):
