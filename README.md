@@ -28,7 +28,7 @@ accelerate launch --config_file /path_to/accelerate_config.yaml run.py train \
 
 ```
 
-### Train on the Custom Datasets:
+### Custom Datasets:
 * The training datasets are set by yaml format, whose architecture is as below:
 ```yaml
 root_path: your_dataset_parent_path
