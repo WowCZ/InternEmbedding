@@ -62,8 +62,8 @@ internembedder_datasets:
 ### Evaluate the embedder on MTEB:
 ```shell
 python run.py evaluate \
---pool_type=cls \
---backbone_type=BGE \
+--pool_type=eos \
+--backbone_type=InternLM \
 --embedder_ckpt_path=/path_to/your_saved_ckpt \
 --embedder_name=your_logging_name \
 --mteb_evaluation_tasks=Banking77Classification,EmotionClassification
@@ -73,8 +73,8 @@ python run.py evaluate \
 ### Deploy the embedder with OpenAI style (not support yet)
 ```shell
 python run.py deploy \
---pool_type=cls \
---backbone_type=BGE \
+--pool_type=eos \
+--backbone_type=InternLM \
 --embedder_ckpt_path=/path_to/your_saved_ckpt \
 --embedder_name=your_logging_name
 ```
