@@ -1,7 +1,6 @@
 <h1 align="center"> <img src="./resets/images/embedder_triangle2.png" alt="embedder" width="50"> InternEmbedding </h1>
 
 ## 🚀 Train InternEmbedding
--------
 ### Train the embedder:
 ```shell
 accelerate launch --config_file /path_to/accelerate_config.yaml run.py train \
@@ -59,8 +58,7 @@ internembedder_datasets:
     ```
 
 
-## 🚀 Evaluate InternEmbedding
--------
+## 📐 Evaluate InternEmbedding
 ### Evaluate the embedder on MTEB:
 ```shell
 python run.py evaluate \
@@ -71,8 +69,7 @@ python run.py evaluate \
 --mteb_evaluation_tasks=Banking77Classification,EmotionClassification
 ```
 
-## 🚀 Deploy InternEmbedding
--------
+## 🌏 Deploy InternEmbedding
 ### Deploy the embedder with OpenAI style (not support yet)
 ```shell
 python run.py deploy \
