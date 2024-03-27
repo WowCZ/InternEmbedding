@@ -39,6 +39,10 @@ def initial_model(args):
                                      mytryoshka_indexes=mytryoshka_indexes, 
                                      normalize=args.embedding_norm)
     '''
+    tokenizer = AutoTokenizer.from_pretrained(args.init_backbone, trust_remote_code=True)
+    if args.backbone_type in ['Mistral']:
+        # uncomment: when padding token is not set, like Mistral 
+        tokenizer.pad_token = tokenizer.eos_token
 
     if args.backbone_type in MODEL_MAPPING:
         embedder = MODEL_MAPPING[args.backbone_type](
@@ -53,7 +57,7 @@ def initial_model(args):
     else:
         raise TypeError(f'The type of backbone {args.backbone_type} has not been supported yet!')
 
-    return embedder
+    return embedder, tokenizer
 
 def initial_opimizer_scheduler(args, embedder, num_training_steps):
     optimizer = torch.optim.AdamW(embedder.parameters(), lr=args.learning_rate)
@@ -67,12 +71,7 @@ def initial_opimizer_scheduler(args, embedder, num_training_steps):
 
     return optimizer, lr_scheduler
 
-def get_train_dataloader(args):
-    tokenizer = AutoTokenizer.from_pretrained(args.init_backbone, trust_remote_code=True)
-    if args.backbone_type in ['Mistral']:
-        # uncomment: when padding token is not set, like Mistral 
-        tokenizer.pad_token = tokenizer.eos_token
-
+def get_train_dataloader(args, tokenizer):
     if args.sampler in ['random']:
         embedding_dataset = EmbedderDatasets(args.dataset_config, 
                                              task_prompt=args.task_prompt, 

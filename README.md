@@ -57,7 +57,6 @@ internembedder_datasets:
     }
     ```
 
-
 ## 📐 Evaluate InternEmbedding
 ### Evaluate the embedder on MTEB:
 ```shell

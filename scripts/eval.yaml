@@ -34,6 +34,10 @@ EnableTensorBoard: False
 Storages:
   - Type: "Vepfs"
     VepfsId: "vepfs-cnsh04f89ec802c7"                      # 若在平台挂载了两个Vepfs实例，则需要指定对应VePFS实例ID；只有一个实例时，可以为空
+    MountPath: "/fs-computility/llm/shared"                        # 容器中的挂载目录
+    SubPath: "llm/shared"
+  - Type: "Vepfs"
+    VepfsId: "vepfs-cnsh04f89ec802c7"                      # 若在平台挂载了两个Vepfs实例，则需要指定对应VePFS实例ID；只有一个实例时，可以为空
     MountPath: "/fs-computility/llm/chenzhi"                        # 容器中的挂载目录
     SubPath: "llm/chenzhi"
     # MountPath: "/fs-computility/llm/chenzhi"  # 在分布式训练容器中挂载的路径

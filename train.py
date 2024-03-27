@@ -76,8 +76,8 @@ def train_embedder(args):
             config={"learning_rate": args.learning_rate, "epochs": args.num_epochs, "batch_size": args.batch_size_per_gpu}
         )
 
-    embedder = initial_model(args)
-    train_loader = get_train_dataloader(args)
+    embedder, tokenizer = initial_model(args)
+    train_loader = get_train_dataloader(args, tokenizer)
 
     if args.embedder_ckpt_path and os.path.exists(args.embedder_ckpt_path):
         print(f'>>> initial the model with {args.embedder_ckpt_path}')

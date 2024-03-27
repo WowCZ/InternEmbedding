@@ -1,7 +1,6 @@
 import os
 import json
 import torch
-from transformers import AutoTokenizer
 from embedding.train.training_embedder import initial_model
 from embedding.eval.mteb_eval_wrapper import MTEBEvaluationWrapper
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
@@ -40,11 +39,7 @@ def evaluate_embedder(args):
                                      mytryoshka_indexes=mytryoshka_indexes,
                                      normalize=args.embedding_norm)
     '''
-    embedder = initial_model(args)
-
-    tokenizer = AutoTokenizer.from_pretrained(args.init_backbone)
-    if args.backbone_type in ['Mistral']:
-        tokenizer.pad_token = tokenizer.eos_token
+    embedder, tokenizer = initial_model(args)
 
     embedder = embedder.to(args.device)
     embedder.eval()

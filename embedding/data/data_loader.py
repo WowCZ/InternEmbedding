@@ -1,3 +1,4 @@
+import torch
 from functools import partial
 from transformers import AutoTokenizer
 from embedding.data.data_utils import InDatasetSampler, InDatasetBatchSampler
@@ -16,8 +17,12 @@ def make_text_batch(t_ls: list, tokenizer: AutoTokenizer, max_length: int, devic
     if any(x is None for x in t_ls):
         return None, None
     
-    tokens = tokenizer(t_ls, padding='max_length', max_length=max_length, return_tensors='pt', truncation=True)
-    if device:
+    tokens = tokenizer(t_ls, 
+                       padding='max_length', 
+                       max_length=max_length, 
+                       return_tensors='pt', 
+                       truncation=True)
+    if device is not None:
         for k in tokens.keys():
             tokens[k] = tokens[k].to(device)
     return tokens
