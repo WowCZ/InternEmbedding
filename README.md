@@ -4,27 +4,27 @@
 ### Train the embedder:
 ```shell
 accelerate launch --config_file /path_to/accelerate_config.yaml run.py train \
-                                           --init_backbone=internlm/internlm2-chat-1_8b \
-                                           --pool_type=eos \
-                                           --backbone_type=InternLM \
-                                           --task_prompt \
-                                           --embedding_norm \
-                                           --task_adaptation \
-                                           --sampler=indataset \
-                                           --hard_negative_sampling \
-                                           --hard_negative_num=1 \
-                                           --warmup_rate=0.01 \
-                                           --clip_gradient \
-                                           --checkpoint_batch_size=25 \
-                                           --gradcache_chunk_size=25 \
-                                           --temperature=0.01 \
-                                           --learning_rate=1e-5 \
-                                           --save_ckpt_steps=200 \
-                                           --matryoshka_adaptive_dims=2048 \
-                                           --mytryoshka_size=2048 \
-                                           --batch_size_per_gpu=1000 \
-                                           --dataset_config=your_dataset_config \
-                                           --embedder_name=your_logging_name
+    --init_backbone=internlm/internlm2-chat-1_8b \
+    --pool_type=eos \
+    --backbone_type=InternLM \
+    --task_prompt \
+    --embedding_norm \
+    --task_adaptation \
+    --sampler=indataset \
+    --hard_negative_sampling \
+    --hard_negative_num=1 \
+    --warmup_rate=0.01 \
+    --clip_gradient \
+    --checkpoint_batch_size=25 \
+    --gradcache_chunk_size=25 \
+    --temperature=0.01 \
+    --learning_rate=1e-5 \
+    --save_ckpt_steps=200 \
+    --matryoshka_adaptive_dims=2048 \
+    --mytryoshka_size=2048 \
+    --batch_size_per_gpu=1000 \
+    --dataset_config=your_dataset_config \
+    --embedder_name=your_logging_name
 
 ```
 

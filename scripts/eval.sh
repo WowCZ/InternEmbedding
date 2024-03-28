@@ -24,20 +24,20 @@
 #                                         --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
 #                                         --embedder_name=$MODEL_NAME &
 
-# # For BGE Model
-# MODEL_NAME=bge_embedder48_indataset_cls1_prompt_hns1_matryoshka1_temp1_lr15_bs1000_ml512_1697_noprompt
-# CKPT_DIR=bge_indataset48_adaptive_paired_prompt_20240325075754
-# CKPT_NAME=bge_indataset48_adaptive_paired_prompt_1697.pt
+# For BGE Model
+MODEL_NAME=bge_embedder48_indataset_cls1_prompt_hns1_matryoshka1_temp05_lr15_bs1600_ml512_500
+CKPT_DIR=bge_indataset48_adaptive_paired_prompt_20240327060409
+CKPT_NAME=bge_indataset48_adaptive_paired_prompt_500.pt
 
-# CUDA_VISIBLE_DEVICES=0 /root/miniconda3/envs/embedding/bin/python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
-#                                         --backbone_type=BGE \
-#                                         --init_backbone=BAAI/bge-base-en-v1.5 \
-#                                         --pool_type=cls \
-#                                         --mytryoshka_size=768 \
-#                                         --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
-#                                         --embedder_name=$MODEL_NAME &
+CUDA_VISIBLE_DEVICES=0 /root/miniconda3/envs/embedding/bin/python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
+                                        --backbone_type=BGE \
+                                        --init_backbone=BAAI/bge-base-en-v1.5 \
+                                        --pool_type=cls \
+                                        --mytryoshka_size=768 \
+                                        --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
+                                        --embedder_name=$MODEL_NAME &
 
-# MODEL_NAME=bge_embedder43_indataset_cls1_prompt_hns1_matryoshka1_temp1_lr15_bs1600_ml512_1062_clipgradient_noprompt
+# MODEL_NAME=bge_embedder48_indataset_cls1_prompt_hns1_matryoshka1_temp1_lr15_bs1600_ml512_1062_clipgradient_noprompt
 # CKPT_DIR=bge_indataset48_adaptive_paired_prompt_20240325052808
 # CKPT_NAME=bge_indataset48_adaptive_paired_prompt_1062.pt
 
@@ -50,31 +50,31 @@
 #                                         --embedder_name=$MODEL_NAME &
 
 
-# For InternLM Model
+# # For InternLM Model
 /root/miniconda3/envs/embedding/bin/pip install einops
 
-MODEL_NAME=internlm_embedder48_sfr_eos1_prompt_hns1_matryoshka1_temp1_lr15_bs1024_ml512_200
-CKPT_DIR=internlm_indataset48_adaptive_paired_prompt_20240326104215
-CKPT_NAME=internlm_indataset48_adaptive_paired_prompt_200.pt
+# MODEL_NAME=internlm_embedder48_sfr_eos1_prompt_hns1_matryoshka1_temp1_lr15_bs1024_ml512_200
+# CKPT_DIR=internlm_indataset48_adaptive_paired_prompt_20240326104215
+# CKPT_NAME=internlm_indataset48_adaptive_paired_prompt_200.pt
 
-CUDA_VISIBLE_DEVICES=0 /root/miniconda3/envs/embedding/bin/python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
-                                        --backbone_type=InternLM \
-                                        --init_backbone=/fs-computility/llm/shared/yangyf/share/internlm2-chat-1_8b-sft \
-                                        --pool_type=eos \
-                                        --mytryoshka_size=768 \
-                                        --peft_lora \
-                                        --task_prompt \
-                                        --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
-                                        --embedder_name=$MODEL_NAME &
+# CUDA_VISIBLE_DEVICES=0 /root/miniconda3/envs/embedding/bin/python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
+#                                         --backbone_type=InternLM \
+#                                         --init_backbone=/fs-computility/llm/shared/yangyf/share/internlm2-chat-1_8b-sft \
+#                                         --pool_type=eos \
+#                                         --mytryoshka_size=2048 \
+#                                         --peft_lora \
+#                                         --task_prompt \
+#                                         --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
+#                                         --embedder_name=$MODEL_NAME &
 
-MODEL_NAME=internlm_embedder48_sfr_eos1_prompt_hns1_matryoshka1_temp1_lr15_bs1000_ml512_200
+MODEL_NAME=internlm_embedder48_sfr_eos1_prompt_hns1_matryoshka1_temp1_lr15_bs1000_ml512_400
 CKPT_DIR=internlm_indataset48_adaptive_paired_prompt_20240326102411
-CKPT_NAME=internlm_indataset48_adaptive_paired_prompt_200.pt
+CKPT_NAME=internlm_indataset48_adaptive_paired_prompt_400.pt
 CUDA_LAUNCH_BLOCKING=1 CUDA_VISIBLE_DEVICES=1 /root/miniconda3/envs/embedding/bin/python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
                                         --backbone_type=InternLM \
                                         --init_backbone=/fs-computility/llm/shared/yangyf/share/internlm2-chat-1_8b-sft \
                                         --pool_type=eos \
-                                        --mytryoshka_size=768 \
+                                        --mytryoshka_size=2048 \
                                         --peft_lora \
                                         --task_prompt \
                                         --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \

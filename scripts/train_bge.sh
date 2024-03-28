@@ -11,11 +11,11 @@
                                            --sampler=indataset \
                                            --hard_negative_sampling \
                                            --hard_negative_num=1 \
-                                           --warmup_rate=0.01 \
+                                           --warmup_rate=0.1 \
                                            --clip_gradient \
                                            --checkpoint_batch_size=200 \
                                            --gradcache_chunk_size=200 \
-                                           --temperature=0.01 \
+                                           --temperature=0.015 \
                                            --learning_rate=1e-5 \
                                            --matryoshka_adaptive_dims=768 \
                                            --mytryoshka_size=768 \
