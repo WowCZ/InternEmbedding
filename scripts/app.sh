@@ -1,4 +1,4 @@
 # !/bin/sh
-/root/miniconda3/envs/embedding/bin/pip install openai==0.28
+source activate /fs-computility/llm/shared/chenzhi/miniconda3/envs/embedding
 
-/root/miniconda3/envs/embedding/bin/python /fs-computility/llm/chenzhi/InternEmbedding/app.py
+python /fs-computility/llm/chenzhi/InternEmbedding/app.py

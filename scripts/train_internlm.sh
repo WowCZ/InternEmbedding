@@ -1,8 +1,7 @@
 #!/bin/sh
+source activate /fs-computility/llm/shared/chenzhi/miniconda3/envs/embedding
 
-/root/miniconda3/envs/embedding/bin/pip install einops
-
-/root/miniconda3/envs/embedding/bin/accelerate launch --config_file /fs-computility/llm/chenzhi/InternEmbedding/configs/internlm_accelerate_config.yaml \
+accelerate launch --config_file /fs-computility/llm/chenzhi/InternEmbedding/configs/internlm_accelerate_config.yaml \
                                            /fs-computility/llm/chenzhi/InternEmbedding/run.py train \
                                            --init_backbone=/fs-computility/llm/shared/yangyf/share/internlm2-chat-1_8b-sft \
                                            --pool_type=position_weight \
