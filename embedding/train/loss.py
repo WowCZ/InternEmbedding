@@ -1,7 +1,7 @@
 import torch
 from info_nce import InfoNCE
 
-ce_loss = torch.nn.CrossEntropyLoss(reduction='mean')
+# ce_loss = torch.nn.CrossEntropyLoss(reduction='mean')
 
 def inbatch_negative_loss(q_embeddings, p_embeddings, temperature=0.02):
     # InfoNCE: refer to https://arxiv.org/pdf/1807.03748.pdf

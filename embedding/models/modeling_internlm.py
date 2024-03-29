@@ -6,7 +6,13 @@ from .base_model import BaseBackboneWrapper, BaseEmbedder
 
 
 class InternLMBackboneWrapper(BaseBackboneWrapper):
-    def __init__(self, backbone: str, pool_type: str='cls', checkpoint_batch_size: int=-1, which_layer: int=-1, lora_config: Union[bool, LoraConfig]=True, self_extend: bool=False):
+    def __init__(self, 
+                 backbone: str, 
+                 pool_type: str='cls', 
+                 checkpoint_batch_size: int=-1, 
+                 which_layer: int=-1, 
+                 lora_config: Union[bool, LoraConfig]=True, 
+                 self_extend: bool=False):
         super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, lora_config, self_extend)
 
     def partial_encode(self, *inputs):
@@ -39,5 +45,14 @@ class InternLMBackboneWrapper(BaseBackboneWrapper):
         return model
     
 class InternLMEmbedder(BaseEmbedder):
-    def __init__(self, backbone: str, InternLMBackboneWrapper: BaseBackboneWrapper=InternLMBackboneWrapper, pool_type: str='cls', checkpoint_batch_size=-1, embed_dim: int=-1, which_layer: int=-1, lora_config: bool=True, mytryoshka_indexes: list=None, normalize: bool = False):
+    def __init__(self, 
+                 backbone: str, 
+                 InternLMBackboneWrapper: BaseBackboneWrapper=InternLMBackboneWrapper, 
+                 pool_type: str='cls', 
+                 checkpoint_batch_size=-1, 
+                 embed_dim: int=-1, 
+                 which_layer: int=-1, 
+                 lora_config: bool=True, 
+                 mytryoshka_indexes: list=None, 
+                 normalize: bool = False):
         super().__init__(backbone, InternLMBackboneWrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, lora_config, mytryoshka_indexes, normalize)

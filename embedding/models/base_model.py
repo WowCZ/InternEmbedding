@@ -9,7 +9,13 @@ import torch.utils.checkpoint as checkpoint
 from embedding.eval.mistral_sel_extend_patch import self_extend_forward, modify_method_of_instance
 
 class BaseBackboneWrapper(nn.Module, ABC):
-    def __init__(self, backbone, pool_type: str='position_weight', checkpoint_batch_size: int=-1, which_layer: int=-1, lora_config: bool=True, self_extend: bool=False):
+    def __init__(self, 
+                 backbone, 
+                 pool_type: str='position_weight', 
+                 checkpoint_batch_size: int=-1, 
+                 which_layer: int=-1, 
+                 lora_config: bool=True, 
+                 self_extend: bool=False):
         super(BaseBackboneWrapper, self).__init__()
         # initial backbone model
         if self_extend:
@@ -66,7 +72,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
         # return the hidden state of the backbone
         return self.backbone(**input_items)[0]
 
-    def grad_cache_checkpoint(self, input_items):
+    def adopting_checkpointing(self, input_items):
         # if input batch size is much larger then checkpoint_batch_size, we need to use checkpoint to aggragate the gradient cache.
         if self.checkpoint_batch_size == -1 or input_items['input_ids'].size(0) < self.checkpoint_batch_size:
             return self.backbone_forward(input_items)
@@ -84,7 +90,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
 
     def encode(self, input_items):
         # return the presentation vectors at the last layer of the backbone
-        cached_backbone_outputs = self.grad_cache_checkpoint(input_items)
+        cached_backbone_outputs = self.adopting_checkpointing(input_items)
 
         # pooling operation
         batch_size = input_items['attention_mask'].size(0)
@@ -135,7 +141,16 @@ class BaseBackboneWrapper(nn.Module, ABC):
 
 
 class BaseEmbedder(nn.Module, ABC):
-    def __init__(self, backbone: str, backbone_wrapper: BaseBackboneWrapper, pool_type: str = 'cls', checkpoint_batch_size=-1, embed_dim: int=-1, which_layer: int=-1, lora_config: bool=True, mytryoshka_indexes: list=None, normalize: bool=False):
+    def __init__(self, 
+                 backbone: str, 
+                 backbone_wrapper: BaseBackboneWrapper, 
+                 pool_type: str = 'cls', 
+                 checkpoint_batch_size=-1, 
+                 embed_dim: int=-1, 
+                 which_layer: int=-1, 
+                 lora_config: bool=True, 
+                 mytryoshka_indexes: list=None, 
+                 normalize: bool=False):
         super(BaseEmbedder, self).__init__()
 
         self.encoder = backbone_wrapper(backbone, pool_type, checkpoint_batch_size, which_layer, lora_config)

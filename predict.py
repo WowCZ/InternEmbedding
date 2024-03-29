@@ -7,7 +7,6 @@ from embedding.eval.metrics import cosine_similarity
 from embedding.models.modeling_bert import BertEmbedder
 from embedding.models.modeling_mistral import MistralEmbedder
 from embedding.eval.mteb_eval_wrapper import EvaluatedEmbedder
-from embedding.models.modeling_bge import BGEEmbedder
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
 def predict_embedder(args):

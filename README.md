@@ -27,6 +27,12 @@ accelerate launch --config_file /path_to/accelerate_config.yaml run.py train \
     --embedder_name=your_logging_name
 
 ```
+* Notes: config your wandb account with passwords, which is defaultly saved in */root/.netrc*:
+```shell
+machine api.wandb.ai
+  login user
+  password Your_API_Keys
+```
 
 ### Custom Datasets:
 * The training datasets are set by yaml format, whose architecture is as below:

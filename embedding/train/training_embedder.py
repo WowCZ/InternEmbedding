@@ -1,5 +1,4 @@
 
-import os
 import math
 import torch
 from embedding.models import MODEL_MAPPING
@@ -9,36 +8,7 @@ from embedding.data.datasets import EmbedderDatasets, EmbedderConcatDataset
 
 def initial_model(args):
     mytryoshka_indexes = list(range(args.mytryoshka_size))
-    '''
-    # !Deprecated
-    if args.backbone_type == 'BERT':
-        embedder = BertEmbedder(args.init_backbone, 
-                                pool_type=args.pool_type, 
-                                checkpoint_batch_size=args.checkpoint_batch_size, 
-                                lora_config=args.peft_lora, 
-                                which_layer=args.which_layer, 
-                                mytryoshka_indexes=mytryoshka_indexes, 
-                                normalize=args.embedding_norm)
 
-    elif args.backbone_type == 'Mistral':
-        # TODO: when pool_type is eos, the loss is NaN
-        embedder = MistralEmbedder(args.init_backbone, 
-                                   pool_type=args.pool_type, 
-                                   checkpoint_batch_size=args.checkpoint_batch_size, 
-                                   lora_config=args.peft_lora, 
-                                   which_layer=args.which_layer, 
-                                   mytryoshka_indexes=mytryoshka_indexes, 
-                                   normalize=args.embedding_norm)
-    
-    elif args.backbone_type == 'BGE':
-        embedder = BGECustomEmbedder(args.init_backbone, 
-                                     pool_type=args.pool_type, 
-                                     checkpoint_batch_size=args.checkpoint_batch_size, 
-                                     lora_config=args.peft_lora, 
-                                     which_layer=args.which_layer, 
-                                     mytryoshka_indexes=mytryoshka_indexes, 
-                                     normalize=args.embedding_norm)
-    '''
     tokenizer = AutoTokenizer.from_pretrained(args.init_backbone, trust_remote_code=True)
     if args.backbone_type in ['Mistral']:
         # uncomment: when padding token is not set, like Mistral 
