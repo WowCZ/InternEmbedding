@@ -9,14 +9,11 @@
                                            --task_prompt \
                                            --peft_lora \
                                            --embedding_norm \
-                                           --sampler=indataset \
-                                           --task_adaptation \
-                                           --hard_negative_sampling \
-                                           --hard_negative_num=1 \
+                                           --sampler=random \
                                            --warmup_rate=0.1 \
                                            --clip_gradient \
-                                           --checkpoint_batch_size=30 \
-                                           --gradcache_chunk_size=30 \
+                                           --checkpoint_batch_size=50 \
+                                           --gradcache_chunk_size=50 \
                                            --temperature=0.01 \
                                            --learning_rate=1e-5 \
                                            --save_ckpt_steps=200 \
