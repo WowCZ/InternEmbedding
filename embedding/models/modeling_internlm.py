@@ -56,7 +56,8 @@ class InternLMEmbedder(BaseEmbedder):
                  checkpoint_batch_size=-1, 
                  embed_dim: int=-1, 
                  which_layer: int=-1, 
+                 reserved_layers: List[int]=None,
                  lora_config: bool=True, 
                  mytryoshka_indexes: list=None, 
                  normalize: bool = False):
-        super().__init__(backbone, InternLMBackboneWrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, lora_config, mytryoshka_indexes, normalize)
+        super().__init__(backbone, InternLMBackboneWrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, reserved_layers, lora_config, mytryoshka_indexes, normalize)

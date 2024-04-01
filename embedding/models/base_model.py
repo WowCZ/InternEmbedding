@@ -158,12 +158,13 @@ class BaseEmbedder(nn.Module, ABC):
                  checkpoint_batch_size=-1, 
                  embed_dim: int=-1, 
                  which_layer: int=-1, 
+                 reserved_layers: List[int]=None,
                  lora_config: bool=True, 
                  mytryoshka_indexes: list=None, 
                  normalize: bool=False):
         super(BaseEmbedder, self).__init__()
 
-        self.encoder = backbone_wrapper(backbone, pool_type, checkpoint_batch_size, which_layer, lora_config)
+        self.encoder = backbone_wrapper(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config)
         # self.device = self.encoder.backbone.device
 
         if embed_dim == -1:

@@ -38,10 +38,11 @@ class BGECustomEmbedder(BaseEmbedder):
                  checkpoint_batch_size=-1, 
                  embed_dim: int = -1, 
                  which_layer: int = -1, 
+                 reserved_layers: List[int]=None,
                  lora_config: bool = False, 
                  mytryoshka_indexes: list = None, 
                  normalize: bool = False):
-        super().__init__(backbone, backbone_wrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, lora_config, mytryoshka_indexes, normalize)
+        super().__init__(backbone, backbone_wrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, reserved_layers, lora_config, mytryoshka_indexes, normalize)
 
 # class BGEEmbedder():
 #     def __init__(self, backbone: str, device: str, max_length: int, ckpt: str=None) -> None:
