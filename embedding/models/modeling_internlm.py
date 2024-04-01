@@ -45,7 +45,13 @@ class InternLMBackboneWrapper(BaseBackboneWrapper):
         model = get_peft_model(model, peft_config)
         return model
     
-    def model_razor(self, backbone):
+    def model_razor(self, backbone, reserved_layers):
+        for lay in range(backbone.config.num_hidden_layers)[::-1]:
+            if lay not in reserved_layers:
+                del(backbone.model.layers[lay])
+        # reset config
+        backbone.config.num_hidden_layers = len(backbone.model.layers)
+        print('Current model layers: ', backbone.config.num_hidden_layers)              
         return backbone
     
 class InternLMEmbedder(BaseEmbedder):

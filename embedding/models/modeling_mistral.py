@@ -42,7 +42,16 @@ class MistralBackboneWrapper(BaseBackboneWrapper):
         model = get_peft_model(model, peft_config)
         return model
     
-    def model_razor(self, backbone):
+    def model_razor(self, backbone, reserved_layers):
+        for lay in range(backbone.config.num_hidden_layers)[::-1]:
+            if lay not in reserved_layers:
+                del(backbone.layers[lay])
+        # reset config
+        backbone.config.num_hidden_layers = len(backbone.layers)
+        # reset layer_idx, specific for mistral
+        for lay in range(len(backbone.layers)):
+            backbone.layers[lay].self_attn.layer_idx = lay
+        print('Current model layers: ', backbone.config.num_hidden_layers)    
         return backbone
     
 class MistralEmbedder(BaseEmbedder):

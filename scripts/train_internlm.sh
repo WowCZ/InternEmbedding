@@ -5,7 +5,7 @@
                                            --init_backbone=/fs-computility/llm/shared/yangyf/share/internlm2-chat-1_8b-sft \
                                            --pool_type=eos \
                                            --backbone_type=InternLM \
-                                           --which_layer=-5 \
+                                           --which_layer=-8 \
                                            --task_prompt \
                                            --peft_lora \
                                            --embedding_norm \
