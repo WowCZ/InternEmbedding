@@ -30,7 +30,18 @@ class BaseBackboneWrapper(nn.Module, ABC):
             backbone = AutoModel.from_pretrained(backbone, trust_remote_code=True)
 
         # TODO: need check
-        backbone = self.model_razor(backbone)
+        if reserved_layers is None:
+            print('Use which_layer attr to razor model.')
+            reserved_layers = [i for i in range(backbone.config.num_hidden_layers)]
+            if which_layer >= 0:
+                reserved_layers = reserved_layers[:which_layer+1]
+            else:
+                reserved_layers = reserved_layers[:which_layer] + [reserved_layers[which_layer]]        
+        else:
+            print('Set reserved_layers and which_layer simultaneously, only use reserved_layers attr to razor model.')
+
+        assert 0 <= reserved_layers[0] and reserved_layers[-1]+1 <= backbone.config.num_hidden_layers, 'reserved layers out of index'
+        backbone = self.model_razor(backbone, reserved_layers)
 
         if hasattr(backbone, "enable_input_require_grads"):
             backbone.enable_input_require_grads()
@@ -79,7 +90,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
         return self.backbone(**input_items)[0]
     
     @abstractmethod
-    def model_razor(self, backbone):
+    def model_razor(self, backbone, reserved_layers):
         return backbone
 
     def adopting_checkpointing(self, input_items):
