@@ -9,7 +9,6 @@ accelerate launch --config_file /fs-computility/llm/chenzhi/InternEmbedding/conf
                                            --init_backbone=/fs-computility/llm/shared/yangyf/share/internlm2-chat-1_8b-sft \
                                            --pool_type=eos \
                                            --backbone_type=InternLM \
-                                           --which_layer=-8 \
                                            --task_prompt \
                                            --embedding_norm \
                                            --sampler=random \

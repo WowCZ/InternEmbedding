@@ -26,7 +26,13 @@ class BGEBackboneWrapper(BaseBackboneWrapper):
     def lora_wrapper(self, model):
         return super().lora_wrapper(model)
     
-    def model_razor(self, backbone):
+    def model_razor(self, backbone, reserved_layers):
+        for lay in range(backbone.config.num_hidden_layers)[::-1]:
+            if lay not in reserved_layers:
+                del(backbone.encoder.layer[lay])
+        # reset config
+        backbone.config.num_hidden_layers = len(backbone.encoder.layer)
+        print('Current model layers: ', backbone.config.num_hidden_layers)    
         return backbone
     
 

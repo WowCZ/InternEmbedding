@@ -20,13 +20,19 @@ class BERTBackboneWrapper(BaseBackboneWrapper):
     def backbone_embedding(self, input_ids):
         return super().backbone_embedding(input_ids)
 
-    def backbone_forward(self, input_ids, attention_mask):
-        return super().backbone_forward(input_ids, attention_mask)
+    def backbone_forward(self, input_ids):
+        return super().backbone_forward(input_ids)
 
     def lora_wrapper(self, model):
         return super().lora_wrapper(model)
     
-    def model_razor(self, backbone):
+    def model_razor(self, backbone, reserved_layers):
+        for lay in range(backbone.config.num_hidden_layers)[::-1]:
+            if lay not in reserved_layers:
+                del(backbone.encoder.layer[lay])
+        # reset config
+        backbone.config.num_hidden_layers = len(backbone.encoder.layer)
+        print('Current model layers: ', backbone.config.num_hidden_layers)    
         return backbone
     
 
@@ -37,8 +43,8 @@ class BertEmbedder(BaseEmbedder):
                  pool_type: str = 'cls', 
                  checkpoint_batch_size=-1, 
                  embed_dim: int = -1, 
-                 which_layer: int = -1, 
-                 reserved_layers: List[int]=None,
+                 which_layer: int = -1,
+                 reserved_layers: list = None,
                  lora_config: bool = False, 
                  mytryoshka_indexes: list = None, 
                  normalize: bool = False):
