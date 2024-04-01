@@ -1,7 +1,7 @@
 # !/bin/sh
 
 source activate /fs-computility/llm/shared/chenzhi/miniconda3/envs/embedding
-pip install einops
+# pip install einops
 
 # # For Mistral Model
 # MODEL_NAME=mistral_embedder48_sfr_eos12_prompt_hns1_matryoshka1_temp1_lr15_bs600_ml512_200
@@ -29,29 +29,29 @@ pip install einops
 #                                         --embedder_name=$MODEL_NAME &
 
 # For BGE Model
-# MODEL_NAME=bge_embedder48_indataset_cls1_prompt_hns1_matryoshka1_temp15_lr15_bs1600_ml512_1000
-# CKPT_DIR=bge_indataset48_adaptive_paired_prompt_20240327185931
-# CKPT_NAME=bge_indataset48_adaptive_paired_prompt_1000.pt
+MODEL_NAME=bge_embedder48_random_cls1_prompt_hns1_matryoshka1_temp1_lr15_bs1600_ml512_1062
+CKPT_DIR=bge_indataset48_adaptive_paired_prompt_20240329080329
+CKPT_NAME=bge_indataset48_adaptive_paired_prompt_1062.pt
 
-# CUDA_VISIBLE_DEVICES=0 python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
-#                                         --backbone_type=BGE \
-#                                         --init_backbone=BAAI/bge-base-en-v1.5 \
-#                                         --pool_type=cls \
-#                                         --mytryoshka_size=768 \
-#                                         --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
-#                                         --embedder_name=$MODEL_NAME &
+CUDA_VISIBLE_DEVICES=0 python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
+                                        --backbone_type=BGE \
+                                        --init_backbone=BAAI/bge-base-en-v1.5 \
+                                        --pool_type=cls \
+                                        --mytryoshka_size=768 \
+                                        --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
+                                        --embedder_name=$MODEL_NAME &
 
-# MODEL_NAME=bge_embedder48_indataset_cls1_prompt_hns1_matryoshka1_temp1_lr15_bs1600_ml512_1062_clipgradient_noprompt
-# CKPT_DIR=bge_indataset48_adaptive_paired_prompt_20240325052808
-# CKPT_NAME=bge_indataset48_adaptive_paired_prompt_1062.pt
+MODEL_NAME=bge_embedder48_random_cls1_prompt_hns1_matryoshka1_temp1_lr15_bs1600_ml512_500
+CKPT_DIR=bge_indataset48_adaptive_paired_prompt_20240329080329
+CKPT_NAME=bge_indataset48_adaptive_paired_prompt_500.pt
 
-# CUDA_VISIBLE_DEVICES=1 python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
-#                                         --backbone_type=BGE \
-#                                         --init_backbone=BAAI/bge-base-en-v1.5 \
-#                                         --pool_type=cls \
-#                                         --mytryoshka_size=768 \
-#                                         --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
-#                                         --embedder_name=$MODEL_NAME &
+CUDA_VISIBLE_DEVICES=1 python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
+                                        --backbone_type=BGE \
+                                        --init_backbone=BAAI/bge-base-en-v1.5 \
+                                        --pool_type=cls \
+                                        --mytryoshka_size=768 \
+                                        --embedder_ckpt_path=/fs-computility/llm/chenzhi/ckpts/$CKPT_DIR/$CKPT_NAME \
+                                        --embedder_name=$MODEL_NAME &
 
 
 # # For InternLM Model
@@ -106,22 +106,22 @@ pip install einops
 #                                         --task_prompt \
 #                                         --embedder_name=$MODEL_NAME &
 
-MODEL_NAME=mistral_layer_12
+# MODEL_NAME=mistral_layer_12
 
-CUDA_VISIBLE_DEVICES=0 python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
-                                        --backbone_type=Mistral \
-                                        --pool_type=position_weight \
-                                        --which_layer=-12 \
-                                        --task_prompt \
-                                        --embedder_name=$MODEL_NAME &
+# CUDA_VISIBLE_DEVICES=0 python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
+#                                         --backbone_type=Mistral \
+#                                         --pool_type=position_weight \
+#                                         --which_layer=-12 \
+#                                         --task_prompt \
+#                                         --embedder_name=$MODEL_NAME &
 
-MODEL_NAME=mistral_layer_1
+# MODEL_NAME=mistral_layer_1
 
-CUDA_VISIBLE_DEVICES=1 python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
-                                        --backbone_type=Mistral \
-                                        --pool_type=position_weight \
-                                        --which_layer=-1 \
-                                        --task_prompt \
-                                        --embedder_name=$MODEL_NAME &
+# CUDA_VISIBLE_DEVICES=1 python /fs-computility/llm/chenzhi/InternEmbedding/run.py evaluate \
+#                                         --backbone_type=Mistral \
+#                                         --pool_type=position_weight \
+#                                         --which_layer=-1 \
+#                                         --task_prompt \
+#                                         --embedder_name=$MODEL_NAME &
 
 wait

@@ -1,7 +1,7 @@
 # 1. 按照volc命令行工具
 # 2. volc ml_task submit --conf=./scripts/train_mistral.yaml
 # 自定义训练任务名称
-TaskName: "embedding-boost"
+TaskName: "embedding-mistral-boost"
 # 自定义训练任务描述
 Description: ""
 # 运行入口命令
@@ -16,7 +16,7 @@ Tags: []
 # 环境变量
 Envs: []
 # 镜像 URL 地址, 执行任务时, 会自动下载该地址的镜像并使用
-ImageUrl: "fs-computility-cn-shanghai.cr.volces.com/devinstance-archive/embedding:v4"
+ImageUrl: "fs-computility-cn-shanghai.cr.volces.com/devinstance-archive/embedding:v5"
 # 提交到火山引擎机器学习平台的某个队列 ID, 可以访问https://console.volcengine.com/ml-platform/resourceQueue 查看有权限的队列
 ResourceQueueID : "q-20240114171437-h89zl" # hsllm_r: q-20240114171437-h89zl, hsllm_e: q-20240114171611-z7bmt, hsllm_d: q-20240114171246-fm7p4
 # 训练框架，支持：TensorFlowPS, PyTorchDDP, Horvod, BytePS, Custom
