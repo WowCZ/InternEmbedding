@@ -6,7 +6,6 @@ accelerate launch --config_file /fs-computility/llm/chenzhi/InternEmbedding/conf
                                            --init_backbone=BAAI/bge-base-en-v1.5 \
                                            --pool_type=cls \
                                            --backbone_type=BGE \
-                                           --task_prompt \
                                            --embedding_norm \
                                            --sampler=random \
                                            --warmup_rate=0.1 \

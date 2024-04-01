@@ -1,6 +1,7 @@
 import math
 import torch
 from torch import nn
+from typing import List
 from functools import partial
 import torch.nn.functional as F
 from abc import ABC, abstractmethod
@@ -14,6 +15,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
                  pool_type: str='position_weight', 
                  checkpoint_batch_size: int=-1, 
                  which_layer: int=-1, 
+                 reserved_layers: List[int]=None,
                  lora_config: bool=True, 
                  self_extend: bool=False):
         super(BaseBackboneWrapper, self).__init__()
@@ -26,6 +28,9 @@ class BaseBackboneWrapper(nn.Module, ABC):
             modify_method_of_instance(backbone, "MistralAttention", "forward", mistral_self_extend_forward)
         else:
             backbone = AutoModel.from_pretrained(backbone, trust_remote_code=True)
+
+        # TODO: need check
+        backbone = self.model_razor(backbone)
 
         if hasattr(backbone, "enable_input_require_grads"):
             backbone.enable_input_require_grads()
@@ -50,6 +55,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
         self.checkpoint_batch_size = checkpoint_batch_size
         self.which_layer = which_layer
         self.lora_config = lora_config
+        self.reserved_layers = reserved_layers
 
     @abstractmethod
     def lora_wrapper(self, model):
@@ -71,6 +77,10 @@ class BaseBackboneWrapper(nn.Module, ABC):
     def backbone_forward(self, input_items):
         # return the hidden state of the backbone
         return self.backbone(**input_items)[0]
+    
+    @abstractmethod
+    def model_razor(self, backbone):
+        return backbone
 
     def adopting_checkpointing(self, input_items):
         # if input batch size is much larger then checkpoint_batch_size, we need to use checkpoint to aggragate the gradient cache.

@@ -1,5 +1,5 @@
 import torch
-from typing import Union
+from typing import Union, List
 from peft import LoraConfig
 from peft import get_peft_model, LoraConfig, TaskType
 from .base_model import BaseBackboneWrapper, BaseEmbedder
@@ -11,9 +11,10 @@ class InternLMBackboneWrapper(BaseBackboneWrapper):
                  pool_type: str='cls', 
                  checkpoint_batch_size: int=-1, 
                  which_layer: int=-1, 
+                 reserved_layers: List[int]=None,
                  lora_config: Union[bool, LoraConfig]=True, 
                  self_extend: bool=False):
-        super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, lora_config, self_extend)
+        super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config, self_extend)
 
     def partial_encode(self, *inputs):
         input_embeddings, attention_mask = inputs
@@ -43,6 +44,9 @@ class InternLMBackboneWrapper(BaseBackboneWrapper):
                                 bias='none')
         model = get_peft_model(model, peft_config)
         return model
+    
+    def model_razor(self, backbone):
+        return backbone
     
 class InternLMEmbedder(BaseEmbedder):
     def __init__(self, 

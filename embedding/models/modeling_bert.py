@@ -1,3 +1,4 @@
+from typing import List
 from .base_model import BaseBackboneWrapper, BaseEmbedder
 from transformers import AutoModel, AutoTokenizer
 
@@ -7,10 +8,11 @@ class BERTBackboneWrapper(BaseBackboneWrapper):
                  pool_type: str = 'cls', 
                  checkpoint_batch_size: int = -1, 
                  which_layer: int = -1, 
+                 reserved_layers: List[int]=None,
                  lora_config: bool = True, 
                  self_extend: bool = False):
         # backbone = AutoModel.from_pretrained(backbone)
-        super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, lora_config, self_extend)
+        super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config, self_extend)
 
     def partial_encode(self, *inputs):
         return super().partial_encode(*inputs)
@@ -23,6 +25,9 @@ class BERTBackboneWrapper(BaseBackboneWrapper):
 
     def lora_wrapper(self, model):
         return super().lora_wrapper(model)
+    
+    def model_razor(self, backbone):
+        return backbone
     
 
 class BertEmbedder(BaseEmbedder):
