@@ -9,7 +9,7 @@ import numpy as np
 from typing import List
 from accelerate import Accelerator
 from accelerate.state import AcceleratorState
-from embedding.train.loss import inbatch_negative_loss, hard_negative_loss
+from embedding.train.loss import inbatch_negative_loss, log_sigmoid_loss
 from embedding.train.training_embedder import initial_model, initial_opimizer_scheduler, get_train_dataloader
 
 def setup_seed(seed):
@@ -37,16 +37,17 @@ def cache_gradients(query_embeds, passage_embeds, negative_embeds, temperature, 
     if negative_embeds is not None:
         negative_embeds = negative_embeds.detach().requires_grad_()
 
-    loss = 0
-    if not task_adaptation or task_type_inbatch not in ['Clustering', 'Classification']:
-        loss = inbatch_negative_loss(query_embeds, passage_embeds, temperature)
+    # loss = 0
+    # if not task_adaptation or task_type_inbatch not in ['Clustering', 'Classification']:
+    #     loss = inbatch_negative_loss(query_embeds, passage_embeds, temperature)
 
-    if task_adaptation and not hard_negative and negative_embeds is None:
-        raise ValueError('The hard negative sampling should be adopted, when task adaptation mode is open. \
-                            Otherewise, the training process will miss Clustering and Classification datasets')
+    # if task_adaptation and not hard_negative and negative_embeds is None:
+    #     raise ValueError('The hard negative sampling should be adopted, when task adaptation mode is open. \
+    #                         Otherewise, the training process will miss Clustering and Classification datasets')
 
-    if negative_embeds is not None and hard_negative:
-        loss += hard_negative_loss(query_embeds, passage_embeds, negative_embeds, temperature)
+    # if negative_embeds is not None and hard_negative:
+    #     loss += hard_negative_loss(query_embeds, passage_embeds, negative_embeds, temperature)
+    loss = log_sigmoid_loss(query_embeds, passage_embeds, temperature)
 
     loss.backward()
 
@@ -90,7 +91,7 @@ def train_embedder(args):
     num_training_steps = math.ceil(num_training_steps / accelerator.num_processes)
 
     if accelerator.is_main_process:
-        accelerator.print('#'*10, f' Embedder Training Config ', '#'*10)
+        accelerator.print('#'*10, f' Preference M Training Config ', '#'*10)
         accelerator.print(json.dumps(args_dcit, indent=4))
         accelerator.print('#'*10, f' Training Dataset Statistics ', '#'*10)
         accelerator.print(train_loader.dataset)
@@ -111,10 +112,11 @@ def train_embedder(args):
     embedder.train()
     train_step = 0
     if accelerator.is_main_process:
-        if args.hard_negative_sampling:
-            lfunc = 'hard_negative_loss'
-        else:
-            lfunc = 'inbatch_negative_loss'
+        # if args.hard_negative_sampling:
+        #     lfunc = 'hard_negative_loss'
+        # else:
+        #     lfunc = 'inbatch_negative_loss'
+        lfunc = 'log_sigmoid_loss'
         accelerator.print(f'>>> Training loss function is {lfunc}')
         
     for epoch in range(args.num_epochs):
@@ -127,89 +129,95 @@ def train_embedder(args):
             if n_list_inputs:
                 n_list_inputs = [dict([(k, v.to(accelerator.device)) for k, v in n_inputs.items()]) for n_inputs in n_list_inputs]
 
-            if args.gradcache_chunk_size < 1:
-                q_embeddings, p_embeddings, n_embeddings = embedder(q_inputs, p_inputs, n_list_inputs)
-                loss = 0
-                for matryoshka_dim in args.matryoshka_adaptive_dims:
-                    matryoshka_selected_ids = list(range(matryoshka_dim))
-                    matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings = select_matryoshka_embedding([q_embeddings, p_embeddings, n_embeddings], matryoshka_selected_ids)
-                    
-                    if not args.task_adaptation or task_type_inbatch not in ['Clustering', 'Classification']:
-                        loss += inbatch_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, args.temperature)
+            # import pdb; pdb.set_trace()
+            # if args.gradcache_chunk_size < 1:
+            q_embeddings, p_embeddings, n_embeddings = embedder(q_inputs, p_inputs, None)
+            # loss = 0
+            # for matryoshka_dim in args.matryoshka_adaptive_dims:
+            #     matryoshka_selected_ids = list(range(matryoshka_dim))
+            #     matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings = select_matryoshka_embedding([q_embeddings, p_embeddings, n_embeddings], matryoshka_selected_ids)
+                
+            #     if not args.task_adaptation or task_type_inbatch not in ['Clustering', 'Classification']:
+            #         loss += inbatch_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, args.temperature)
 
-                    if args.task_adaptation and not args.hard_negative_sampling and n_embeddings is None:
-                        raise ValueError('The hard negative sampling should be adopted, when task adaptation mode is open. \
-                                         Otherewise, the training process will miss Clustering and Classification datasets.')
+            #     if args.task_adaptation and not args.hard_negative_sampling and n_embeddings is None:
+            #         raise ValueError('The hard negative sampling should be adopted, when task adaptation mode is open. \
+            #                          Otherewise, the training process will miss Clustering and Classification datasets.')
 
-                    if n_embeddings and args.hard_negative_sampling:
-                        loss += hard_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings, args.temperature)                        
-                        
-                accelerator.backward(loss)
+            #     if n_embeddings and args.hard_negative_sampling:
+            #         loss += hard_negative_loss(matryoshka_q_embeddings, matryoshka_p_embeddings, matryoshka_n_embeddings, args.temperature)  
+                
+            if lfunc == 'log_sigmoid_loss':
+                loss = log_sigmoid_loss(q_embeddings, p_embeddings, args.temperature)
             else:
+                raise NotImplementedError(f"Loss function {lfunc} has not been implemented yet!")
+
+            accelerator.backward(loss)
+            # else:
                 # Refer to https://github.com/luyug/GradCache/tree/main & https://github.com/nomic-ai/contrastors/blob/main/src/contrastors/loss.py
                 # Step 1: Iterated inference process to get query and passage embeddings for each GradCache chunk
-                query_embeds = []
-                passage_embeds = []
-                negative_embeds = []
-                with torch.no_grad():
-                    for chunk_left in range(0, args.batch_size_per_gpu, args.gradcache_chunk_size):
-                        chunk_right = args.gradcache_chunk_size + chunk_left
-                        q_chunk_inputs = dict([(k, v[chunk_left: chunk_right]) for k, v in q_inputs.items()])
-                        p_chunk_inputs = dict([(k, v[chunk_left: chunk_right]) for k, v in p_inputs.items()])
-                        n_chunk_inputs = None
-                        if n_list_inputs:
-                            n_chunk_inputs = [dict([(k, v[chunk_left: chunk_right]) for k, v in n_inputs.items()]) for n_inputs in n_list_inputs]
-                        q_chunk_embeds, p_chunk_embeds, n_chunk_embeds = embedder(q_chunk_inputs, p_chunk_inputs, n_chunk_inputs)
+                # query_embeds = []
+                # passage_embeds = []
+                # negative_embeds = []
+                # with torch.no_grad():
+                #     for chunk_left in range(0, args.batch_size_per_gpu, args.gradcache_chunk_size):
+                #         chunk_right = args.gradcache_chunk_size + chunk_left
+                #         q_chunk_inputs = dict([(k, v[chunk_left: chunk_right]) for k, v in q_inputs.items()])
+                #         p_chunk_inputs = dict([(k, v[chunk_left: chunk_right]) for k, v in p_inputs.items()])
+                #         n_chunk_inputs = None
+                #         if n_list_inputs:
+                #             n_chunk_inputs = [dict([(k, v[chunk_left: chunk_right]) for k, v in n_inputs.items()]) for n_inputs in n_list_inputs]
+                #         q_chunk_embeds, p_chunk_embeds, n_chunk_embeds = embedder(q_chunk_inputs, p_chunk_inputs, n_chunk_inputs)
 
-                        query_embeds.append(q_chunk_embeds)
-                        passage_embeds.append(p_chunk_embeds)
-                        if n_chunk_embeds is not None:
-                            negative_embeds.append(n_chunk_embeds)
+                #         query_embeds.append(q_chunk_embeds)
+                #         passage_embeds.append(p_chunk_embeds)
+                #         if n_chunk_embeds is not None:
+                #             negative_embeds.append(n_chunk_embeds)
 
-                    query_embeds = torch.concat(query_embeds, dim=0)
-                    passage_embeds = torch.concat(passage_embeds, dim=0)
-                    if negative_embeds:
-                        negative_embeds = torch.concat(negative_embeds, dim=0)
-                    else:
-                        negative_embeds = None
+                #     query_embeds = torch.concat(query_embeds, dim=0)
+                #     passage_embeds = torch.concat(passage_embeds, dim=0)
+                #     if negative_embeds:
+                #         negative_embeds = torch.concat(negative_embeds, dim=0)
+                #     else:
+                #         negative_embeds = None
 
                 # Step 2: Calculate the cached gradients of representation with inbatch negative loss
-                query_grad_cache, passage_grad_cache, negative_grad_cache, loss = cache_gradients(query_embeds, passage_embeds, negative_embeds, args.temperature, args.task_adaptation, task_type_inbatch, args.hard_negative_sampling)
+                # query_grad_cache, passage_grad_cache, negative_grad_cache, loss = cache_gradients(query_embeds, passage_embeds, negative_embeds, args.temperature, args.task_adaptation, task_type_inbatch, args.hard_negative_sampling)
                 
                 # Step 3: Backpropagate the gradients according to the cached representation gradients
-                query_grad_cache = query_grad_cache.split(args.gradcache_chunk_size)
-                passage_grad_cache = passage_grad_cache.split(args.gradcache_chunk_size)
-                if negative_grad_cache is not None:
-                    negative_grad_cache = negative_grad_cache.split(args.gradcache_chunk_size)
+                # query_grad_cache = query_grad_cache.split(args.gradcache_chunk_size)
+                # passage_grad_cache = passage_grad_cache.split(args.gradcache_chunk_size)
+                # if negative_grad_cache is not None:
+                #     negative_grad_cache = negative_grad_cache.split(args.gradcache_chunk_size)
 
-                for ci, chunk_left in enumerate(range(0, args.batch_size_per_gpu, args.gradcache_chunk_size)):
-                    chunk_right = args.gradcache_chunk_size + chunk_left
+                # for ci, chunk_left in enumerate(range(0, args.batch_size_per_gpu, args.gradcache_chunk_size)):
+                #     chunk_right = args.gradcache_chunk_size + chunk_left
    
-                    q_chunk_inputs = dict([(k, v[chunk_left: chunk_right]) for k, v in q_inputs.items()])
-                    p_chunk_inputs = dict([(k, v[chunk_left: chunk_right]) for k, v in p_inputs.items()])
-                    n_chunk_inputs = None
-                    if n_list_inputs:
-                        n_chunk_inputs = [dict([(k, v[chunk_left: chunk_right]) for k, v in n_inputs.items()]) for n_inputs in n_list_inputs]
+                #     q_chunk_inputs = dict([(k, v[chunk_left: chunk_right]) for k, v in q_inputs.items()])
+                #     p_chunk_inputs = dict([(k, v[chunk_left: chunk_right]) for k, v in p_inputs.items()])
+                #     n_chunk_inputs = None
+                #     if n_list_inputs:
+                #         n_chunk_inputs = [dict([(k, v[chunk_left: chunk_right]) for k, v in n_inputs.items()]) for n_inputs in n_list_inputs]
 
-                    q_chunk_embeds, p_chunk_embeds, n_chunk_embeds = embedder(q_chunk_inputs, p_chunk_inputs, n_chunk_inputs)
+                #     q_chunk_embeds, p_chunk_embeds, n_chunk_embeds = embedder(q_chunk_inputs, p_chunk_inputs, n_chunk_inputs)
 
-                    q_chunk_cache = query_grad_cache[ci]
-                    p_chunk_cache = passage_grad_cache[ci]
+                #     q_chunk_cache = query_grad_cache[ci]
+                #     p_chunk_cache = passage_grad_cache[ci]
 
-                    n_chunk_cache = None
-                    if negative_grad_cache:
-                        n_chunk_cache = negative_grad_cache[ci]                        
+                #     n_chunk_cache = None
+                #     if negative_grad_cache:
+                #         n_chunk_cache = negative_grad_cache[ci]                        
 
-                    if n_chunk_cache is None:
-                        qp_chunk_embeds = torch.concat([q_chunk_embeds, p_chunk_embeds], dim=1)
-                        qp_chunk_cache = torch.concat([q_chunk_cache, p_chunk_cache], dim=1)
-                        surrogate = torch.dot(qp_chunk_embeds.flatten(), qp_chunk_cache.flatten())
-                    else:
-                        qpn_chunk_embeds = torch.concat([q_chunk_embeds.unsqueeze(1), p_chunk_embeds.unsqueeze(1), n_chunk_embeds], dim=1)
-                        qpn_chunk_cache = torch.concat([q_chunk_cache.unsqueeze(1), p_chunk_cache.unsqueeze(1), n_chunk_cache], dim=1)
-                        surrogate = torch.dot(qpn_chunk_embeds.flatten(), qpn_chunk_cache.flatten())
+                #     if n_chunk_cache is None:
+                #         qp_chunk_embeds = torch.concat([q_chunk_embeds, p_chunk_embeds], dim=1)
+                #         qp_chunk_cache = torch.concat([q_chunk_cache, p_chunk_cache], dim=1)
+                #         surrogate = torch.dot(qp_chunk_embeds.flatten(), qp_chunk_cache.flatten())
+                #     else:
+                #         qpn_chunk_embeds = torch.concat([q_chunk_embeds.unsqueeze(1), p_chunk_embeds.unsqueeze(1), n_chunk_embeds], dim=1)
+                #         qpn_chunk_cache = torch.concat([q_chunk_cache.unsqueeze(1), p_chunk_cache.unsqueeze(1), n_chunk_cache], dim=1)
+                #         surrogate = torch.dot(qpn_chunk_embeds.flatten(), qpn_chunk_cache.flatten())
 
-                    accelerator.backward(surrogate)
+                #     accelerator.backward(surrogate)
 
             # TODO: NO Effection
             if args.clip_gradient:

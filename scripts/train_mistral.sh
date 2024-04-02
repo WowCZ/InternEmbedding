@@ -1,7 +1,7 @@
 #!/bin/sh
 source activate /fs-computility/llm/shared/chenzhi/miniconda3/envs/embedding
 
-accelerate launch --config_file /fs-computility/llm/chenzhi/InternEmbedding/configs/mistral_accelerate_config.yaml \
+/fs-computility/llm/shared/chenzhi/miniconda3/envs/embedding/bin/accelerate launch --config_file /fs-computility/llm/chenzhi/InternEmbedding/configs/mistral_accelerate_config.yaml \
                                            /fs-computility/llm/chenzhi/InternEmbedding/run.py train \
                                            --pool_type=eos \
                                            --backbone_type=Mistral \

@@ -36,11 +36,12 @@ def prompt_wrapper(question: str, response: str, negatives: List[str], task_type
 
 
 class EmbedderDatasets(Dataset):
-    def __init__(self, datatset_config: str, task_prompt: bool=False, negative_num: int=3):
+    def __init__(self, datatset_config: str, task_prompt: bool=False, negative_num: int=3, file_name: str='train.jsonl'):
         qa_pairs = []
-        dataset_infos = extract_dataset_configs(datatset_config)
+        dataset_infos = extract_dataset_configs(datatset_config, file_name)
         for dataset_name, dataset_info in dataset_infos.items():
             with open(dataset_info['disk_path'], 'r') as fr:
+                print(f'>>> Loading {dataset_name} from {dataset_info["disk_path"]}')
                 lines = fr.readlines()
                 dataset_infos[dataset_name]['sample_cnt'] = len(lines)
                 sampling_cnt = math.ceil(dataset_info['sampling_ratio'] * dataset_infos[dataset_name]['sample_cnt'])
@@ -49,8 +50,9 @@ class EmbedderDatasets(Dataset):
                 for li, l in enumerate(lines):
                     if li > sampling_cnt:
                         break
-
-                    qa_pairs.append((dataset_name, l))
+                    
+                    if self.get_preference_pseduolabel(json.loads(l)) is not None:
+                        qa_pairs.append((dataset_name, l))
 
         self.dataset_infos = dataset_infos
         
@@ -66,24 +68,47 @@ class EmbedderDatasets(Dataset):
     def __str__(self) -> str:
         return json.dumps(self.dataset_infos, indent=4)
 
+    def get_preference_pseduolabel(self, sample):
+        # import pdb; pdb.set_trace()
+        puyu_label = sample['preds']['ad']['pred_tag']
+        if puyu_label is not None:
+            puyu_label = int(puyu_label)
+            return puyu_label 
+        else:
+            return None
+    
+    def tackle_preference_sample(self, sample):
+        # label = sample['labels']['ad']
+        puyu_label = int(sample['preds']['ad']['pred_tag'])
+        text_a = sample['texts']['texts'][0]['content']
+        text_b = sample['texts']['texts'][1]['content']
+        assert puyu_label in [0, 1]
+        if puyu_label == 1:
+            text_a, text_b = text_b, text_a
+        return {
+            'question': text_a,
+            'response': text_b,
+            'negative_response': None
+        }
+
     def make_sample(self, dataset_name, sample):
         sample = json.loads(sample)
-
         task_type = self.dataset_infos[dataset_name]['task_type']
+        sample = self.tackle_preference_sample(sample)
 
-        if 'negative_response' not in sample:
-            sample['negative_response'] = None
-        else:
-            sample['negative_response'] = sample['negative_response'][:self.negative_num]
+        # if 'negative_response' not in sample:
+        sample['negative_response'] = None
+        # else:
+        #     sample['negative_response'] = sample['negative_response'][:self.negative_num]
 
         question, response, negatives = sample['question'], sample['response'], sample['negative_response']
 
-        if self.task_prompt:
-             question, response, negatives = prompt_wrapper(question, 
-                                                            response, 
-                                                            negatives, 
-                                                            task_type, 
-                                                            self.dataset_infos[dataset_name]['prompts'])
+        # if self.task_prompt:
+        #      question, response, negatives = prompt_wrapper(question, 
+        #                                                     response, 
+        #                                                     negatives, 
+        #                                                     task_type, 
+        #                                                     self.dataset_infos[dataset_name]['prompts'])
 
         return (question, response, negatives, task_type)
 

@@ -30,6 +30,10 @@ def hard_negative_loss(q_embeddings, p_embeddings, n_embeddings, temperature=0.0
     loss = InfoNCE(negative_mode='paired', temperature=temperature)
     return loss(q_embeddings, p_embeddings, n_embeddings)
 
+def log_sigmoid_loss(q_logits, p_logits, temperature = 1.):
+    # refer to https://arxiv.org/pdf/2006.03632.pdf
+    # q_logits refer to the logits of better representation, the higher the better
+    return -torch.mean(torch.log(torch.sigmoid((q_logits - p_logits) / temperature)))
 
 def gradcache_loss():
     pass

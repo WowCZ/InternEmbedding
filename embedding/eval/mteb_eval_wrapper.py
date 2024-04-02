@@ -6,10 +6,12 @@ from tqdm.rich import trange
 from typing import List, Union
 from functools import partial
 from transformers import AutoTokenizer
+from tqdm import tqdm
 import torch.nn.functional as F
 from embedding.models.base_model import BaseEmbedder
 from embedding.data.data_loader import make_text_batch
 from embedding.data.datasets import custom_corpus_prompt
+from embedding.train.training_embedder import get_eval_dataloader
 from embedding.eval.eval_utils import get_task_def_by_task_name_and_type
 
 class EvaluatedEmbedder:
@@ -94,3 +96,42 @@ class MTEBEvaluationWrapper:
             results.append(result)
 
         return results
+
+class PrefEvaluationWrapper:
+    def __init__(self, embedder: Union[str, BaseEmbedder], model_name: str, tokenizer: AutoTokenizer, max_length: int, prompt: bool, device: str, result_dir: str, params):
+        self.evaluated_embedder = EvaluatedEmbedder(embedder, tokenizer, max_length, device)
+        self.model_name = model_name
+        self.prompt = prompt
+        self.result_dir = result_dir
+        self.params = params
+
+    def evaluation(self):
+        embedder = self.evaluated_embedder.embedder
+        tokenizer = self.evaluated_embedder.tokenizer
+        eval_loader = get_eval_dataloader(self.params, tokenizer)
+        all_labels, all_preds, all_lead_scores = [], [], []
+
+        pbar = tqdm(eval_loader, ncols=100)
+        device = self.params.device
+        for pq in pbar:
+            q_inputs, p_inputs, _, labels = pq
+            q_inputs = dict([(k, v.to(device)) for k, v in q_inputs.items()])
+            p_inputs = dict([(k, v.to(device)) for k, v in p_inputs.items()])
+            with torch.no_grad():
+                q_embeddings, p_embeddings, n_embeddings = embedder(q_inputs, p_inputs, None)
+                lead_scores = (q_embeddings - p_embeddings).view(-1).tolist()
+                preds = torch.where(q_embeddings >= p_embeddings, 0, 1).view(-1).tolist()
+
+            all_preds.extend(preds)
+            all_labels.extend([0] * len(preds))
+            all_lead_scores.extend(lead_scores)
+
+            # import pdb; pdb.set_trace()
+            acc = sum([1 for p, l in zip(all_preds, all_labels) if p == l]) / len(all_preds)
+            pbar.set_description(f"Acc: {acc:.4f}")
+        
+        return dict(
+            scores=all_lead_scores,
+            accuracy=sum([1 for p, l in zip(all_preds, all_labels) if p == l]) / len(all_preds),
+        )
+

@@ -10,7 +10,7 @@ from torch.utils.data import Sampler, BatchSampler
 
 random.seed(20)
 
-def extract_dataset_configs(config_file: str):
+def extract_dataset_configs(config_file: str, file_name: str='train.jsonl'):
     with open(config_file,'r') as f:
         dataset_info = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -19,7 +19,7 @@ def extract_dataset_configs(config_file: str):
     for dataset in dataset_info['internembedder_datasets']:
         dname = dataset['name']
 
-        disk_path = os.path.join(dataset_root_dir, dname, 'train.jsonl')
+        disk_path = os.path.join(dataset_root_dir, dname, file_name)
         if not os.path.exists(disk_path):
             print(f'>>> Loadining dataset {dname} failed, where the disk path {disk_path} does not exist.')
             continue
