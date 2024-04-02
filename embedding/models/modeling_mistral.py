@@ -19,7 +19,7 @@ class MistralBackboneWrapper(BaseBackboneWrapper):
     def partial_encode(self, *inputs):
         input_embeddings, attention_mask = inputs
         backbone_outputs = self.backbone(inputs_embeds=input_embeddings, attention_mask=attention_mask, output_hidden_states=True, return_dict=True)
-        backbone_full_embedding = backbone_outputs['hidden_states'][self.which_layer]
+        backbone_full_embedding = backbone_outputs['hidden_states'][-1]
 
         return backbone_full_embedding
 
@@ -28,7 +28,7 @@ class MistralBackboneWrapper(BaseBackboneWrapper):
 
     def backbone_forward(self, input_items):
         backbone_outputs = self.backbone(**input_items, output_hidden_states=True, return_dict=True)
-        backbone_full_embedding = backbone_outputs['hidden_states'][self.which_layer]
+        backbone_full_embedding = backbone_outputs['hidden_states'][-1]
 
         return backbone_full_embedding
 
