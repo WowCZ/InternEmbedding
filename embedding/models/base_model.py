@@ -184,7 +184,9 @@ class BaseEmbedder(nn.Module, ABC):
     
     def forward(self, q_ids, p_ids, n_list_ids):
         q_embeddings = self.embedding(q_ids)
-        p_embeddings = self.embedding(p_ids)
+        # 保证 p_ids 为 None 时，返回 None
+        # 框架允许只有一个输入的情况
+        p_embeddings = self.embedding(p_ids) if p_ids else None
         n_m_embeddings = None
         if n_list_ids is not None:
             if type(n_list_ids) is not list:
