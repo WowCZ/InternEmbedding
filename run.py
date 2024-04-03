@@ -64,7 +64,7 @@ evaluating_parser.add_argument('--extract_pseduolabel_0326', type=int, default=1
 
 predicting_parser =  subparsers.add_parser(name='predict', help='prediction of embedder')
 predicting_parser.add_argument('--embedder_name', type=str, default='mistral_embedder', help='The name of the training embedder')
-predicting_parser.add_argument('--backbone_type', type=str, default='Mistral', help='Supported backbone types: [Mistral, BERT]')
+predicting_parser.add_argument('--backbone_type', type=str, default='InternLM', help='Supported backbone types: [Mistral, BERT]')
 predicting_parser.add_argument('--init_backbone', type=str, default='/fs-computility/llm/chenzhi/huggingface_cache/models--mistralai--Mistral-7B-Instruct-v0.1/snapshots/9ab9e76e2b09f9f29ea2d56aa5bd139e4445c59e', help='The parameter path of initial embedder backbone')
 predicting_parser.add_argument('--pool_type', type=str, default='position_weight', help='Supported pool types: [position_weight, mean, eos, cls]')
 predicting_parser.add_argument('--peft_lora', action='store_true', default=False, help='Training as lora strategy or not')
@@ -74,8 +74,10 @@ predicting_parser.add_argument('--task_prompt', action='store_true', default=Fal
 predicting_parser.add_argument('--mytryoshka_size', type=int, default=4096, help='The selected size in matryoshka representation learning')
 predicting_parser.add_argument('--embedding_norm', action='store_true', default=False, help='Normalize the embedding or not')
 predicting_parser.add_argument('--embedder_ckpt_path', type=str, default='', help='The evaluated checkpoint of the embedder')
-predicting_parser.add_argument('--mteb_evaluation_tasks', type=str, default="/fs-computility/llm/shared/wangyikun/code/TrainPrefModel/configs/dataset_configs/pref_datasets.yaml", help='The evaluation tasks')
+predicting_parser.add_argument('--dataset_path', type=str, default="/fs-computility/llm/shared/wangyikun/dump/ad_preference_0326_segmented/AD_Preference/test.jsonl", help='Data for preference prediction')
 predicting_parser.add_argument('--device', type=str, default='cuda', help='loading device')
+predicting_parser.add_argument('--result_dir', type=str, default='/fs-computility/llm/shared/wangyikun/dump/ad_preference_0326_segmented/AD_Preference/results', help='The saved path of the evalyated results')
+predicting_parser.add_argument('--checkpoint_batch_size', type=int, default=-1, help='The batch size in checkpointing training strategy')
 predicting_parser.set_defaults(func=predict_embedder)
 
 args = parser.parse_args()

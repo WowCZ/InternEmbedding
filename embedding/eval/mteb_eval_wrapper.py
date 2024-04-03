@@ -34,11 +34,10 @@ class EvaluatedEmbedder:
         batch_cnt = math.ceil(len(sentences) / batch_size)
         sentence_embeddings = []
         with torch.no_grad():
-            for bi in trange(batch_cnt):
-            # for bi in range(batch_cnt):
+            # for bi in trange(batch_cnt):
+            for bi in range(batch_cnt):
                 cur_batch = sentences[bi*batch_size: (bi+1)* batch_size]
                 bi_inputs = make_text_batch(cur_batch, self.tokenizer, self.max_length, self.device)
-
                 cur_embeddings = self.embedder.embedding(bi_inputs)
                 sentence_embeddings.append(cur_embeddings)
 
