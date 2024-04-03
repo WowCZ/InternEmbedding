@@ -1,5 +1,23 @@
 <h1 align="center"> <img src="./resets/images/embedder_triangle2.png" alt="embedder" width="50"> InternEmbedding </h1>
 
+## Preference Model Training
+
+### 环境
+
+部署开发机，使用以下镜像：
+
+```
+fs-computility-cn-shanghai.cr.volces.com/devinstance-archive/embedding:v4
+```
+
+### Train the PrefModel:
+
+```shell
+bash scripts/debug_pref_internlm.sh
+```
+* Notes: Change the `scripts/debug_pref_internlm.yaml` for debugging.
+
+
 ## 🚀 Train InternEmbedding
 ### Train the embedder:
 ```shell
