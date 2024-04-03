@@ -43,7 +43,8 @@ def get_train_dataloader(args, tokenizer):
         print(f'Overload the EmbedderDatasets class with the preference dataset class')
         embedding_dataset = EmbedderDatasets(args.dataset_config, 
                                              task_prompt=args.task_prompt, 
-                                             negative_num=args.hard_negative_num)
+                                             negative_num=args.hard_negative_num,
+                                             args=args)
     else:
         raise NotADirectoryError(f'>>> The sampler {args.sampler} has not been supported yet!')
 

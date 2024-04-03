@@ -55,7 +55,7 @@ class EmbedderDatasets(Dataset):
                     
                     if dataset_name == 'AD_Preference':
                         # 如果是 AD Preference 数据集，需要对数据进行处理
-                        if get_preference_pseduolabel_0326(json.loads(l), extract_pseduo_label=args.extract_pseduolabel_0326) is not None:
+                        if get_preference_pseduolabel_0326(json.loads(l), extract_pseduo_label=args.extract_pseduolabel_0326):
                             qa_pairs.append((dataset_name, l))
                     else:
                         # 否则直接添加
@@ -82,6 +82,9 @@ class EmbedderDatasets(Dataset):
 
         if dataset_name == 'AD_Preference':
             sample = tackle_preference_sample_0326(sample, self.args.extract_pseduolabel_0326)
+            sample['negative_response'] = None
+        elif dataset_name == 'Haijun_Preference':
+            sample = tackle_haijun_preference_0321(sample)
             sample['negative_response'] = None
 
         else:

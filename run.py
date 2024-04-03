@@ -40,6 +40,7 @@ training_parser.add_argument('--record_log', type=str, default='wandb', help='Th
 training_parser.add_argument('--wandb_project_name', type=str, default='MistralEmbedder', help='The project name of the init wandb')
 training_parser.add_argument('--seed', type=int, default=20, help='Random seed')
 training_parser.set_defaults(func=train_embedder)
+training_parser.add_argument('--extract_pseduolabel_0326', type=int, default=1, help='1 means using the extracted Puyu-20B pseduo labels, 0 means using GPT3 pseduo labels')
 
 evaluating_parser =  subparsers.add_parser(name='evaluate', help='evaluating embedder')
 evaluating_parser.add_argument('--embedder_name', type=str, default='mistral_embedder', help='The name of the training embedder')

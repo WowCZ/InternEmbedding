@@ -19,8 +19,22 @@ def tackle_preference_sample_0326(sample, extract_pseduo_label=True):
 
     text_a = sample['texts']['texts'][0]['content']
     text_b = sample['texts']['texts'][1]['content']
+    puyu_label = int(puyu_label)
     assert puyu_label in [0, 1]
     if puyu_label == 1:
+        text_a, text_b = text_b, text_a
+    return {
+        'question': text_a,
+        'response': text_b,
+        'negative_response': None
+    }
+
+def tackle_haijun_preference_0321(sample):
+    text_a = sample['texts'][0]['content']
+    text_b = sample['texts'][1]['content']
+    label = sample['label']
+    assert label in [0, 1]
+    if label == 1:
         text_a, text_b = text_b, text_a
     return {
         'question': text_a,

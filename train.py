@@ -101,12 +101,13 @@ def train_embedder(args):
     # TODO: negative sampling with margin scale refer to https://gombru.github.io/2019/04/03/ranking_loss/
     embedder.train()
     train_step = 0
+
+    lfunc = 'log_sigmoid_loss'
     if accelerator.is_main_process:
         # if args.hard_negative_sampling:
         #     lfunc = 'hard_negative_loss'
         # else:
         #     lfunc = 'inbatch_negative_loss'
-        lfunc = 'log_sigmoid_loss'
         accelerator.print(f'>>> Training loss function is {lfunc}')
         
     for epoch in range(args.num_epochs):
