@@ -6,6 +6,8 @@ from typing import List
 from torch.utils.data import Dataset
 from embedding.data.data_utils import extract_dataset_configs
 
+from .utils import *
+
 random.seed(20)
 
 def custom_corpus_prompt(query_prompt: str, task_type: str):
@@ -36,7 +38,7 @@ def prompt_wrapper(question: str, response: str, negatives: List[str], task_type
 
 
 class EmbedderDatasets(Dataset):
-    def __init__(self, datatset_config: str, task_prompt: bool=False, negative_num: int=3, file_name: str='train.jsonl'):
+    def __init__(self, datatset_config: str, task_prompt: bool=False, negative_num: int=3, file_name: str='train.jsonl', args=None):
         qa_pairs = []
         dataset_infos = extract_dataset_configs(datatset_config, file_name)
         for dataset_name, dataset_info in dataset_infos.items():
@@ -51,7 +53,12 @@ class EmbedderDatasets(Dataset):
                     if li > sampling_cnt:
                         break
                     
-                    if self.get_preference_pseduolabel(json.loads(l)) is not None:
+                    if dataset_name == 'AD_Preference':
+                        # 如果是 AD Preference 数据集，需要对数据进行处理
+                        if get_preference_pseduolabel_0326(json.loads(l), extract_pseduo_label=args.extract_pseduolabel_0326) is not None:
+                            qa_pairs.append((dataset_name, l))
+                    else:
+                        # 否则直接添加
                         qa_pairs.append((dataset_name, l))
 
         self.dataset_infos = dataset_infos
@@ -61,6 +68,7 @@ class EmbedderDatasets(Dataset):
         self.dataset_infos['TotalTrainingNum'] = self.qa_num
         self.task_prompt = task_prompt
         self.negative_num = negative_num
+        self.args = args
 
     def __len__(self):
         return self.qa_num
@@ -68,47 +76,29 @@ class EmbedderDatasets(Dataset):
     def __str__(self) -> str:
         return json.dumps(self.dataset_infos, indent=4)
 
-    def get_preference_pseduolabel(self, sample):
-        # import pdb; pdb.set_trace()
-        puyu_label = sample['preds']['ad']['pred_tag']
-        if puyu_label is not None:
-            puyu_label = int(puyu_label)
-            return puyu_label 
-        else:
-            return None
-    
-    def tackle_preference_sample(self, sample):
-        # label = sample['labels']['ad']
-        puyu_label = int(sample['preds']['ad']['pred_tag'])
-        text_a = sample['texts']['texts'][0]['content']
-        text_b = sample['texts']['texts'][1]['content']
-        assert puyu_label in [0, 1]
-        if puyu_label == 1:
-            text_a, text_b = text_b, text_a
-        return {
-            'question': text_a,
-            'response': text_b,
-            'negative_response': None
-        }
-
     def make_sample(self, dataset_name, sample):
         sample = json.loads(sample)
         task_type = self.dataset_infos[dataset_name]['task_type']
-        sample = self.tackle_preference_sample(sample)
 
-        # if 'negative_response' not in sample:
-        sample['negative_response'] = None
-        # else:
-        #     sample['negative_response'] = sample['negative_response'][:self.negative_num]
+        if dataset_name == 'AD_Preference':
+            sample = tackle_preference_sample_0326(sample, self.args.extract_pseduolabel_0326)
+            sample['negative_response'] = None
+
+        else:
+            # 正常处理流程
+            if 'negative_response' not in sample:
+                sample['negative_response'] = None
+            else:
+                sample['negative_response'] = sample['negative_response'][:self.negative_num]
 
         question, response, negatives = sample['question'], sample['response'], sample['negative_response']
 
-        # if self.task_prompt:
-        #      question, response, negatives = prompt_wrapper(question, 
-        #                                                     response, 
-        #                                                     negatives, 
-        #                                                     task_type, 
-        #                                                     self.dataset_infos[dataset_name]['prompts'])
+        if self.task_prompt:
+             question, response, negatives = prompt_wrapper(question, 
+                                                            response, 
+                                                            negatives, 
+                                                            task_type, 
+                                                            self.dataset_infos[dataset_name]['prompts'])
 
         return (question, response, negatives, task_type)
 

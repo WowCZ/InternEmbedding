@@ -60,6 +60,7 @@ evaluating_parser.add_argument('--device', type=str, default='cuda', help='loadi
 evaluating_parser.set_defaults(func=evaluate_embedder)
 evaluating_parser.add_argument('--batch_size_per_gpu', type=int, default=20, help='The batch size in per GPU when DDP training')
 evaluating_parser.add_argument('--dev_mode', type=int, default=1, help='The evaluation mode of the embedder')
+evaluating_parser.add_argument('--extract_pseduolabel_0326', type=int, default=1, help='1 means using the extracted Puyu-20B pseduo labels, 0 means using GPT3 pseduo labels')
 
 predicting_parser =  subparsers.add_parser(name='predict', help='prediction of embedder')
 predicting_parser.add_argument('--embedder_name', type=str, default='mistral_embedder', help='The name of the training embedder')

@@ -37,16 +37,6 @@ def cache_gradients(query_embeds, passage_embeds, negative_embeds, temperature, 
     if negative_embeds is not None:
         negative_embeds = negative_embeds.detach().requires_grad_()
 
-    # loss = 0
-    # if not task_adaptation or task_type_inbatch not in ['Clustering', 'Classification']:
-    #     loss = inbatch_negative_loss(query_embeds, passage_embeds, temperature)
-
-    # if task_adaptation and not hard_negative and negative_embeds is None:
-    #     raise ValueError('The hard negative sampling should be adopted, when task adaptation mode is open. \
-    #                         Otherewise, the training process will miss Clustering and Classification datasets')
-
-    # if negative_embeds is not None and hard_negative:
-    #     loss += hard_negative_loss(query_embeds, passage_embeds, negative_embeds, temperature)
     loss = log_sigmoid_loss(query_embeds, passage_embeds, temperature)
 
     loss.backward()

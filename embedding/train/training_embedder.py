@@ -59,7 +59,8 @@ def get_eval_dataloader(args, tokenizer):
     embedding_dataset = EmbedderDatasets(args.dataset_config,
                                          task_prompt=False,
                                          negative_num=0,
-                                         file_name='eval.jsonl' if args.dev_mode else 'test.jsonl')
+                                         file_name='eval.jsonl' if args.dev_mode else 'test.jsonl',
+                                         args=args)
     eval_loader = train_dataloader(embedding_dataset,
                                    tokenizer,
                                    max_length=args.max_length,
