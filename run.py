@@ -12,6 +12,7 @@ training_parser.add_argument('--backbone_type', type=str, default='Mistral', hel
 training_parser.add_argument('--init_backbone', type=str, default='/fs-computility/llm/chenzhi/huggingface_cache/models--mistralai--Mistral-7B-Instruct-v0.1/snapshots/9ab9e76e2b09f9f29ea2d56aa5bd139e4445c59e', help='The parameter path of initial embedder backbone')
 training_parser.add_argument('--pool_type', type=str, default='position_weight', help='Supported pool types: [position_weight, mean, eos, cls]')
 training_parser.add_argument('--peft_lora', action='store_true', default=False, help='Training as lora strategy or not')
+training_parser.add_argument('--training_loss', type=str, default='log_sigmoid_loss', choices=['log_sigmoid_loss', 'logit_margin_loss'])
 training_parser.add_argument('--which_layer', type=int, default=-1, help='The number of the last layer, whose hidden representation as the embedding')
 training_parser.add_argument('--batch_size_per_gpu', type=int, default=300, help='The batch size in per GPU when DDP training')
 training_parser.add_argument('--num_epochs', type=int, default=1, help='Training epoch number')

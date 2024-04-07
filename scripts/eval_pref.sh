@@ -4,7 +4,7 @@ source activate /fs-computility/llm/shared/chenzhi/miniconda3/envs/embedding
 
 # For Mistral Model
 MODEL_NAME=pref_internlm
-CKPT_DIR=/fs-computility/llm/wangyikun/workspace/ckpts/pref_internlm_20240401081259
+CKPT_DIR=/fs-computility/llm/wangyikun/workspace/ckpts/pref_internlm_v1.0
 
 step=600
 CKPT_NAME=pref_internlm_${step}.pt

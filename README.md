@@ -15,7 +15,7 @@ fs-computility-cn-shanghai.cr.volces.com/devinstance-archive/embedding:v4
 一键式脚本：
 
 ```shell
-bash scripts/debug_pref_internlm.sh
+bash scripts/train_pref_internlm.sh
 ```
 * Notes: Change the `scripts/debug_pref_internlm.yaml` for debugging (Change the `num_processes` to $1$ for better debugging experience).
 

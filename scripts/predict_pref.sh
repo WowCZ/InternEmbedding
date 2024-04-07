@@ -1,7 +1,7 @@
 #!/bin/sh
 INIT_MODEL=/fs-computility/llm/shared/yangyf/share/internlm2-chat-1_8b-sft
 MODEL_NAME=pref_internlm
-CKPT_PATH=/fs-computility/llm/wangyikun/workspace/ckpts/pref_internlm_20240401081259/pref_internlm_600.pt
+CKPT_PATH=/fs-computility/llm/wangyikun/workspace/ckpts/pref_internlm_v1.0/pref_internlm_600.pt
 DATASET_PATH=/fs-computility/llm/shared/wangyikun/dump/ad_preference_0326_segmented/AD_Preference/test.jsonl
 CUDA_RANK=1
 

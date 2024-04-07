@@ -116,7 +116,7 @@ def train_embedder(args):
         for pq in train_loader:
             q_inputs, p_inputs, n_list_inputs, labels = pq
             q_inputs = dict([(k, v.to(accelerator.device)) for k, v in q_inputs.items()])
-            p_inputs = dict([(k, v.to(accelerator.device)) for k, v in p_inputs.items()])
+            p_inputs = dict([(k, v.to(accelerator.device)) for k, v in p_inputs.items()]) if p_inputs else None
             if n_list_inputs:
                 n_list_inputs = [dict([(k, v.to(accelerator.device)) for k, v in n_inputs.items()]) for n_inputs in n_list_inputs]
 
@@ -126,6 +126,7 @@ def train_embedder(args):
                 loss = log_sigmoid_loss(q_embeddings, p_embeddings, args.temperature)
             elif lfunc == 'logit_margin_loss':
                 assert p_embeddings is None
+                print(labels)
                 loss = logit_margin_loss(q_embeddings, labels, args.temperature)
             else:
                 raise NotImplementedError(f"Loss function {lfunc} has not been implemented yet!")
