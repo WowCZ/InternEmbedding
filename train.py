@@ -126,7 +126,6 @@ def train_embedder(args):
                 loss = log_sigmoid_loss(q_embeddings, p_embeddings, args.temperature)
             elif lfunc == 'logit_margin_loss':
                 assert p_embeddings is None
-                print(labels)
                 loss = logit_margin_loss(q_embeddings, labels, args.temperature)
             else:
                 raise NotImplementedError(f"Loss function {lfunc} has not been implemented yet!")

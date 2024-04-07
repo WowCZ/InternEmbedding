@@ -46,7 +46,11 @@ Please select the text that ensembles an advertisement more.
 {text_b}
 ```
 """
-    prompt = prompt_temp.format(text_a=text_a, text_b=text_b)
+    try:
+        prompt = prompt_temp.format(text_a=text_a, text_b=text_b)
+    except Exception as e:
+        print(e)
+        import pdb; pdb.set_trace()
     return {
         'question': prompt,
         'response': None,
