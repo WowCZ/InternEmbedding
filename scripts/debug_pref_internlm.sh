@@ -20,7 +20,7 @@ accelerate launch --config_file /fs-computility/llm/shared/wangyikun/code/TrainP
                                            --learning_rate=1e-5 \
                                            --save_ckpt_steps=200 \
                                            --batch_size_per_gpu=60 \
-                                           --dataset_config=/fs-computility/llm/shared/wangyikun/code/TrainPrefModel/configs/dataset_configs/pref_datasets.yaml \
+                                           --dataset_config=configs/dataset_configs/pref_datasets.yaml \
                                            --embedder_name=pref_internlm
 
 # accelerate launch --config_file /fs-computility/llm/wangyikun/workspace/TrainPrefModel/scripts/debug_pref_internlm.yaml \

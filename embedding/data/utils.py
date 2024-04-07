@@ -29,9 +29,35 @@ def tackle_preference_sample_0326(sample, extract_pseduo_label=True):
         'negative_response': None
     }
 
-def tackle_haijun_preference_0321(sample):
+def tackle_preference_sample_0407(sample):
     text_a = sample['texts'][0]['content']
     text_b = sample['texts'][1]['content']
+    label = sample['preds']['ad']['pred_tag']
+
+    prompt_temp = f"""
+Please select the text that ensembles an advertisement more.
+
+# Option 0
+```
+{text_a}
+```
+
+# Option 1
+```
+{text_b}
+```
+"""
+    prompt = prompt_temp.format(text_a=text_a, text_b=text_b)
+    return {
+        'question': prompt,
+        'response': None,
+        'negative_response': None, # either 0 or 1
+        'label': label
+    }
+
+def tackle_haijun_preference_0321(sample):
+    text_a = sample['text_a']
+    text_b = sample['text_b']
     label = sample['label']
     assert label in [0, 1]
     if label == 1:

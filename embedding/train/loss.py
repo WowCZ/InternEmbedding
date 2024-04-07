@@ -37,3 +37,12 @@ def log_sigmoid_loss(q_logits, p_logits, temperature = 1.):
 
 def gradcache_loss():
     pass
+
+def logit_margin_loss(q_logits, labels, temperature = 1.):
+    # q_logits refer to the logits of better representation, the higher the better
+    labels = torch.tensor(labels).to(q_logits.device)
+    q_logits = q_logits.squeeze()
+    assert labels.shape == q_logits.shape
+    # flip q logit if label is 1 else keep it
+    q_logits = q_logits * (1 - 2 * labels)
+    return -torch.mean(torch.log(torch.sigmoid(q_logits / temperature)))

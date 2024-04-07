@@ -20,21 +20,21 @@ def custom_corpus_prompt(query_prompt: str, task_type: str):
 
     return corpus_prompt
 
-def prompt_wrapper(question: str, response: str, negatives: List[str], task_type: str, prompt_candidates: List[str]):
-    q_prompt = random.choice(prompt_candidates)
-    r_prompt = custom_corpus_prompt(q_prompt, task_type)
+# def prompt_wrapper(question: str, response: str, negatives: List[str], task_type: str, prompt_candidates: List[str]):
+#     q_prompt = random.choice(prompt_candidates)
+#     r_prompt = custom_corpus_prompt(q_prompt, task_type)
 
-    question = q_prompt + ': ' + question
-    response = r_prompt + ': ' + response
-    if negatives is not None:
-        if type(negatives) is not list:
-            if type(negatives) is not str:
-                raise TypeError(f'>>> Unknow negative sample types: {type(negatives)}')
-            else:
-                negatives = [negatives]
-        negatives = [r_prompt + ': ' + n for n in negatives]
+#     question = q_prompt + ': ' + question
+#     response = r_prompt + ': ' + response
+#     if negatives is not None:
+#         if type(negatives) is not list:
+#             if type(negatives) is not str:
+#                 raise TypeError(f'>>> Unknow negative sample types: {type(negatives)}')
+#             else:
+#                 negatives = [negatives]
+#         negatives = [r_prompt + ': ' + n for n in negatives]
     
-    return question, response, negatives
+#     return question, response, negatives
 
 
 class EmbedderDatasets(Dataset):
@@ -78,7 +78,6 @@ class EmbedderDatasets(Dataset):
 
     def make_sample(self, dataset_name, sample):
         sample = json.loads(sample)
-        task_type = self.dataset_infos[dataset_name]['task_type']
 
         if dataset_name == 'AD_Preference':
             sample = tackle_preference_sample_0326(sample, self.args.extract_pseduolabel_0326)
@@ -86,7 +85,8 @@ class EmbedderDatasets(Dataset):
         elif dataset_name == 'Haijun_Preference':
             sample = tackle_haijun_preference_0321(sample)
             sample['negative_response'] = None
-
+        elif dataset_name == 'AD_Preference_Prompt_0407':
+            sample = tackle_preference_sample_0407(sample)
         else:
             # 正常处理流程
             if 'negative_response' not in sample:
@@ -94,16 +94,18 @@ class EmbedderDatasets(Dataset):
             else:
                 sample['negative_response'] = sample['negative_response'][:self.negative_num]
 
+        if 'label' not in sample.keys():
+            sample['label'] = None
         question, response, negatives = sample['question'], sample['response'], sample['negative_response']
 
-        if self.task_prompt:
-             question, response, negatives = prompt_wrapper(question, 
-                                                            response, 
-                                                            negatives, 
-                                                            task_type, 
-                                                            self.dataset_infos[dataset_name]['prompts'])
+        # if self.task_prompt:
+        #      question, response, negatives = prompt_wrapper(question, 
+        #                                                     response, 
+        #                                                     negatives, 
+        #                                                     task_type, 
+        #                                                     self.dataset_infos[dataset_name]['prompts'])
 
-        return (question, response, negatives, task_type)
+        return (question, response, negatives, sample['label'])
 
     def __getitem__(self, index):
         dataset_name, qa_sample = self.qa_pairs[index]
@@ -158,12 +160,12 @@ class EmbedderIndependentDataset(Dataset):
 
         question, response, negatives = sample['question'], sample['response'], sample['negative_response']
         
-        if self.task_prompt:
-            question, response, negatives = prompt_wrapper(question, 
-                                                           response, 
-                                                           negatives, 
-                                                           task_type, 
-                                                           self.dataset_info['prompts'])
+        # if self.task_prompt:
+        #     question, response, negatives = prompt_wrapper(question, 
+        #                                                    response, 
+        #                                                    negatives, 
+        #                                                    task_type, 
+        #                                                    self.dataset_info['prompts'])
             
         return (question, response, negatives, self.dataset_info['task_type'])
 

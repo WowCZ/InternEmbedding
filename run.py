@@ -23,7 +23,7 @@ training_parser.add_argument('--clip_gradient', action='store_true', default=Fal
 training_parser.add_argument('--ckpt_saving_dir', type=str, default='/fs-computility/llm/wangyikun/workspace/ckpts', help='The saving path of the embedder checkpoint')
 training_parser.add_argument('--save_ckpt_steps', type=int, default=500, help='The saving steps of the embedder checkpoint')
 training_parser.add_argument('--only_last_ckpt', action='store_true', default=False, help='Only saving the last checkpoint or not')
-training_parser.add_argument('--dataset_config', type=str, default='/fs-computility/llm/chenzhi/InternEmbedding/configs/datasets.yaml', help='The path of the training dataset config')
+training_parser.add_argument('--dataset_config', type=str, default='configs/datasets.yaml', help='The path of the training dataset config')
 training_parser.add_argument('--task_adaptation', action='store_true', default=False, help='The task adaption training strategy, where Clustering and Classification tasks are only trained by hard negative sampling method.')
 training_parser.add_argument('--sampler', type=str, default='random', help='The mode of the dataset sampler')
 training_parser.add_argument('--hard_negative_sampling', action='store_true', default=False, help='The contrastive loss function is hard negative sampling or inbatch negative sampling')
@@ -39,8 +39,8 @@ training_parser.add_argument('--matryoshka_adaptive_dims', nargs='+', type=int, 
 training_parser.add_argument('--record_log', type=str, default='wandb', help='The record type of the accelerator')
 training_parser.add_argument('--wandb_project_name', type=str, default='MistralEmbedder', help='The project name of the init wandb')
 training_parser.add_argument('--seed', type=int, default=20, help='Random seed')
-training_parser.set_defaults(func=train_embedder)
 training_parser.add_argument('--extract_pseduolabel_0326', type=int, default=1, help='1 means using the extracted Puyu-20B pseduo labels, 0 means using GPT3 pseduo labels')
+training_parser.set_defaults(func=train_embedder)
 
 evaluating_parser =  subparsers.add_parser(name='evaluate', help='evaluating embedder')
 evaluating_parser.add_argument('--embedder_name', type=str, default='mistral_embedder', help='The name of the training embedder')

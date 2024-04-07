@@ -38,16 +38,12 @@ def make_query_passage_batch(qp_ls: list, tokenizer: AutoTokenizer, max_length: 
     #     task_type_inbatch = t_ls[0]
 
     q_inputs = make_text_batch(q_ls, tokenizer, max_length)
-    p_inputs = make_text_batch(p_ls, tokenizer, max_length)
+    p_inputs = make_text_batch(p_ls, tokenizer, max_length) if p_ls[0] is not None else None
 
     if any(x is None for x in list(expand_list(n_ls))):
         n_list_inputs = []
     else:
-        n_list_inputs = []
-        negative_cnt = min([len(ns) for ns in n_ls])
-        for nid in range(negative_cnt):
-            n_inputs = make_text_batch([ns[nid] for ns in n_ls], tokenizer, max_length)
-            n_list_inputs.append(n_inputs)
+        n_list_inputs = n_ls
 
     return (q_inputs, p_inputs, n_list_inputs, t_ls)
 
