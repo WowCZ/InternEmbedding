@@ -35,18 +35,15 @@ def tackle_preference_sample_0407(sample):
     label = sample['label']
     prompt_temp = f"""
 Please select the text that ensembles an advertisement more.
-
 # Option 0
 ```
 {text_a}
 ```
-
 # Option 1
 ```
 {text_b}
 ```
 """
-
     return {
         'question': prompt_temp,
         'response': None,
