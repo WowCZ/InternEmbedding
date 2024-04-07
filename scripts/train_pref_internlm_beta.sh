@@ -13,12 +13,13 @@ accelerate launch --config_file /fs-computility/llm/shared/wangyikun/code/TrainP
                                            --sampler=random \
                                            --warmup_rate=0.1 \
                                            --num_epochs 5 \
+                                           --max_length 2048 \
                                            --checkpoint_batch_size=10 \
                                            --gradcache_chunk_size=10 \
                                            --temperature=1. \
                                            --learning_rate=1e-5 \
                                            --save_ckpt_steps=200 \
                                            --training_loss=logit_margin_loss \
-                                           --batch_size_per_gpu=60 \
+                                           --batch_size_per_gpu=4 \
                                            --dataset_config=configs/dataset_configs/pref_datasets_prompt.yaml \
                                            --embedder_name=pref_internlm_prompt
