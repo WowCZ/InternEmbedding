@@ -21,7 +21,7 @@ training_parser.add_argument('--task_prompt', action='store_true', default=False
 training_parser.add_argument('--checkpoint_batch_size', type=int, default=10, help='The batch size in checkpointing training strategy')
 training_parser.add_argument('--gradcache_chunk_size', type=int, default=10, help='The chunk size in GradCache training strategy')
 training_parser.add_argument('--clip_gradient', action='store_true', default=False, help='The clip of the training parameters')
-training_parser.add_argument('--ckpt_saving_dir', type=str, default='/fs-computility/llm/wangyikun/workspace/ckpts', help='The saving path of the embedder checkpoint')
+training_parser.add_argument('--ckpt_saving_dir', type=str, default='/fs-computility/llm/shared/wangyikun/ckpts', help='The saving path of the embedder checkpoint')
 training_parser.add_argument('--save_ckpt_steps', type=int, default=500, help='The saving steps of the embedder checkpoint')
 training_parser.add_argument('--only_last_ckpt', action='store_true', default=False, help='Only saving the last checkpoint or not')
 training_parser.add_argument('--dataset_config', type=str, default='configs/datasets.yaml', help='The path of the training dataset config')

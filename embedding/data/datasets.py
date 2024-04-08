@@ -62,7 +62,7 @@ class EmbedderDatasets(Dataset):
                         qa_pairs.append((dataset_name, l))
 
         self.dataset_infos = dataset_infos
-        
+
         self.qa_pairs = qa_pairs
         self.qa_num = len(qa_pairs)
         self.dataset_infos['TotalTrainingNum'] = self.qa_num
@@ -72,7 +72,7 @@ class EmbedderDatasets(Dataset):
 
     def __len__(self):
         return self.qa_num
-    
+
     def __str__(self) -> str:
         return json.dumps(self.dataset_infos, indent=4)
 
@@ -110,7 +110,7 @@ class EmbedderDatasets(Dataset):
     def __getitem__(self, index):
         dataset_name, qa_sample = self.qa_pairs[index]
         return self.make_sample(dataset_name, qa_sample)
-    
+
 
 class EmbedderIndependentDataset(Dataset):
     def __init__(self, dataset_info: dict, task_prompt: bool=False, negative_num: int=3):
