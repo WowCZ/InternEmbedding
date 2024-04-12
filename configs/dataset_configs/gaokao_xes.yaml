@@ -1,0 +1,7 @@
+root_path: /fs-computility/llm/shared/chenzhi/internembedding_datasets
+internembedder_datasets:
+  - name: XESGAOKAO
+    data_type: s2s
+    task_type: Preference
+    prompts: [""]
+    sampling_ratio: 1.0

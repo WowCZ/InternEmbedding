@@ -13,12 +13,8 @@ def create_gaokao_chromadb(gaokao_file: str, chromadb_path: str, chromabd_name: 
         print(f'>>> {chromabd_name} is existed!')
         return
 
-    # try:
-    #     client.delete_collection(chromabd_name)
-    # except:
-    #     print(client.list_collections())
-
-    collection = client.get_or_create_collection(name=chromabd_name, embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt))
+    collection = client.get_or_create_collection(name=chromabd_name, 
+                                                 embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt))
 
     gaokao = []
     gaokao_metadatas = []
@@ -46,7 +42,6 @@ def create_gaokao_chromadb(gaokao_file: str, chromadb_path: str, chromabd_name: 
                 'q_type': l['q_type']
             })
             gaokao_ids.append(f'gaokao_{cur_s}_id{li}')
-
 
     gaokao = gaokao[1500:]
     gaokao_metadatas = gaokao_metadatas[1500:]
@@ -98,7 +93,8 @@ def create_internembedder_chromadb():
     chroma_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/internembedder_independent_dataset_docs_{rank}'
     client = chromadb.PersistentClient(path=str(chroma_path))
     # client.delete_collection(name="internembedder")
-    collection = client.get_or_create_collection(name="internembedder", embedding_function=BGEFunction(bge_name='BAAI/bge-base-en-v1.5', bge_ckpt=None), metadata={"hnsw:space": "cosine"})
+    collection = client.get_or_create_collection(name="internembedder", 
+                                                 embedding_function=BGEFunction(bge_name='BAAI/bge-base-en-v1.5', bge_ckpt=None), metadata={"hnsw:space": "cosine"})
 
     li = 0
     docs = []

@@ -35,7 +35,7 @@ def retrieval_from_gaokao(gaokao_file: str, chromadb_path: str, chromabd_name: s
                 'q_type': l['q_type']
             })
 
-    retrieved_gaokao_metadatas = retrieval_from_question(collection, topk, gaokao[:1000], gaokao_metadatas[:1000])
+    retrieved_gaokao_metadatas = retrieval_from_question(collection, topk, gaokao, gaokao_metadatas)
     
     with open(saved_retrieval_file, 'w') as fw:
         for q in retrieved_gaokao_metadatas:
