@@ -2,6 +2,7 @@ import argparse
 from train import train_embedder
 from eval import evaluate_embedder
 from predict import predict_embedder
+from reparametrize import reparametrize_func
 
 parser = argparse.ArgumentParser(description='Embedder Training & Evaluation Configuration')
 subparsers = parser.add_subparsers(help='Embedder Training & Evaluation')
@@ -81,6 +82,24 @@ predicting_parser.add_argument('--device', type=str, default='cuda', help='loadi
 predicting_parser.add_argument('--result_dir', type=str, default='/fs-computility/llm/shared/wangyikun/dump/ad_preference_0326_segmented/AD_Preference/results', help='The saved path of the evalyated results')
 predicting_parser.add_argument('--checkpoint_batch_size', type=int, default=-1, help='The batch size in checkpointing training strategy')
 predicting_parser.set_defaults(func=predict_embedder)
+
+reparametrize_parser =  subparsers.add_parser(name='reparametrize', help='evaluating embedder')
+reparametrize_parser.add_argument('--embedder_name', type=str, default='mistral_embedder', help='The name of the training embedder')
+reparametrize_parser.add_argument('--backbone_type', type=str, default='Mistral', help='Supported backbone types: [Mistral, BERT]')
+reparametrize_parser.add_argument('--init_backbone', type=str, default='/fs-computility/llm/chenzhi/huggingface_cache/models--mistralai--Mistral-7B-Instruct-v0.1/snapshots/9ab9e76e2b09f9f29ea2d56aa5bd139e4445c59e', help='The parameter path of initial embedder backbone')
+reparametrize_parser.add_argument('--pool_type', type=str, default='position_weight', help='Supported pool types: [position_weight, mean, eos, cls]')
+reparametrize_parser.add_argument('--peft_lora', action='store_true', default=False, help='Training as lora strategy or not')
+reparametrize_parser.add_argument('--which_layer', type=int, default=-1, help='The number of the last layer, whose hidden representation as the embedding')
+reparametrize_parser.add_argument('--max_length', type=int, default=512, help='The max token lenght of the training text')
+reparametrize_parser.add_argument('--task_prompt', action='store_true', default=False, help='Using task prompt or not')
+reparametrize_parser.add_argument('--checkpoint_batch_size', type=int, default=-1, help='The batch size in checkpointing training strategy')
+reparametrize_parser.add_argument('--mytryoshka_size', type=int, default=4096, help='The selected size in matryoshka representation learning')
+reparametrize_parser.add_argument('--embedding_norm', action='store_true', default=False, help='Normalize the embedding or not')
+reparametrize_parser.add_argument('--embedder_ckpt_path', type=str, default='', help='The evaluated checkpoint of the embedder')
+reparametrize_parser.add_argument('--dataset_config', type=str, default="/fs-computility/llm/shared/wangyikun/code/TrainPrefModel/configs/dataset_configs/pref_datasets.yaml", help='The evaluation tasks')
+reparametrize_parser.add_argument('--result_dir', type=str, default='/fs-computility/llm/shared/wangyikun/dump/ad_preference_0326_segmented/AD_Preference/results', help='The saved path of the evalyated results')
+reparametrize_parser.add_argument('--device', type=str, default='cuda', help='loading device')
+reparametrize_parser.set_defaults(func=reparametrize_func)
 
 args = parser.parse_args()
 args.func(args)

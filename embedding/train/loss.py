@@ -1,5 +1,5 @@
 import torch
-from info_nce import InfoNCE
+# from info_nce import InfoNCE
 
 # ce_loss = torch.nn.CrossEntropyLoss(reduction='mean')
 
@@ -12,8 +12,9 @@ def inbatch_negative_loss(q_embeddings, p_embeddings, temperature=0.02):
     loss_pq = ce_loss(compare_scores.t() / temperature, torch.arange(compare_scores.size(0)).to(device))
     return (loss_pq + loss_qp) / 2
     """
-    loss = InfoNCE(temperature=temperature)
-    return loss(q_embeddings, p_embeddings)
+    # loss = InfoNCE(temperature=temperature)
+    # return loss(q_embeddings, p_embeddings)
+    pass
 
 def hard_negative_loss(q_embeddings, p_embeddings, n_embeddings, temperature=0.02):
     """
