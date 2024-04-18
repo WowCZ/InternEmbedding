@@ -3,6 +3,7 @@ from typing import Union, List
 from peft import LoraConfig
 from peft import get_peft_model, LoraConfig, TaskType
 from .base_model import BaseBackboneWrapper, BaseEmbedder
+from transformers import AutoModel, AutoConfig, AutoModelForCausalLM
 
 
 class InternLMBackboneWrapper(BaseBackboneWrapper):
@@ -15,6 +16,22 @@ class InternLMBackboneWrapper(BaseBackboneWrapper):
                  lora_config: Union[bool, LoraConfig]=True, 
                  self_extend: bool=False):
         super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config, self_extend)
+
+    def _init_backbone(self, backbone):
+        config = AutoConfig.from_pretrained(backbone, trust_remote_code=True)
+
+        config._flash_attn_2_enabled = True
+        config.attn_implementation = "flash_attention_2"
+        try:
+            backbone = AutoModelForCausalLM.from_pretrained(backbone, 
+                                                            config=config, 
+                                                            trust_remote_code=True)  # , local_files_only=True: PretrainedConfig
+        except:
+            backbone = AutoModel.from_pretrained(backbone, 
+                                                 config=config, 
+                                                 trust_remote_code=True)
+                
+        return backbone
 
     def partial_encode(self, *inputs):
         input_embeddings, attention_mask = inputs

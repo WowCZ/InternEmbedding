@@ -21,13 +21,9 @@ class BaseBackboneWrapper(nn.Module, ABC):
         super(BaseBackboneWrapper, self).__init__()
         # initial backbone model
         if self_extend:
-            mistral_self_extend_forward = partial(self_extend_forward, group_size_1=4, group_size_2=512)
-            config = AutoConfig.from_pretrained(backbone)
-            config.sliding_window = 200000000
-            backbone = AutoModel.from_pretrained(backbone, config=config)
-            modify_method_of_instance(backbone, "MistralAttention", "forward", mistral_self_extend_forward)
+            backbone = self._init_backbone_with_self_extend(backbone)
         else:
-            backbone = AutoModel.from_pretrained(backbone, trust_remote_code=True)
+            backbone = self._init_backbone(backbone)
 
         # TODO: need check
         if reserved_layers is None:
@@ -67,6 +63,22 @@ class BaseBackboneWrapper(nn.Module, ABC):
         self.which_layer = which_layer
         self.lora_config = lora_config
         self.reserved_layers = reserved_layers
+    
+    @abstractmethod
+    def _init_backbone(self, backbone):
+        config = AutoConfig.from_pretrained(backbone, trust_remote_code=True)
+        backbone = AutoModel.from_pretrained(backbone, config=config, trust_remote_code=True)
+
+        return backbone
+    
+    def _init_backbone_with_self_extend(self, backbone):
+        mistral_self_extend_forward = partial(self_extend_forward, group_size_1=4, group_size_2=512)
+        config = AutoConfig.from_pretrained(backbone)
+        config.sliding_window = 200000000
+        backbone = AutoModel.from_pretrained(backbone, config=config)
+        modify_method_of_instance(backbone, "MistralAttention", "forward", mistral_self_extend_forward)
+    
+        return backbone
 
     @abstractmethod
     def lora_wrapper(self, model):
@@ -178,12 +190,13 @@ class BaseEmbedder(nn.Module, ABC):
         self.encoder = backbone_wrapper(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config)
         # self.device = self.encoder.backbone.device
 
-        if embed_dim == -1:
-            self.embed_dim = self.encoder.backbone_dim
-            self.project = None
-        else:
-            self.embed_dim = embed_dim
-            self.project = nn.Linear(self.encoder.backbone_dim, embed_dim, bias=False)
+        # if embed_dim == -1:
+        #     self.embed_dim = self.encoder.backbone_dim
+        #     self.project = None
+        # else:
+        #     self.embed_dim = embed_dim
+        #     self.project = nn.Linear(self.encoder.backbone_dim, embed_dim, bias=False)
+
         # print(f'>>> The dimension of {backbone} is {self.embed_dim}.')
         self.which_layer = which_layer
         self.mytryoshka_indexes = mytryoshka_indexes
@@ -191,8 +204,8 @@ class BaseEmbedder(nn.Module, ABC):
 
     def embedding(self, input_items):
         embeddings = self.encoder.encode(input_items)
-        if self.project is not None:
-            embeddings = self.project(embeddings)
+        # if self.project is not None:
+        #     embeddings = self.project(embeddings)
 
         device = embeddings.device
         if self.mytryoshka_indexes:

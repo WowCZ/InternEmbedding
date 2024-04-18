@@ -16,7 +16,11 @@ def retrieval_from_gaokao(gaokao_file: str, chromadb_path: str, chromabd_name: s
             l = json.loads(l)
 
             major = l['major']
-            keypoint = ' | '.join(l['keypoint']) if all(k is not None for k in l['keypoint']) else ''
+            if type(l['keypoint']) is not str:
+                keypoint = ' | '.join(l['keypoint']) if all(k is not None for k in l['keypoint']) else ''
+            else:
+                keypoint = l['keypoint']
+
             cur_s = subject_zh_en_map[major]
             if len(keypoint) == 0 or cur_s != subject:
                 continue
@@ -30,7 +34,7 @@ def retrieval_from_gaokao(gaokao_file: str, chromadb_path: str, chromabd_name: s
                 'subject': cur_s,
                 'area': l['area'],
                 'language': l['language'],
-                'keypoint': ' | '.join(l['keypoint']) if all(k is not None for k in l['keypoint']) else '',
+                'keypoint': keypoint,
                 'hard_level': l['hard_level'],
                 'q_type': l['q_type']
             })
@@ -83,7 +87,6 @@ def retrieval_from_raw_questions(questions: List[str], chromadb_path: str, chrom
     client = chromadb.PersistentClient(path=str(chromadb_path))
     collection = client.get_collection(name=chromabd_name, embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt))
     
-
     retrieved_metadatas = retrieval_from_question(collection, topk, questions, None)
     
     with open(saved_retrieval_file, 'w') as fw:

@@ -6,19 +6,25 @@ from apps.clustering.gaokao import create_subject_keypoint_db, evaluate_subject_
 
 subject = 'biology'
 chromadb_path = f'/fs-computility/llm/shared/chenzhi/chromadbs/{subject}_gaokao_questions'
-# gaokao_file = '/fs-computility/llm/shared/chenzhi/gaokao/xueersi_v0327_dedup.jsonl'
-gaokao_file ='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
+gaokao_file = '/fs-computility/llm/shared/chenzhi/gaokao/xueersi_v0327_dedup.jsonl'
+# gaokao_file ='/fs-computility/llm/shared/leizhikai/chenzhi/zh-exam-k12/detail_prompt/kindergarten_sft.jsonl'
 # ckpt = '/fs-computility/llm/chenzhi/ckpts/bge_keypoint_triple5_20240314072748/bge_keypoint_triple5_2000.pt'
 ckpt = '/fs-computility/llm/chenzhi/ckpts/bge_gaokao_xes_kp_20240411155015/bge_gaokao_xes_kp_1281.pt'
 # ckpt = None
-chromabd_name = 'questions_train_xes_kg'
+chromabd_name = 'questions_train_xes_xes'
 
 create_gaokao_chromadb(gaokao_file, chromadb_path, chromabd_name, subject, ckpt)
 
 topk = 10
 retrieval_gaokao_file ='/fs-computility/llm/shared/yangyf/share/random_sample_trained_wrong_case_on_train_set.jsonl'
-saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/train_hard_{subject}_retrieval_from_scratch_bge.jsonl'
-retrieval_from_gaokao(retrieval_gaokao_file, chromadb_path, chromabd_name, subject, topk, ckpt, saved_retrieval_file)
+saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/train_hard_{subject}_retrieval_from_xes_bge.jsonl'
+retrieval_from_gaokao(retrieval_gaokao_file, 
+                      chromadb_path, 
+                      chromabd_name, 
+                      subject, 
+                      topk, 
+                      ckpt, 
+                      saved_retrieval_file)
 
 # # saved_retrieval_file = f'/fs-computility/llm/shared/chenzhi/gaokao/{subject}_raw_retrieval_from_keypoint_bge.jsonl'
 # # retrieval_from_raw_questions(questions, chromadb_path, chromabd_name, topk, ckpt, saved_retrieval_file)

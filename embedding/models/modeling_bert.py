@@ -14,6 +14,9 @@ class BERTBackboneWrapper(BaseBackboneWrapper):
         # backbone = AutoModel.from_pretrained(backbone)
         super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config, self_extend)
 
+    def _init_backbone(self, backbone):
+        return super()._init_backbone(backbone)
+
     def partial_encode(self, *inputs):
         return super().partial_encode(*inputs)
 

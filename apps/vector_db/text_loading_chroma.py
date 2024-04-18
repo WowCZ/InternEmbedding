@@ -9,10 +9,11 @@ from apps.clustering.gaokao import subject_zh_en_map
 
 def create_gaokao_chromadb(gaokao_file: str, chromadb_path: str, chromabd_name: str, subject: str, ckpt: str):
     client = chromadb.PersistentClient(path=str(chromadb_path))
-    if chromabd_name in client.list_collections():
-        print(f'>>> {chromabd_name} is existed!')
-        return
+    # if chromabd_name in client.list_collections():
+    #     print(f'>>> {chromabd_name} is existed!')
+    #     return
 
+    client.delete_collection(name=chromabd_name)
     collection = client.get_or_create_collection(name=chromabd_name, 
                                                  embedding_function=BGEFunction(bge_name='BAAI/bge-base-zh-v1.5', bge_ckpt=ckpt))
 
@@ -24,7 +25,12 @@ def create_gaokao_chromadb(gaokao_file: str, chromadb_path: str, chromabd_name: 
             l = json.loads(l)
 
             major = l['major']
-            keypoint = ' | '.join(l['keypoint']) if all(k is not None for k in l['keypoint']) else ''
+
+            if type(l['keypoint']) is not str:
+                keypoint = ' | '.join(l['keypoint']) if all(k is not None for k in l['keypoint']) else ''
+            else:
+                keypoint = l['keypoint']
+
             cur_s = subject_zh_en_map[major]
             if len(keypoint) == 0 or cur_s != subject:
                 continue
@@ -37,7 +43,7 @@ def create_gaokao_chromadb(gaokao_file: str, chromadb_path: str, chromabd_name: 
                 'subject': cur_s,
                 'area': l['area'],
                 'language': l['language'],
-                'keypoint': ' | '.join(l['keypoint']) if all(k is not None for k in l['keypoint']) else '',
+                'keypoint': keypoint,
                 'hard_level': l['hard_level'],
                 'q_type': l['q_type']
             })

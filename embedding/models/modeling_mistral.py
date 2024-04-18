@@ -16,6 +16,9 @@ class MistralBackboneWrapper(BaseBackboneWrapper):
                  self_extend: bool=False):
         super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config, self_extend)
 
+    def _init_backbone(self, backbone):
+        return super()._init_backbone(backbone)
+
     def partial_encode(self, *inputs):
         input_embeddings, attention_mask = inputs
         backbone_outputs = self.backbone(inputs_embeds=input_embeddings, attention_mask=attention_mask, output_hidden_states=True, return_dict=True)
