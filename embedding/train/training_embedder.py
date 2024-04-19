@@ -10,7 +10,7 @@ def initial_model(args):
     mytryoshka_indexes = list(range(args.mytryoshka_size))
 
     tokenizer = AutoTokenizer.from_pretrained(args.init_backbone, trust_remote_code=True)
-    if args.backbone_type in ['Mistral']:
+    if args.backbone_type in ['Mistral', 'Llama']:
         # uncomment: when padding token is not set, like Mistral 
         tokenizer.pad_token = tokenizer.eos_token
 

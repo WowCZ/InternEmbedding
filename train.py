@@ -128,6 +128,9 @@ def train_embedder(args):
                 n_list_inputs = [dict([(k, v.to(accelerator.device)) for k, v in n_inputs.items()]) for n_inputs in n_list_inputs]
 
             if args.gradcache_chunk_size < 1:
+                if len(n_list_inputs) == 0:
+                    n_list_inputs = None
+                    
                 q_embeddings, p_embeddings, n_embeddings = embedder(q_inputs, p_inputs, n_list_inputs)
                 loss = 0
                 for matryoshka_dim in args.matryoshka_adaptive_dims:
