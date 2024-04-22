@@ -14,14 +14,25 @@ class LlamaBackboneWrapper(BaseBackboneWrapper):
                  which_layer: int=-1, 
                  reserved_layers: List[int]=None,
                  lora_config: Union[bool, LoraConfig]=True, 
-                 self_extend: bool=False):
-        super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config, self_extend)
+                 self_extend: bool=False,
+                 **kwargs):
+        super().__init__(backbone, 
+                         pool_type, 
+                         checkpoint_batch_size, 
+                         which_layer, 
+                         reserved_layers, 
+                         lora_config, 
+                         self_extend,
+                         **kwargs)
 
-    def _init_backbone(self, backbone):
+    def _init_backbone(self, backbone, **kwargs):
+        flashatt = kwargs['flashatt']
         config = AutoConfig.from_pretrained(backbone, trust_remote_code=True)
 
-        config._flash_attn_2_enabled = True
-        config.attn_implementation = "flash_attention_2"
+        if flashatt:
+            config._flash_attn_2_enabled = True
+            config.attn_implementation = "flash_attention_2"
+            
         try:
             backbone = AutoModelForCausalLM.from_pretrained(backbone, 
                                                             config=config, 
@@ -32,7 +43,7 @@ class LlamaBackboneWrapper(BaseBackboneWrapper):
                                                  trust_remote_code=True)
                 
         return backbone
-
+    
     def partial_encode(self, *inputs):
         input_embeddings, attention_mask = inputs
         backbone_outputs = self.backbone(inputs_embeds=input_embeddings, attention_mask=attention_mask, output_hidden_states=True, return_dict=True)
@@ -77,10 +88,21 @@ class LlamaEmbedder(BaseEmbedder):
                  LlamaBackboneWrapper: BaseBackboneWrapper=LlamaBackboneWrapper, 
                  pool_type: str='cls', 
                  checkpoint_batch_size=-1, 
-                 embed_dim: int=-1, 
+                 flashatt: bool=False, 
                  which_layer: int=-1, 
                  reserved_layers: List[int]=None,
                  lora_config: bool=True, 
                  mytryoshka_indexes: list=None, 
-                 normalize: bool = False):
-        super().__init__(backbone, LlamaBackboneWrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, reserved_layers, lora_config, mytryoshka_indexes, normalize)
+                 normalize: bool = False,
+                 **kwargs):
+        super().__init__(backbone, 
+                         LlamaBackboneWrapper, 
+                         pool_type, 
+                         checkpoint_batch_size, 
+                         flashatt, 
+                         which_layer, 
+                         reserved_layers, 
+                         lora_config, 
+                         mytryoshka_indexes, 
+                         normalize, 
+                         **kwargs)

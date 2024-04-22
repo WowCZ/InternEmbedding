@@ -10,12 +10,20 @@ class BERTBackboneWrapper(BaseBackboneWrapper):
                  which_layer: int = -1, 
                  reserved_layers: List[int]=None,
                  lora_config: bool = True, 
-                 self_extend: bool = False):
+                 self_extend: bool = False,
+                 **kwargs):
         # backbone = AutoModel.from_pretrained(backbone)
-        super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config, self_extend)
+        super().__init__(backbone, 
+                         pool_type, 
+                         checkpoint_batch_size, 
+                         which_layer, 
+                         reserved_layers, 
+                         lora_config, 
+                         self_extend,
+                         **kwargs)
 
-    def _init_backbone(self, backbone):
-        return super()._init_backbone(backbone)
+    def _init_backbone(self, backbone, **kwargs):
+        return super()._init_backbone(backbone, **kwargs)
 
     def partial_encode(self, *inputs):
         return super().partial_encode(*inputs)
@@ -45,10 +53,21 @@ class BertEmbedder(BaseEmbedder):
                  backbone_wrapper: BaseBackboneWrapper=BERTBackboneWrapper, 
                  pool_type: str = 'cls', 
                  checkpoint_batch_size=-1, 
-                 embed_dim: int = -1, 
+                 flashatt: bool=False, 
                  which_layer: int = -1,
                  reserved_layers: list = None,
                  lora_config: bool = False, 
                  mytryoshka_indexes: list = None, 
-                 normalize: bool = False):
-        super().__init__(backbone, backbone_wrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, reserved_layers, lora_config, mytryoshka_indexes, normalize)
+                 normalize: bool = False,
+                 **kwargs):
+        super().__init__(backbone, 
+                         backbone_wrapper, 
+                         pool_type, 
+                         checkpoint_batch_size, 
+                         flashatt, 
+                         which_layer, 
+                         reserved_layers, 
+                         lora_config, 
+                         mytryoshka_indexes, 
+                         normalize, 
+                         **kwargs)

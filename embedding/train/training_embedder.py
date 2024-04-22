@@ -20,6 +20,7 @@ def initial_model(args):
             pool_type=args.pool_type, 
             checkpoint_batch_size=args.checkpoint_batch_size, 
             lora_config=args.peft_lora, 
+            flashatt=args.flashatt,
             which_layer=args.which_layer,
             reserved_layers=args.reserved_layers,
             mytryoshka_indexes=mytryoshka_indexes, 

@@ -17,13 +17,14 @@ class BaseBackboneWrapper(nn.Module, ABC):
                  which_layer: int=-1, 
                  reserved_layers: List[int]=None,
                  lora_config: bool=True, 
-                 self_extend: bool=False):
+                 self_extend: bool=False,
+                 **kwargs):
         super(BaseBackboneWrapper, self).__init__()
         # initial backbone model
         if self_extend:
             backbone = self._init_backbone_with_self_extend(backbone)
         else:
-            backbone = self._init_backbone(backbone)
+            backbone = self._init_backbone(backbone, **kwargs)
 
         # TODO: need check
         if reserved_layers is None:
@@ -65,7 +66,7 @@ class BaseBackboneWrapper(nn.Module, ABC):
         self.reserved_layers = reserved_layers
     
     @abstractmethod
-    def _init_backbone(self, backbone):
+    def _init_backbone(self, backbone, **kwargs):
         config = AutoConfig.from_pretrained(backbone, trust_remote_code=True)
         backbone = AutoModel.from_pretrained(backbone, config=config, trust_remote_code=True)
 
@@ -179,23 +180,23 @@ class BaseEmbedder(nn.Module, ABC):
                  backbone_wrapper: BaseBackboneWrapper, 
                  pool_type: str = 'cls', 
                  checkpoint_batch_size=-1, 
-                 embed_dim: int=-1, 
+                 flashatt: bool=False, 
                  which_layer: int=-1, 
                  reserved_layers: List[int]=None,
                  lora_config: bool=True, 
                  mytryoshka_indexes: list=None, 
-                 normalize: bool=False):
+                 normalize: bool=False,
+                 **kwargs):
         super(BaseEmbedder, self).__init__()
 
-        self.encoder = backbone_wrapper(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config)
-        # self.device = self.encoder.backbone.device
-
-        # if embed_dim == -1:
-        #     self.embed_dim = self.encoder.backbone_dim
-        #     self.project = None
-        # else:
-        #     self.embed_dim = embed_dim
-        #     self.project = nn.Linear(self.encoder.backbone_dim, embed_dim, bias=False)
+        self.encoder = backbone_wrapper(backbone, 
+                                        pool_type, 
+                                        checkpoint_batch_size, 
+                                        which_layer, 
+                                        reserved_layers, 
+                                        lora_config,
+                                        flashatt=flashatt,
+                                        **kwargs)
 
         # print(f'>>> The dimension of {backbone} is {self.embed_dim}.')
         self.which_layer = which_layer

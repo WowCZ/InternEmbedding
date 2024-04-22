@@ -13,11 +13,19 @@ class MistralBackboneWrapper(BaseBackboneWrapper):
                  which_layer: int=-1, 
                  reserved_layers: List[int]=None,
                  lora_config: Union[bool, LoraConfig]=True, 
-                 self_extend: bool=False):
-        super().__init__(backbone, pool_type, checkpoint_batch_size, which_layer, reserved_layers, lora_config, self_extend)
+                 self_extend: bool=False,
+                 **kwargs):
+        super().__init__(backbone, 
+                         pool_type, 
+                         checkpoint_batch_size, 
+                         which_layer, 
+                         reserved_layers, 
+                         lora_config, 
+                         self_extend,
+                         **kwargs)
 
-    def _init_backbone(self, backbone):
-        return super()._init_backbone(backbone)
+    def _init_backbone(self, backbone, **kwargs):
+        return super()._init_backbone(backbone, **kwargs)
 
     def partial_encode(self, *inputs):
         input_embeddings, attention_mask = inputs
@@ -63,10 +71,20 @@ class MistralEmbedder(BaseEmbedder):
                  MistralBackboneWrapper: BaseBackboneWrapper=MistralBackboneWrapper, 
                  pool_type: str='cls', 
                  checkpoint_batch_size=-1, 
-                 embed_dim: int=-1, 
+                 flashatt: bool=False, 
                  which_layer: int=-1, 
                  reserved_layers: List[int]=None,
                  lora_config: bool=True, 
                  mytryoshka_indexes: list=None, 
-                 normalize: bool = False):
-        super().__init__(backbone, MistralBackboneWrapper, pool_type, checkpoint_batch_size, embed_dim, which_layer, reserved_layers, lora_config, mytryoshka_indexes, normalize)
+                 normalize: bool = False,
+                 **kwargs):
+        super().__init__(backbone, 
+                         MistralBackboneWrapper, 
+                         pool_type, 
+                         checkpoint_batch_size, 
+                         flashatt, which_layer, 
+                         reserved_layers, 
+                         lora_config, 
+                         mytryoshka_indexes, 
+                         normalize, 
+                         **kwargs)

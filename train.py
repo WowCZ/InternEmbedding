@@ -130,7 +130,7 @@ def train_embedder(args):
             if args.gradcache_chunk_size < 1:
                 if len(n_list_inputs) == 0:
                     n_list_inputs = None
-                    
+
                 q_embeddings, p_embeddings, n_embeddings = embedder(q_inputs, p_inputs, n_list_inputs)
                 loss = 0
                 for matryoshka_dim in args.matryoshka_adaptive_dims:
@@ -177,7 +177,13 @@ def train_embedder(args):
                         negative_embeds = None
 
                 # Step 2: Calculate the cached gradients of representation with inbatch negative loss
-                query_grad_cache, passage_grad_cache, negative_grad_cache, loss = cache_gradients(query_embeds, passage_embeds, negative_embeds, args.temperature, args.task_adaptation, task_type_inbatch, args.hard_negative_sampling)
+                query_grad_cache, passage_grad_cache, negative_grad_cache, loss = cache_gradients(query_embeds, 
+                                                                                                  passage_embeds, 
+                                                                                                  negative_embeds, 
+                                                                                                  args.temperature, 
+                                                                                                  args.task_adaptation, 
+                                                                                                  task_type_inbatch, 
+                                                                                                  args.hard_negative_sampling)
                 
                 # Step 3: Backpropagate the gradients according to the cached representation gradients
                 query_grad_cache = query_grad_cache.split(args.gradcache_chunk_size)
