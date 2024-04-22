@@ -74,6 +74,21 @@ python run.py evaluate \
 --mteb_evaluation_tasks=Banking77Classification,EmotionClassification
 ```
 
+## ☕ Usage Cases
+### Dense Semantic Recall
+```shell
+python run.py predict \
+--backbone_type=Mistral \
+--pool_type=eos \
+--which_layer=-1 \
+--peft_lora \
+--task_prompt \
+--mytryoshka_size=4096 \
+--embedder_ckpt_path=/path_to/your_saved_ckpt \
+--embedder_name=your_logging_name
+```
+
+
 ## 🌏 Deploy InternEmbedding
 ### Deploy the embedder with OpenAI style (not support yet)
 ```shell

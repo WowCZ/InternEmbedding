@@ -630,6 +630,32 @@ def download_multitrain_datasets(dataset_name: str, save_dir: str):
         fw.write(''.join(qp_pairs))
 
 
+def download_banking77_datasets(dataset_name: str, save_dir: str):
+    qc_pairs = []
+    dataset = load_dataset(dataset_name, cache_dir=HFCACHEDATASETS, trust_remote_code=True)
+    for d in dataset['test']:
+        qc_pairs.append(json.dumps(
+                {
+                    'content': d['text'],
+                    'label': d['label']
+                }
+            )+'\n')
+        
+    for d in dataset['train']:
+        qc_pairs.append(json.dumps(
+                {
+                    'content': d['text'],
+                    'label': d['label']
+                }
+            )+'\n')
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    with open(os.path.join(save_dir, 'BANKING77_icltest.jsonl'), 'w') as fw:
+        fw.write(''.join(qc_pairs))
+
+
 if __name__ == '__main__':
     # save_dir = '/fs-computility/llm/chenzhi/datasets_processed/ELI5'
     # download_eli5_datasets('vincentmin/eli5_rlhf', save_dir)
@@ -709,7 +735,9 @@ if __name__ == '__main__':
     # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/YahooQAClustering'
     # download_yahooqaclustering_datasets('yahoo_answers_qa', save_dir)
 
-    
+    save_dir = '/fs-computility/llm/shared/chenzhi/ICL/SymbolTuning/eval'
+    download_banking77_datasets('FastFit/banking_77', save_dir)
+
     # print('>>> Process Multi Train...')
     # # New Datasets
     # huggingface_names = ['emb-wow-train', 'emb-trex-train', 'emb-medmcqa-train', 'emb-pubmed']
@@ -722,21 +750,21 @@ if __name__ == '__main__':
     # dataset_dirs = ['st_allnli', 'st_eli5', 'st_gooqa', 'st_specter', 'st_stackexchange_dup', 'st_wikihow', 'st_yahoo_qa']
     # save_dirs = ['STAllNLI', 'STELI5', 'STGooQA', 'STSpecter', 'STStackexchangeDup', 'STWikiHow', 'STYahooQA']
 
-    print('>>> Process Sentence Transformer...')
-    # dataset_dirs = ['st_altlex', 'st_amazon_review', 'st_s2orc_ta', 'st_codesearchnet', 'st_npr', 'st_wikianswers', 'st_agnews', 'st_ccnews', 'st_flickr30k', 'st_xsum', 'st_paq']
-    # save_dirs = ['STAltlex', 'STAmazonReview', 'STS2ORCTA', 'STCodeSearchNet', 'STNPR', 'STWikiAnswers', 'STAGNews', 'STCCNews', 'STFlickr30k', 'STXSum', 'STPAQ']
-    dataset_dirs = ['st_allnli', 'st_specter', 'st_stackexchange_dup', 'st_wikihow']
-    save_dirs = ['STAllNLI', 'STSpecter', 'STStackexchangeDup', 'STWikiHow']
+    # print('>>> Process Sentence Transformer...')
+    # # dataset_dirs = ['st_altlex', 'st_amazon_review', 'st_s2orc_ta', 'st_codesearchnet', 'st_npr', 'st_wikianswers', 'st_agnews', 'st_ccnews', 'st_flickr30k', 'st_xsum', 'st_paq']
+    # # save_dirs = ['STAltlex', 'STAmazonReview', 'STS2ORCTA', 'STCodeSearchNet', 'STNPR', 'STWikiAnswers', 'STAGNews', 'STCCNews', 'STFlickr30k', 'STXSum', 'STPAQ']
+    # dataset_dirs = ['st_allnli', 'st_specter', 'st_stackexchange_dup', 'st_wikihow']
+    # save_dirs = ['STAllNLI', 'STSpecter', 'STStackexchangeDup', 'STWikiHow']
 
 
-    for dataset, save_dir in tqdm.tqdm(zip(dataset_dirs, save_dirs)):
-        dataset_root = f'/fs-computility/llm/chenzhi/datasets_cache/{dataset}'
-        for _, _, fs in os.walk(dataset_root):
-            for f in fs:
-                if f.endswith('.jsonl'):
-                    dataset_name = os.path.join(dataset_root, f)
-                    if os.path.exists(dataset_name):
-                        data_format = download_stembedding_datasets(dataset_name, f'/fs-computility/llm/shared/chenzhi/internembedding_datasets/{save_dir}')
-                        print(f'>>> Type {data_format} download from ', dataset_name)
+    # for dataset, save_dir in tqdm.tqdm(zip(dataset_dirs, save_dirs)):
+    #     dataset_root = f'/fs-computility/llm/chenzhi/datasets_cache/{dataset}'
+    #     for _, _, fs in os.walk(dataset_root):
+    #         for f in fs:
+    #             if f.endswith('.jsonl'):
+    #                 dataset_name = os.path.join(dataset_root, f)
+    #                 if os.path.exists(dataset_name):
+    #                     data_format = download_stembedding_datasets(dataset_name, f'/fs-computility/llm/shared/chenzhi/internembedding_datasets/{save_dir}')
+    #                     print(f'>>> Type {data_format} download from ', dataset_name)
 
     

@@ -1,11 +1,11 @@
 # 1. 按照volc命令行工具
-# 2. volc ml_task submit --conf=./scripts/app.yaml
+# 2. volc ml_task submit --conf=./scripts/train_llama.yaml
 # 自定义训练任务名称
-TaskName: "embedding-app"
+TaskName: "embedding-llama-boost"
 # 自定义训练任务描述
 Description: ""
 # 运行入口命令
-Entrypoint: "/usr/bin/bash /fs-computility/llm/chenzhi/InternEmbedding/scripts/app.sh"
+Entrypoint: "/usr/bin/bash /fs-computility/llm/chenzhi/InternEmbedding/scripts/train_llama.sh"
 # 标签
 Tags: [] 
 # # 待上传代码的本地路径, 如是目录且以 '/' 结尾, 则将该目录下的所有内容上传到 RemoteMountCodePath,
@@ -25,9 +25,9 @@ Framework: "Custom"
 TaskRoleSpecs:
   - RoleName: "worker"
     RoleReplicas: 1
-    Flavor: "ml.pni2l.7xlarge"
+    Flavor: "ml.pni2l.28xlarge"
 # 该自定义任务最长运行时间, 支持 1h, 2h45m, 30s 等方式表达时间段, 如未带单位, 则默认单位为秒
-ActiveDeadlineSeconds: 80h
+ActiveDeadlineSeconds: 240h
 # 是否开启 TensorBoard. 如需开启, 则可以反注释下方配置. 同时需将 TensorBoard 数据写入训练容器预置的环境变量($TENSORBOARD_LOG_PATH)下
 EnableTensorBoard: False
 # 挂载分布式数据盘至训练容器中, 支持 Tos, vePFS 等数据盘挂载方式
@@ -36,9 +36,13 @@ Storages:
     VepfsId: "vepfs-cnsh04f89ec802c7"                      # 若在平台挂载了两个Vepfs实例，则需要指定对应VePFS实例ID；只有一个实例时，可以为空
     MountPath: "/fs-computility/llm/shared"                        # 容器中的挂载目录
     SubPath: "llm/shared"
-    # MountPath: "/fs-computility/llm/chenzhi"  # 在分布式训练容器中挂载的路径
-    # Bucket: "repleace_with_your_tos_bucket" # 可访问的 tos 下某个具体的 bucket 名字, 例如: default_bucket
   - Type: "Vepfs"
     VepfsId: "vepfs-cnsh04f89ec802c7"                      # 若在平台挂载了两个Vepfs实例，则需要指定对应VePFS实例ID；只有一个实例时，可以为空
     MountPath: "/fs-computility/llm/chenzhi"                        # 容器中的挂载目录
     SubPath: "llm/chenzhi"
+    # MountPath: "/fs-computility/llm/chenzhi"  # 在分布式训练容器中挂载的路径
+    # Bucket: "repleace_with_your_tos_bucket" # 可访问的 tos 下某个具体的 bucket 名字, 例如: default_bucket
+  # - Type: "Vepfs"
+  #   VepfsId: "vepfs-cnsh04f89ec802c7"                      # 若在平台挂载了两个Vepfs实例，则需要指定对应VePFS实例ID；只有一个实例时，可以为空
+  #   MountPath: "/fs-computility/llm/shared"                        # 容器中的挂载目录
+  #   SubPath: "llm/shared"

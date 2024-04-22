@@ -1,4 +1,7 @@
 # !/bin/sh
-source activate /fs-computility/llm/shared/chenzhi/miniconda3/envs/embedding
+source activate /root/miniconda3/envs/embedding
+
+export http_proxy=100.66.27.20:3128
+export https_proxy=100.66.27.20:3128
 
 python /fs-computility/llm/chenzhi/InternEmbedding/app.py
