@@ -21,7 +21,7 @@ CUDA_VISIBLE_DEVICES=0 python /fs-computility/llm/chenzhi/InternEmbedding/run.py
 
 MODEL_NAME=mistral_embedder18_example
 CKPT_DIR=mistral_filter18_20240303141730
-CKPT_NAME=mistral_filter18_1000.pt
+CKPT_NAME=mistral_filter18_2000.pt
 
 CUDA_VISIBLE_DEVICES=1 python /fs-computility/llm/chenzhi/InternEmbedding/run.py predict \
                                         --backbone_type=Mistral \
