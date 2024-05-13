@@ -1,5 +1,4 @@
 from typing import List
-from transformers import AutoModel, AutoTokenizer
 from .base_model import BaseBackboneWrapper, BaseEmbedder
 
 class BGEBackboneWrapper(BaseBackboneWrapper):

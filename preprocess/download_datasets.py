@@ -656,6 +656,30 @@ def download_banking77_datasets(dataset_name: str, save_dir: str):
         fw.write(''.join(qc_pairs))
 
 
+def download_thulongbenchen_datasets(dataset_name: str, save_dir: str):
+    
+    subsets = ["qasper", "multifieldqa_en", "hotpotqa", "2wikimqa", "gov_report", "multi_news", "trec", \
+            "triviaqa", "samsum", "passage_count", "passage_retrieval_en", "lcc", "repobench-p"]
+    for subset in subsets:
+        qca_pairs = []
+        dataset = load_dataset(dataset_name, f"{subset}_e", cache_dir=HFCACHEDATASETS, trust_remote_code=True)
+        for d in dataset['test']:
+            input, context, answers = d['input'], d['context'], d['answers']
+            qca_pairs.append(json.dumps(
+                {
+                    'content': context + '\n\n' + input,
+                    'answers': answers
+                }
+            )+'\n')
+
+        subset_save_dir = os.path.join(save_dir, subset)
+        if not os.path.exists(subset_save_dir):
+            os.makedirs(subset_save_dir)
+
+        with open(os.path.join(subset_save_dir, f'THU_LongBench_En_{subset}.jsonl'), 'w') as fw:
+            fw.write(''.join(qca_pairs))
+
+
 if __name__ == '__main__':
     # save_dir = '/fs-computility/llm/chenzhi/datasets_processed/ELI5'
     # download_eli5_datasets('vincentmin/eli5_rlhf', save_dir)
@@ -735,8 +759,11 @@ if __name__ == '__main__':
     # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/YahooQAClustering'
     # download_yahooqaclustering_datasets('yahoo_answers_qa', save_dir)
 
-    save_dir = '/fs-computility/llm/shared/chenzhi/ICL/SymbolTuning/eval'
-    download_banking77_datasets('FastFit/banking_77', save_dir)
+    # save_dir = '/fs-computility/llm/shared/chenzhi/ICL/SymbolTuning/eval'
+    # download_banking77_datasets('FastFit/banking_77', save_dir)
+
+    save_dir = '/fs-computility/llm/shared/chenzhi/ICL/hf_datasets/THULongBench'
+    download_thulongbenchen_datasets('THUDM/LongBench', save_dir)
 
     # print('>>> Process Multi Train...')
     # # New Datasets

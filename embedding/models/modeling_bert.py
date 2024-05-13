@@ -1,6 +1,5 @@
 from typing import List
 from .base_model import BaseBackboneWrapper, BaseEmbedder
-from transformers import AutoModel, AutoTokenizer
 
 class BERTBackboneWrapper(BaseBackboneWrapper):
     def __init__(self, 

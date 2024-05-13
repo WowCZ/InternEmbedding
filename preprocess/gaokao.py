@@ -3,7 +3,9 @@ import tqdm
 import glob
 import json
 import random
-
+import jsonlines
+from tqdm import tqdm
+from contextlib import contextmanager
 
 def gaokao_exam():
     with open("/fs-computility/llm/chenzhi/InternEmbedding/resets/gaokao/single_choices_prompt.txt","r") as f:
@@ -163,4 +165,39 @@ def change_to_embedding_training(file: str):
 
     fw.close()
 
-change_to_embedding_training("/fs-computility/llm/shared/chenzhi/gaokao/xueersi_v0327_dedup.jsonl")
+
+@contextmanager
+def read_jsonl_file(file_path: str):
+    with open(file_path, 'r') as file:
+        with jsonlines.Reader(file) as reader:  # type: ignore
+            yield reader
+
+
+def extract_biology(gaokao_file: str, save_file: str):
+    with open(save_file, 'a') as fw:
+        with read_jsonl_file(gaokao_file) as fr:
+            for sample in tqdm(fr):
+                if sample['ori']['major'] == '生物':
+                    if sample['ori']['supplier'].lower() == 'xes':
+                        keypoint = extract_xes_keypoint(sample['ori']['keypoint'][0])
+                        sample['ori']['keypoint'] = keypoint
+                    fw.write(json.dumps(sample, ensure_ascii=False)+'\n')
+
+
+def add_search_content(gaokao_file: str, save_file: str):
+    with open(save_file, 'a') as fw:
+        with read_jsonl_file(gaokao_file) as fr:
+            for sample in tqdm(fr):
+                sample['recall_anchor'] = sample['ori']['q_main'] + '\n' + '\n'.join(sample['ori']['options']) + '\n' + sample['ori']['answer_detail']
+                fw.write(json.dumps(sample, ensure_ascii=False)+'\n')
+if __name__ == '__main__':
+    # gaokao_file = '/fs-computility/llm/shared/leizhikai/kaoshi/exam_V0416/cn_exam_simple_fix_equation_V3_merge/merge.jsonl'
+    # save_biology_file = '/fs-computility/llm/shared/chenzhi/gaokao/cn_exam_simple_fix_equation_V3_merge_biology.jsonl'
+    # extract_biology(gaokao_file, save_biology_file)
+
+    gaokao_file = '/fs-computility/llm/shared/chenzhi/gaokao/cn_exam_simple_fix_equation_V3_merge_biology.jsonl'
+    save_biology_file = '/fs-computility/llm/shared/chenzhi/gaokao/cn_exam_simple_fix_equation_V3_merge_biology_search_bm25.jsonl'
+    add_search_content(gaokao_file, save_biology_file)
+
+
+    # change_to_embedding_training("/fs-computility/llm/shared/chenzhi/gaokao/xueersi_v0327_dedup.jsonl")
