@@ -656,6 +656,25 @@ def download_banking77_datasets(dataset_name: str, save_dir: str):
         fw.write(''.join(qc_pairs))
 
 
+def download_longalpaca_datasets(dataset_name: str, save_dir: str):
+    qa_pairs = []
+    dataset = load_dataset(dataset_name, split='train', cache_dir=HFCACHEDATASETS, trust_remote_code=True)
+    for d in dataset:
+        instruction, output = d['instruction'], d['output']
+        qa_pairs.append(json.dumps(
+            {
+                'prompt': instruction,
+                'output': output
+            }
+        )+'\n')
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    with open(os.path.join(save_dir, 'train.jsonl'), 'w') as fw:
+        fw.write(''.join(qa_pairs))
+
+
 if __name__ == '__main__':
     # save_dir = '/fs-computility/llm/chenzhi/datasets_processed/ELI5'
     # download_eli5_datasets('vincentmin/eli5_rlhf', save_dir)
@@ -735,8 +754,11 @@ if __name__ == '__main__':
     # save_dir = '/fs-computility/llm/shared/chenzhi/internembedding_datasets/YahooQAClustering'
     # download_yahooqaclustering_datasets('yahoo_answers_qa', save_dir)
 
-    save_dir = '/fs-computility/llm/shared/chenzhi/ICL/SymbolTuning/eval'
-    download_banking77_datasets('FastFit/banking_77', save_dir)
+    # save_dir = '/fs-computility/llm/shared/chenzhi/ICL/SymbolTuning/eval'
+    # download_banking77_datasets('FastFit/banking_77', save_dir)
+
+    save_dir = '/fs-computility/llm/shared/chenzhi/ICL/hf_datasets/LongAlpaca-12K'
+    download_longalpaca_datasets('Yukang/LongAlpaca-12k', save_dir)
 
     # print('>>> Process Multi Train...')
     # # New Datasets

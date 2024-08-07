@@ -23,3 +23,18 @@ def cosine_similarity(x, y):
         cosine_similarity.append(s)
 
     return np.array(cosine_similarity)
+
+
+def matrix_cosine_similarity(x):
+    cosine_similarity = []
+    for i in range(x.shape[0]):
+        row = []
+        for j in range(x.shape[0]):
+            if j < i:
+                row.append(0)
+            else:
+                s = 1 - cosine(x[i], x[j])
+                row.append(round(s, 3))
+        cosine_similarity.append(row)
+
+    return cosine_similarity

@@ -1,6 +1,7 @@
 import os
 import math
 import torch
+from tqdm import tqdm
 from mteb import MTEB
 from tqdm.rich import trange
 from typing import List, Union
@@ -13,7 +14,7 @@ from embedding.data.datasets import custom_corpus_prompt
 from embedding.eval.eval_utils import get_task_def_by_task_name_and_type
 
 class EvaluatedEmbedder:
-    def __init__(self, embedder: Union[str, BaseEmbedder], tokenizer: AutoTokenizer, max_length: int, device: str='cuda:0', eval_batch_size: int=64):
+    def __init__(self, embedder: Union[str, BaseEmbedder], tokenizer: AutoTokenizer, max_length: int, device: str='cuda:0', eval_batch_size: int=916):
         if type(embedder) is str:
             self.embedder = torch.load(embedder)
         else:
@@ -25,6 +26,23 @@ class EvaluatedEmbedder:
         self.eval_batch_size = eval_batch_size
 
     def batch_encode(self, sentences: Union[str, list], batch_size=32, **kwargs):
+        batch_size = self.eval_batch_size
+        if type(sentences) is str:
+            sentences = [sentences]
+
+        batch_cnt = math.ceil(len(sentences) / batch_size)
+        sentence_embeddings = []
+        with torch.no_grad():
+            for bi in trange(batch_cnt):
+                cur_batch = sentences[bi*batch_size: (bi+1)* batch_size]
+                bi_inputs = make_text_batch(cur_batch, self.tokenizer, self.max_length, self.device)
+
+                cur_embeddings = self.embedder.embedding(bi_inputs)
+                sentence_embeddings.append(cur_embeddings)
+
+        return torch.cat(sentence_embeddings, dim=0).detach().cpu()
+    
+    def batch_encode_similarity(self, sentences: Union[str, list], batch_size=32, **kwargs):
         # batch_size = self.eval_batch_size
         if type(sentences) is str:
             sentences = [sentences]
@@ -40,7 +58,9 @@ class EvaluatedEmbedder:
                 cur_embeddings = self.embedder.embedding(bi_inputs)
                 sentence_embeddings.append(cur_embeddings)
 
-        return torch.cat(sentence_embeddings, dim=0).detach().cpu()
+        sentence_embeddings = torch.cat(sentence_embeddings, dim=0)
+        similarity = sentence_embeddings.mm(sentence_embeddings.t())
+        return sentence_embeddings.detach().cpu(), similarity.detach().cpu()
     
     def encode_queries(self, queries, prompt=None, batch_size=32, **kwargs):
         if prompt is not None:
